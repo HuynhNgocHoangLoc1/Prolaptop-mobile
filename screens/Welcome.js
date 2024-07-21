@@ -1,11 +1,15 @@
 import { StyleSheet, View, Image, TouchableOpacity, Text } from "react-native";
 import React from "react";
 import images from "../constants/images";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Welcome() {
+
+    const navigation = useNavigation();
   const handleStart = () => {
-    alert("Start");
+    navigation.navigate("Login");
   };
+  
   return (
     <View style={styles.container}>
       <Image style={styles.background} source={images.backgroundWelcome} />
@@ -19,32 +23,38 @@ export default function Welcome() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 12,
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "white",
   },
   background: {
-    height: 200,
-    width: 300,
+    width: 252,
+    height: 177,
+    justAlign: "center",
+    resizeMode: "cover",
+    transform: [{ scale: 1.0 }],
+
   },
   buttonStart: {
-    width: 100,
-    height: 50,
+    width: "auto",
+    height: "auto",
     backgroundColor: "#D9D9D9",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 30,
     elevation: 10,
-    marginTop: 300,
-    marginBottom: -200,
+    position: "absolute",
+    bottom: 50,
   },
   welcomeText: {
     fontSize: 30,
-    fontWeight: "bold",
+    fontWeight: "900",
   },
   startText: {
     fontSize: 30,
     fontWeight: "bold",
+    paddingHorizontal: 40,
+    paddingVertical: 10,
   },
 });
