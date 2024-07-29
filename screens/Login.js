@@ -5,6 +5,7 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  TouchableHighlightComponent,
 } from "react-native";
 import React from "react";
 import images from "../constants/images";
@@ -19,7 +20,7 @@ export default function Login() {
     navigation.navigate("SignUp")
   };
   const handleLogin = () => {
-    console.log("login");
+    navigation.navigate("Home")
   };
 
   return (
@@ -34,7 +35,9 @@ export default function Login() {
           style={styles.backgroundLogin}
           source={images.backgroundWelcome}
         />
+        <TouchableOpacity onPress={handleLogin}>
         <Text style={styles.loginText}>Login</Text>
+        </TouchableOpacity>
         <TextInput
           style={styles.inputUserName}
           placeholder="Username"
