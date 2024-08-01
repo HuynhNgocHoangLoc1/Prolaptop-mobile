@@ -69,17 +69,17 @@ import {
       fontSize: 22,
     },
     shape: {
-      width: 150,
-      height: 150,
-      backgroundColor: colors.dark_gray,
+      width: 220,
+      height: 200,
+      backgroundColor: colors.blue_main,
       borderRadius: 100,
       position: "absolute",
       top: -50,
     },
     categoryItem: {
       marginTop: 10,
-      width: 130,
-      height: 160,
+      width: 200,
+      height: 280,
       justifyContent: "center",
       alignItems: "center",
       backgroundColor: colors.white,
@@ -94,7 +94,7 @@ import {
       borderColor: colors.dark_gray,
     },
     img: {
-      width: 60,
+      width: 75,
       height: 60,
     },
     text: {

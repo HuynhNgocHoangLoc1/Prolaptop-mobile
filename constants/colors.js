@@ -6,7 +6,7 @@ export default colors = {
     text: '#4a4a4a',
     subText: '#666666',
     white: '#ffffff',
-    black: '#00000',
+    black: '#000000', // Sửa lại từ '#00000' thành '#000000'
     light_gray: '#f4f4f4',
     dark_gray: '#d9d9d9',
     gray: '#efefef',
@@ -16,4 +16,7 @@ export default colors = {
     success: '#07a14f',
     border: '#B8B4B4',
     button: '#A3D2B1',
+    dark_blu: '#1720FA', // Thêm '#'
+    light_blu: '#0D6EFA', // Thêm '#'
+    blue_main: '#2b3494', // Thêm '#'
 };

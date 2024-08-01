@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   shape: {
     width: 150,
     height: 150,
-    backgroundColor: colors.dark_gray,
+    backgroundColor: colors.blue_main,
     borderRadius: 100,
     position: "absolute",
     top: -50,

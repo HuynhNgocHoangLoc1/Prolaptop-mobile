@@ -6,9 +6,8 @@ import { Welcome, Login } from '../screens/index';
 import { NavigationContainer } from '@react-navigation/native';
 import SignUp from '../screens/SignUp';
 import Home from '../screens/home/Home';
-import Slider from '../screens/home/Slider';
-import Category from '../screens/home/Category';
-import BestSeller from '../screens/home/BestSeller';
+
+import UITab from './UITab';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,7 +23,8 @@ export default function NavigationApp(props) {
                 <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
                 <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
                 <Stack.Screen name="SignUp" component={SignUp} options= {{headerShown: false}}/>
-                <Stack.Screen name="Home" component={Home} options= {{headerShown: false}}/>
+                <Stack.Screen name="Home" component={Home} options= {{headerShown: false}}/>        
+                {/* <Stack.Screen name="UITab" component={UITab} options= {{headerShown: false}}/> */}
 
 
             </Stack.Navigator>
