@@ -95,6 +95,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderWidth: 0.4,
     borderColor: colors.dark_gray,
+    borderWidth: 1, // Tăng độ dày của viền
+    borderColor: 'black', // Đặt màu viền là đen
   },
   img: {
     width: 60,
@@ -104,10 +106,12 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "500",
     marginTop: 10,
+    
   },
   title: {
     fontSize: 30,
     fontWeight: "700",
     marginTop: 10,
+    color: "blue_text",
   },
 });

@@ -82,7 +82,7 @@ import {
       height: 280,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: colors.white,
+      backgroundColor: "#fff",
       margin: 8,
       borderRadius: 10,
       elevation: 5, // Android shadow
@@ -92,6 +92,8 @@ import {
       overflow: "hidden",
       borderWidth: 0.4,
       borderColor: colors.dark_gray,
+      borderWidth: 1, // Tăng độ dày của viền
+      borderColor: 'black', // Đặt màu viền là đen
     },
     img: {
       width: 75,
@@ -106,6 +108,7 @@ import {
       fontSize: 30,
       fontWeight: "700",
       marginTop: 10,
+      color: "blue_text",
     },
   });
   

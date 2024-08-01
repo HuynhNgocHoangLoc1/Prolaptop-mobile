@@ -16,7 +16,7 @@ export default function Welcome() {
         <Text style ={styles.welcomeText}>Welcome</Text>
       <TouchableOpacity style={styles.buttonStart} onPress={handleStart}>
         <Text style={styles.startText}>Start</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> 
     </View>
   );
 }

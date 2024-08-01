@@ -25,12 +25,13 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
+    backgroundColor: "#fff",
   },
   header: {
     width: "100%",
     height: 80,
     resizeMode: "cover",
-    backgroundColor: 'white',
+    backgroundColor: '#EBEBEB',
     display: "flex",
     transform: [{ scale: 1.0 }],
     alignItems: "center",

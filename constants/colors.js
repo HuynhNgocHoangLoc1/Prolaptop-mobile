@@ -18,5 +18,7 @@ export default colors = {
     button: '#A3D2B1',
     dark_blu: '#1720FA', // Thêm '#'
     light_blu: '#0D6EFA', // Thêm '#'
-    blue_main: '#2b3494', // Thêm '#'
+    blue_main: '#617EB7', // Thêm '#'
+    blue_text: '#171B4D',
 };
+            

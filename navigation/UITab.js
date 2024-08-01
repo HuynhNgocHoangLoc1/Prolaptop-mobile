@@ -39,7 +39,7 @@ const UITab = () => {
                 tabBarStyle: styles.tabBar, // Thêm kiểu này
             })}
         >
-            <Tab.Screen name="Home" component={() => null} />
+            <Tab.Screen style={styles.homeTab} name="Home" component={() => null} />
             <Tab.Screen name="Search" component={() => null} />
             <Tab.Screen name="Cart" component={() => null} />
             <Tab.Screen name="User" component={() => null} />
@@ -50,10 +50,11 @@ const UITab = () => {
 const styles = StyleSheet.create({
     tabBar: {
         position: 'fixed',
-        bottom: -10,
-        // height: 30,
-        height: 45,
+      
     },
+    homeTab:{
+
+    }
 });
 
 export default UITab;
