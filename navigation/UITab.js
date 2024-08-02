@@ -42,7 +42,7 @@ const UITab = () => {
             <Tab.Screen style={styles.homeTab} name="Home" component={() => null} />
             <Tab.Screen name="Search" component={() => null} />
             <Tab.Screen name="Cart" component={() => null} />
-            <Tab.Screen name="User" component={() => null} />
+            <Tab.Screen name="User" component={() => null}  />
         </Tab.Navigator>
     );
 };
