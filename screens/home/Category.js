@@ -16,9 +16,7 @@ export default function Category() {
       icon: require("../../assets/icons/category/asus.png"),
     },
 
-    { name: "Hp", icon: require("../../assets/icons/category/hp.png") 
-
-    },
+    { name: "Hp", icon: require("../../assets/icons/category/hp.png") },
 
     {
       name: "Msi",
@@ -96,7 +94,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.4,
     borderColor: colors.dark_gray,
     borderWidth: 1, // Tăng độ dày của viền
-    borderColor: 'black', // Đặt màu viền là đen
+    borderColor: "black", // Đặt màu viền là đen
   },
   img: {
     width: 60,
@@ -106,7 +104,6 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "500",
     marginTop: 10,
-    
   },
   title: {
     fontSize: 30,
