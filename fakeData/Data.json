@@ -1,0 +1,153 @@
+{
+    "user": [
+        {
+            "password": "123456789",
+            "avatar": "https://res.cloudinary.com/dnjkwuc7p/image/upload/v1712043752/avatar/default_avatar.png",
+            "createdAt": "2024-08-03T20:38:54.782Z",
+            "createdBy": null,
+            "updatedAt": "2024-08-03T20:38:54.782Z",
+            "updatedBy": null,
+            "deletedAt": null,
+            "deletedBy": null,
+            "id": "3ab5bebb-6c54-4efa-8674-58c7a86c0840",
+            "userName": "Huynh Ngoc Hoang Loc ",
+            "email": "loc021102@gmail.com",
+            "gender": "male",
+            "address": "Trường trinh ",
+            "phone": "1234567891",
+            "role": "user"
+        },
+        {
+            "password": "123456789",
+            "avatar": "https://res.cloudinary.com/dnjkwuc7p/image/upload/v1712043752/avatar/default_avatar.png",
+            "createdAt": "2024-08-03T20:41:17.941Z",
+            "createdBy": null,
+            "updatedAt": "2024-08-03T20:41:17.941Z",
+            "updatedBy": null,
+            "deletedAt": null,
+            "deletedBy": null,
+            "id": "6c6637b3-df8f-48db-9971-b87ac620b1b8",
+            "userName": "Van Dung",
+            "email": "Dung021102@gmail.com",
+            "gender": "male",
+            "address": "Phan Thanh",
+            "phone": "1234567891",
+            "role": "user"
+        }
+    ],
+    "shipping-address": [
+        {
+            
+            "createdAt": "2024-08-03T20:46:16.868Z",
+            "createdBy": null,
+            "updatedAt": "2024-08-03T20:46:16.868Z",
+            "updatedBy": null,
+            "deletedAt": null,
+            "deletedBy": null,
+            "id": "8ff278d8-3b9f-4b2b-893f-c40d0e97dfbb",
+            "district": "Thanh Khe",
+            "address": "135 NPN",
+            "city": "Da Nang"
+        },
+        {
+            "createdAt": "2024-08-03T20:48:03.301Z",
+            "createdBy": null,
+            "updatedAt": "2024-08-03T20:48:03.301Z",
+            "updatedBy": null,
+            "deletedAt": null,
+            "deletedBy": null,
+            "id": "a9c07567-826e-45b3-8aef-4c4feb337f3f",
+            "district": "Thac Gian",
+            "address": "111 Phan Thanh",
+            "city": "Da Nang"
+        }
+    ],
+    "order": [
+        {
+            "createdAt": "2024-08-03T21:00:24.954Z",
+            "createdBy": null,
+            "updatedAt": "2024-08-03T21:00:24.954Z",
+            "updatedBy": null,
+            "deletedAt": null,
+            "deletedBy": null,
+            "id": "f84242dd-48e7-4d84-b536-0f6bfc14fe69",
+            "userId": "3ab5bebb-6c54-4efa-8674-58c7a86c0840",
+            "date": "2024-05-26T00:00:00.000Z",
+            "name": "Loc",
+            "email": "Locg@gmail.com",
+            "phoneNumber": "0787707317",
+            "shippingAddress": "8ff278d8-3b9f-4b2b-893f-c40d0e97dfbb",
+            "price": 500
+        }
+    ],
+    "category": [
+        {
+            
+                "createdAt": "2024-08-03T21:12:51.743Z",
+                "createdBy": null,
+                "updatedAt": "2024-08-03T21:12:51.743Z",
+                "updatedBy": null,
+                "deletedAt": null,
+                "deletedBy": null,
+                "id": "40b4b0c0-5157-41c8-9c40-950a8d44fad8",
+                "name": "macbook",
+                "description": "beautifull"
+        }
+    ],
+    "product": [
+        {
+            "imageUrl": "https://res.cloudinary.com/dnjkwuc7p/image/upload/v1712043752/avatar/default_avatar.png",
+            "createdAt": "2024-08-03T21:23:57.434Z",
+            "createdBy": null,
+            "updatedAt": "2024-08-03T21:23:57.434Z",
+            "updatedBy": null,
+            "deletedAt": null,
+            "deletedBy": null,
+            "id": "3e2e62d6-4269-412c-bd48-bc4622111483",
+            "name": "Macbook",
+            "description": "good",
+            "categoryId": "40b4b0c0-5157-41c8-9c40-950a8d44fad8",
+            "price": 500000,
+            "stockQuantity": 10,
+            "ram": "8Gb",
+            "cpu": "macOs",
+            "card": "gtx 1050 ti",
+            "chip": "M1 pro",
+            "hardDrive": "Mac"
+        }
+    ],
+    "orderDetail": [
+        {
+            "orderId": "f84242dd-48e7-4d84-b536-0f6bfc14fe69",
+            "productId": "3e2e62d6-4269-412c-bd48-bc4622111483",
+            "quantity": 5,
+            "price": 900,
+            "createdAt": "2024-08-03T21:41:01.416Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "deletedBy": null,
+            "updatedAt": "2024-08-03T21:41:01.416Z",
+            "deletedAt": null,
+            "id": "3073b590-6640-473c-9387-115879af6c06"
+        }   
+    ],
+    "review": [
+        
+            {
+                "createdAt": "2024-08-03T21:59:59.818Z",
+                "createdBy": null,
+                "updatedAt": "2024-08-03T21:59:59.818Z",
+                "updatedBy": null,
+                "deletedAt": null,
+                "deletedBy": null,
+                "id": "07fb714c-609e-4a72-8684-dfa65539365e",
+                "productId": "3e2e62d6-4269-412c-bd48-bc4622111483",
+                "orderId": "f84242dd-48e7-4d84-b536-0f6bfc14fe69",
+                "rating": 5,
+                "comment": "good",
+                "date": "2020-12-03T00:00:00.000Z"
+            }
+        
+    ]
+
+}

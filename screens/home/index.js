@@ -16,7 +16,7 @@ export default function Home() {
       </View>
       <Category />
       <BestSeller />
-      <UITab style={styles.tab} />
+      <UITab style={styles} />
     </ScrollView>
   );
 }
@@ -44,11 +44,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 28,
   },
-  tab: {
-    // paddingTop: 2000,
-    width: "100%",
-    height: "100%",
-  },
+
   textname: {
     fontWeight: "bold",
     fontSize: 20,

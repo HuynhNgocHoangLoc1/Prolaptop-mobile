@@ -1,7 +1,7 @@
-import Welcome from "./Welcome"
-import Login from "./Login"
-import SignUp from "./SignUp"
-import Home from "./home/Home"
+import Welcome from "./index/Welcome"
+import Login from "./index/Login"
+import SignUp from "./index/SignUp"
+import Home from "./home"
 import Slider from "./home/Slider"
 
 export{
@@ -9,4 +9,5 @@ export{
     Login,
     SignUp,
     Slider,
+    Home,
 }

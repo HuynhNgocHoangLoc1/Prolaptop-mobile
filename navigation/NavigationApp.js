@@ -4,9 +4,9 @@ import colors from "../constants/colors";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Welcome, Login } from "../screens/index";
 import { NavigationContainer } from "@react-navigation/native";
-import SignUp from "../screens/SignUp";
-import Home from "../screens/home/Home";
-import Profile from "../screens/profile/Profile";
+import SignUp from "../screens/index/SignUp";
+import Home from "../screens/home";
+import Profile from "../screens/profile";
 
 const Stack = createNativeStackNavigator();
 
@@ -14,7 +14,7 @@ export default function NavigationApp(props) {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Welcome"
+        initialRouteName="Profile"
         screenOptions={{
           headerTintColor: colors.accent,
         }}
