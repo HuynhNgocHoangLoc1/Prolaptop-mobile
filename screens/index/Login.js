@@ -8,7 +8,7 @@ import {
   TouchableHighlightComponent,
 } from "react-native";
 import React from "react";
-import images from "../constants/images";
+import images from "../../constants/images";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
 

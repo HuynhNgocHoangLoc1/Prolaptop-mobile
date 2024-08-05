@@ -1,19 +1,20 @@
-import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View, StatusBar } from "react-native";
 import React from "react";
 import Slide from "./Slider";
 import Category from "./Category";
 import BestSeller from "./BestSeller";
-import colors from "../../constants/colors";
 // import UITab from "../../navigation/UITab";
+import colors from "../../constants/colors";
+
 
 export default function Home() {
   return (
+    
     <ScrollView style={styles.container}>
-      <StatusBar
-        backgroundColor={colors.blue_background_profile}
-        barStyle="black"
+       <StatusBar
+        backgroundColor={colors.white}
+        barStyle="dark-content"
       />
-      
       <View style={styles.header}>
         <Text style={styles.textname}>Hi, user 1</Text>
       </View>
@@ -22,7 +23,7 @@ export default function Home() {
       </View>
       <Category />
       <BestSeller />
-      {/* <UITab/> */}
+      {/* <UITab style={styles} /> */}
     </ScrollView>
   );
 }
@@ -31,13 +32,13 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
-    backgroundColor: "white",
+    backgroundColor: "#fff",
   },
   header: {
     width: "100%",
     height: 80,
     resizeMode: "cover",
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     display: "flex",
     transform: [{ scale: 1.0 }],
     alignItems: "center",
@@ -50,11 +51,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 28,
   },
-  tab: {
-    // paddingTop: 2000,
-    width: "100%",
-    height: "100%",
-  },
+
   textname: {
     fontWeight: "bold",
     fontSize: 20,

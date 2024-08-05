@@ -34,11 +34,11 @@ export default function NavigationApp(props) {
           component={SignUp}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Home"
           component={Home}
           options={{ headerShown: false }}
-        />
+        /> */}
          <Stack.Screen
           name="Profile"
           component={Profile}

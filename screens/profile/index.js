@@ -20,11 +20,11 @@ export default function Profile() {
     <View style={styles.container}>
       <StatusBar
         backgroundColor={colors.blue_background_profile}
-        barStyle="black"
+        barStyle="white"
       />
       <ImageBackground
         style={styles.background}
-        source={images.backgroundProfile}
+        source={images.profileBackground}
       />
       {/* <Touchable
         onPress={onLogout}
