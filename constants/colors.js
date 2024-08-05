@@ -19,6 +19,8 @@ export default colors = {
     dark_blu: '#1720FA', // Thêm '#'
     light_blu: '#0D6EFA', // Thêm '#'
     blue_main: '#617EB7', // Thêm '#'
+    silver_gray : "#EBEBEB",
     blue_text: '#171B4D',
+    blue_background_profile : "#0F01A3",
 };
             

@@ -2,11 +2,11 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import colors from "../constants/colors";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Welcome, Login } from "../screens/index";
+import { Welcome, Login, SignUp, Home, Profile, Search, Cart } from "../screens/index";
 import { NavigationContainer } from "@react-navigation/native";
-import SignUp from "../screens/SignUp";
-import Home from "../screens/home/Home";
-import Profile from "../screens/profile/Profile";
+import UITab from "./UITab";
+
+
 
 const Stack = createNativeStackNavigator();
 
@@ -39,11 +39,27 @@ export default function NavigationApp(props) {
           component={Home}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
+         <Stack.Screen
           name="Profile"
           component={Profile}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="UITab"
+          component={UITab}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Searcn"
+          component={Search}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Cart"
+          component={Cart}
+          options={{ headerShown: false }}
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

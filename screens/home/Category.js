@@ -109,6 +109,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "700",
     marginTop: 10,
-    color: "blue_text",
+    color: colors.blue_text,
   },
 });

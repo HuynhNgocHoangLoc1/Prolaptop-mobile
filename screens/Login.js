@@ -20,7 +20,7 @@ export default function Login() {
     navigation.navigate("SignUp")
   };
   const handleLogin = () => {
-    navigation.navigate("Home")
+    navigation.navigate("UITab")
   };
 
   return (
