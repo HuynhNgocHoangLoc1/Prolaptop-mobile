@@ -9,6 +9,7 @@ import {
 import React from "react";
 import { useEffect, useState } from "react";
 import colors from "../../constants/colors";
+
 export default function Category() {
   const [categories, setCategory] = useState([
     {
@@ -69,14 +70,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 22,
   },
-  shape: {
-    width: 150,
-    height: 150,
-    backgroundColor: colors.blue_main,
-    borderRadius: 100,
-    position: "absolute",
-    top: -50,
-  },
+  
   categoryItem: {
     marginTop: 10,
     width: 130,
@@ -104,6 +98,14 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "500",
     marginTop: 10,
+  },
+  shape: {
+    width: 150,
+    height: 150,
+    backgroundColor: colors.blue_main,
+    borderRadius: 100,
+    position: "absolute",
+    top: -50,
   },
   title: {
     fontSize: 30,

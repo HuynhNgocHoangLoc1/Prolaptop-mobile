@@ -55,7 +55,7 @@ export default function Login() {
             Don't have an account?{" "}
             <Text
               style={{
-                color: colors.secondary,
+                color: colors.blue_background_profile,
                 textDecorationLine: "underline",
               }}
             >

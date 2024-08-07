@@ -11,10 +11,14 @@ export default function Home() {
   return (
     
     <ScrollView style={styles.container}>
-       <StatusBar
-        backgroundColor={colors.white}
+       {/* <StatusBar
+        animated={true}
+        backgroundColor="#fff"
         barStyle="dark-content"
-      />
+        barStyle={statusBarStyle}
+        showHideTransition={statusBarTransition}
+        hidden={hidden}
+      /> */}
       <View style={styles.header}>
         <Text style={styles.textname}>Hi, user 1</Text>
       </View>
@@ -58,5 +62,6 @@ const styles = StyleSheet.create({
     color: "black",
     paddingRight: 290,
     paddingTop: 0,
+    marginTop: 20,
   },
 });

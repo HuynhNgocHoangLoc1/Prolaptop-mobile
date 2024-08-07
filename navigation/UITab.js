@@ -22,7 +22,7 @@ const getTabBarIcon = (route, focused, color, size) => {
   }
 
   return (
-    <Image
+    <Image  
       source={iconName}
       style={{ width: size, height: size, tintColor: color }}
     />

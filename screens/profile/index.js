@@ -4,34 +4,102 @@ import {
   View,
   Image,
   ImageBackground,
-  StatusBar,
-  Touchable,
+  TouchableOpacity,
+  FlatList,
 } from "react-native";
 import React from "react";
 import images from "../../constants/images";
-import UITab from "../../navigation/UITab";
 import colors from "../../constants/colors";
+import fakeData from "../../fakeData/Data.json";
+import { useEffect, useState } from "react";
+import { AntDesign, FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Profile() {
-    // const onLogout = () =>{
 
-    // }
+
+  const navigation = useNavigation();
+  const handleLogout = () => {
+    console.log("success");
+    navigation.navigate("Login")
+  }
+  const [items, setItem] = useState([
+    {
+      name: "Update profile",
+      icon: <FontAwesome name="user-circle" size={24} color="black" />,
+    },
+    {
+      name: "Change password",
+      icon: <MaterialIcons name="lock" size={24} color="black" />,
+    },
+    {
+      name: "List of liked laptops",
+      icon: <AntDesign name="hearto" size={24} color="black" />,
+    },
+    {
+      name: "Logout",
+      icon: <MaterialIcons name="logout" size={24} color="black" />,
+      onPress: handleLogout,
+    },
+  ]);
+
+  // Lấy thông tin user đầu tiên trong danh sách
+  const user =
+    fakeData.user && fakeData.user.length > 0 ? fakeData.user[0] : null;
+
+  // Kiểm tra nếu user tồn tại
+  if (!user) {
+    return (
+      <View style={styles.container}>
+        <Text>User data is not available</Text>
+      </View>
+    );
+  }
+
+  // Kiểm tra URL hình ảnh
+  const avatarUrl = user.avatar;
+  if (!avatarUrl) {
+    return (
+      <View style={styles.container}>
+        <Text>No avatar URL found</Text>
+      </View>
+    );
+  }
+
+  console.log("User Avatar URL:", avatarUrl); // Debugging
+
+  const renderItem = ({ item }) => {
+    return (
+      <TouchableOpacity style={styles.item} onPress={item.onPress}>
+        <View style={styles.iconContainer}>{item.icon}</View>
+        <Text style={styles.text}>{item.name}</Text>
+        <AntDesign name="right" size={24} color="black" />
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <StatusBar
-        backgroundColor={colors.blue_background_profile}
-        barStyle="white"
-      />
       <ImageBackground
         style={styles.background}
         source={images.profileBackground}
-      />
-      {/* <Touchable
-        onPress={onLogout}
       >
-        <Text>Logout</Text>
-      </Touchable> */}
-      {/* <UITab/> */}
+        <View style={styles.header}>
+          <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+          <View style={styles.userInfo}>
+            <Text style={styles.userName}>{user.userName}</Text>
+            <Text style={styles.email}>{user.email}</Text>
+          </View>
+        </View>
+      </ImageBackground>
+
+      <FlatList
+        data={items}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={renderItem}
+        showsVerticalScrollIndicator={false}
+        style={styles.list}
+      />
     </View>
   );
 }
@@ -39,17 +107,56 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.white,
   },
-  profile: {
-    width: "100%",
-    flex: 2.6,
-    height: 400,
-    paddingTop: 50,
+  header: {
+    // flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    borderRadius: 20,
+    margin: 50,
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginRight: 20,
+  },
+  userInfo: {
+    flexDirection: 'column',
+  },
+  userName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: colors.white,
+    marginTop: 10,
+  },
+  email: {
+    fontSize: 14,
+    color: colors.gray,
+    marginLeft: 18,
+  },
+
+  list: {
+    flex: 1,
+  },
+  item: {
     flexDirection: "row",
     alignItems: "center",
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.light_gray,
+  },
+  iconContainer: {
+    width: 30,
+  },
+  text: {
+    flex: 1,
+    fontSize: 16,
   },
   background: {
-    width: "100%",
-    height: 400,
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
 });
