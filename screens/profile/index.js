@@ -6,6 +6,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   FlatList,
+  StatusBar,
 } from "react-native";
 import React from "react";
 import images from "../../constants/images";
@@ -80,6 +81,7 @@ export default function Profile() {
 
   return (
     <View style={styles.container}>
+       
       <ImageBackground
         style={styles.background}
         source={images.profileBackground}
@@ -120,7 +122,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    marginRight: 20,
+    
   },
   userInfo: {
     flexDirection: 'column',
@@ -130,11 +132,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: colors.white,
     marginTop: 10,
+    textAlign: 'center',
   },
   email: {
     fontSize: 14,
     color: colors.gray,
     marginLeft: 18,
+    justifyContent: 'center',
+    // textAlign: 'center',
   },
 
   list: {

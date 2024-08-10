@@ -13,20 +13,21 @@ export default function Home() {
     <ScrollView style={styles.container}>
        {/* <StatusBar
         animated={true}
-        backgroundColor="#fff"
+        backgroundColor="white"
         barStyle="dark-content"
-        barStyle={statusBarStyle}
-        showHideTransition={statusBarTransition}
-        hidden={hidden}
       /> */}
       <View style={styles.header}>
         <Text style={styles.textname}>Hi, user 1</Text>
       </View>
+
       <View>
         <Slide style={styles.slider} />
       </View>
+      <View style={styles.line}>
       <Category />
       <BestSeller />
+      </View>
+     
       {/* <UITab style={styles} /> */}
     </ScrollView>
   );
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
-    backgroundColor: "#fff",
+
   },
   header: {
     width: "100%",
@@ -63,5 +64,10 @@ const styles = StyleSheet.create({
     paddingRight: 290,
     paddingTop: 0,
     marginTop: 20,
+  },
+  line: {
+    marginTop: 10,
+    marginBottom: 10,
+    backgroundColor: colors.light_gray
   },
 });

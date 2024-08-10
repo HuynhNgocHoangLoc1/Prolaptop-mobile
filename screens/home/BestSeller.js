@@ -9,6 +9,8 @@ import {
 import React from "react";
 import { useEffect, useState } from "react";
 import colors from "../../constants/colors";
+import fakeData from "../../fakeData/Data.json";
+
 export default function BestSeller() {
   const [categories, setCategory] = useState([
     {
@@ -29,21 +31,25 @@ export default function BestSeller() {
   ]);
 
   const renderItem = ({ item }) => {
+    console.log(item.imageUrl);
     return (
       <TouchableOpacity style={styles.categoryItem}>
-        <View style={styles.shape} />
-        <Image source={item.icon} style={styles.img} />
-        <Text style={styles.text}>{item.name}</Text>
+        {/* <View style={styles.shape} /> */}
+        <Image source={{uri : item.imageUrl}} style={styles.img} />
+        {/* <Text style={styles.text}>{item.name}</Text> */}
       </TouchableOpacity>
     );
   };
+
+  const product = fakeData.product && fakeData.product.length > 0 ? fakeData.product : [];
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Best Seller </Text>
       </View>
       <FlatList
-        data={categories}
+        data={product}
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderItem}
         horizontal={true}
@@ -58,6 +64,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
+    backgroundColor: "white",
   },
   header: {
     padding: 10,
@@ -78,8 +85,8 @@ const styles = StyleSheet.create({
   },
   categoryItem: {
     marginTop: 10,
-    width: 200,
-    height: 280,
+    width: 300,
+    height: 250,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
@@ -92,12 +99,14 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderWidth: 0.4,
     borderColor: colors.dark_gray,
-    borderWidth: 1, // Tăng độ dày của viền
-    borderColor: "black", // Đặt màu viền là đen
+
+   
   },
   img: {
-    width: 75,
-    height: 60,
+    width: "100%",
+    height: "100%",
+    objectFit: "contain",
+
   },
   text: {
     fontSize: 25,
@@ -108,6 +117,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "700",
     marginTop: 10,
-    color: "blue_text",
+    color: colors.blue_text,
+
   },
 });

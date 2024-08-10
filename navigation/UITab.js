@@ -52,6 +52,7 @@ const UITab = () => {
 const styles = StyleSheet.create({
   tabBar: {
     position: "fixed",
+  paddingTop: 5,
   },
   homeTab: {},
 });

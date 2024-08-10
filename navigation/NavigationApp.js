@@ -14,7 +14,7 @@ export default function NavigationApp(props) {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Profile"
+        initialRouteName="UITab"
         screenOptions={{
           headerTintColor: colors.accent,
         }}
@@ -34,32 +34,12 @@ export default function NavigationApp(props) {
           component={SignUp}
           options={{ headerShown: false }}
         />
-        {/* <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{ headerShown: false }}
-        /> */}
-         <Stack.Screen
-          name="Profile"
-          component={Profile}
-          options={{ headerShown: false }}
-        />
         <Stack.Screen
           name="UITab"
           component={UITab}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="Searcn"
-          component={Search}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Cart"
-          component={Cart}
-          options={{ headerShown: false }}
-        />
-
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

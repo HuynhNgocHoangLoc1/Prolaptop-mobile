@@ -69,8 +69,7 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 5,
-    marginHorizontal: 4,
-    marginTop: 20,
+    // marginHorizontal: 4,
   },
   activeDotStyle: {
     backgroundColor: "blue",
@@ -78,6 +77,5 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 7,
     marginHorizontal: 4,
-    marginTop: 20,
   },
 });
