@@ -43,8 +43,10 @@ export default function Search() {
         data={product}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => <LaptopItem item={item} />}
-        horizontal={true}
+        horizontal={false}
         showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+
       />
     </SafeAreaView>
   );
@@ -59,6 +61,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     width: "100%",
     height: "100%",
+    
   },
   title: {
     fontSize: 24,

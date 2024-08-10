@@ -108,12 +108,12 @@
             "description": "good",
             "categoryId": "40b4b0c0-5157-41c8-9c40-950a8d44fad8",
             "price": 500000,
-            "stockQuantity": 10,
+            "stockQuantity": 0,
             "ram": "8Gb",
-            "cpu": "macOs",
-            "card": "gtx 1050 ti",
+            "cpu": "M1 pro",
+            "card": "AMD",
             "chip": "M1 pro",
-            "hardDrive": "Mac"
+            "hardDrive": "256gb"
         },
         {
             "imageUrl": "https://res.cloudinary.com/dnjkwuc7p/image/upload/v1712043752/avatar/default_avatar.png",
@@ -152,6 +152,26 @@
             "ram": "8Gb",
             "cpu": "macOs",
             "card": "gtx 1050 ti",
+            "chip": "M1 pro",
+            "hardDrive": "Mac"
+        },
+        {
+            "imageUrl": "https://macone.vn/wp-content/uploads/2021/10/macbook-pro-spacegray-m1-2020.jpeg",
+            "createdAt": "2024-08-03T21:23:57.434Z",
+            "createdBy": null,
+            "updatedAt": "2024-08-03T21:23:57.434Z",
+            "updatedBy": null,
+            "deletedAt": null,
+            "deletedBy": null,
+            "id": "3e2e62d6-4269-412c-bd48-bc4622111483",
+            "name": "Macbook",
+            "description": "good",
+            "categoryId": "40b4b0c0-5157-41c8-9c40-950a8d44fad8",
+            "price": 500000,
+            "stockQuantity": 0,
+            "ram": "8Gb",
+            "cpu": "M1 pro",
+            "card": "AMD",
             "chip": "M1 pro",
             "hardDrive": "Mac"
         }

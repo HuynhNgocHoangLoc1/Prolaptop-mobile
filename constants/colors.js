@@ -22,5 +22,6 @@ export default colors = {
     silver_gray : "#EBEBEB",
     blue_text: '#171B4D',
     blue_background_profile : "#0F01A3",
+    green: '#3E9D0A'
 };
             
