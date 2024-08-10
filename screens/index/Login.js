@@ -16,7 +16,7 @@ export default function Login() {
 
   const navigation = useNavigation();
   const handleSignUp = () => {
-    console.log("sign up");
+    // console.log("sign up");
     navigation.navigate("SignUp")
   };
   const handleLogin = () => {

@@ -1,13 +1,11 @@
-import { StyleSheet, Image, View, Text, } from "react-native";
+import { StyleSheet, Image, View, Text, StatusBar } from "react-native";
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Home, Profile } from "../screens";
 import { Search, Cart } from "../screens/index";
-import icons from '../constants/icons';
+import icons from "../constants/icons";
 
 const Tab = createBottomTabNavigator();
-
-
 
 const getTabBarIcon = (route, focused, color, size) => {
   let iconName;
@@ -22,7 +20,7 @@ const getTabBarIcon = (route, focused, color, size) => {
   }
 
   return (
-    <Image  
+    <Image
       source={iconName}
       style={{ width: size, height: size, tintColor: color }}
     />
@@ -41,10 +39,26 @@ const UITab = () => {
         tabBarStyle: styles.tabBar, // Thêm kiểu này
       })}
     >
-      <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Search" component={Search} />
-      <Tab.Screen name="Cart" component={Cart} />
-      <Tab.Screen name="User" component={Profile} />
+      <Tab.Screen
+        name="Home"
+        component={Home}
+        listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+      />
+      <Tab.Screen
+        name="Search"
+        component={Search}
+        listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+      />
+      <Tab.Screen
+        name="Cart"
+        component={Cart}
+        listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+      />
+      <Tab.Screen
+        name="User"
+        component={Profile}
+        listeners={{ focus: () => StatusBar.setBarStyle("light-content") }}
+      />
     </Tab.Navigator>
   );
 };
@@ -52,7 +66,7 @@ const UITab = () => {
 const styles = StyleSheet.create({
   tabBar: {
     position: "fixed",
-  paddingTop: 5,
+    paddingTop: 5,
   },
   homeTab: {},
 });

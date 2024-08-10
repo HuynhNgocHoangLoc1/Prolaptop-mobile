@@ -21,7 +21,7 @@ export default function Profile() {
 
   const navigation = useNavigation();
   const handleLogout = () => {
-    console.log("success");
+    // console.log("success");
     navigation.navigate("Login")
   }
   const [items, setItem] = useState([

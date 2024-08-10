@@ -12,26 +12,10 @@ import colors from "../../constants/colors";
 import fakeData from "../../fakeData/Data.json";
 
 export default function BestSeller() {
-  const [categories, setCategory] = useState([
-    {
-      name: "Asus",
-      icon: require("../../assets/icons/category/asus.png"),
-    },
-
-    { name: "Hp", icon: require("../../assets/icons/category/hp.png") },
-
-    {
-      name: "Msi",
-      icon: require("../../assets/icons/category/msi.png"),
-    },
-    {
-      name: "Apple",
-      icon: require("../../assets/icons/category/apple.png"),
-    },
-  ]);
+  
 
   const renderItem = ({ item }) => {
-    console.log(item.imageUrl);
+    // console.log(item.imageUrl);
     return (
       <TouchableOpacity style={styles.categoryItem}>
         {/* <View style={styles.shape} /> */}
