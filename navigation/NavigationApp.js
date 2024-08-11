@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Welcome, Login, SignUp, Home, Profile, Search, Cart } from "../screens/index";
 import { NavigationContainer } from "@react-navigation/native";
 import UITab from "./UITab";
+import ProductDetail from "../screens/productDetail";
 
 
 
@@ -14,7 +15,7 @@ export default function NavigationApp(props) {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="UITab"
+        initialRouteName="ProductDetail"
         screenOptions={{
           headerTintColor: colors.accent,
         }}
@@ -37,6 +38,11 @@ export default function NavigationApp(props) {
         <Stack.Screen
           name="UITab"
           component={UITab}
+          options={{ headerShown: false }}
+        />
+          <Stack.Screen
+          name="ProductDetail"
+          component={ProductDetail}
           options={{ headerShown: false }}
         />
         

@@ -105,15 +105,15 @@
             "deletedBy": null,
             "id": "3e2e62d6-4269-412c-bd48-bc4622111483",
             "name": "Macbook",
-            "description": "good",
+            "description": "The MacBook Pro M1 2019 is a powerful and sleek laptop.",
             "categoryId": "40b4b0c0-5157-41c8-9c40-950a8d44fad8",
             "price": 500000,
             "stockQuantity": 0,
-            "ram": "8Gb",
-            "cpu": "M1 pro",
-            "card": "AMD",
-            "chip": "M1 pro",
-            "hardDrive": "256gb"
+            "ram": "8GB hoặc 16GB: Bộ nhớ thống nhất (Unified Memory Architecture).",
+            "cpu": "7-core hoặc 8-core GPU: Tùy thuộc vào cấu hình.",
+            "card": "GPU tích hợp trong chip M1, không có card đồ họa rời.",
+            "chip": "Apple M1: Bao gồm CPU, GPU, và Neural Engine trên một chip duy nhất.",
+            "hardDrive": "SSD: Tùy chọn 256GB, 512GB, 1TB hoặc 2TB."
         },
         {
             "imageUrl": "https://res.cloudinary.com/dnjkwuc7p/image/upload/v1712043752/avatar/default_avatar.png",

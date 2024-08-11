@@ -4,13 +4,12 @@ import colors from '../constants/colors';
 
 export default function LaptopItem(props) {
     const { item } = props;
-    
     return (
         <TouchableOpacity style={styles.container}>
             <Image source={{ uri: item.imageUrl }} style={styles.img} />
             <View style={styles.main}>
                 <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.description}>{item.description}</Text>
+                <Text style={styles.description}>{item.stockQuantity}</Text>
                 <Text style={{
                     backgroundColor: item.stockQuantity == 0 ? colors.warning : item.stockQuantity == 1 ? colors.success : colors.green,
                     fontWeight: '700',
@@ -34,6 +33,14 @@ export default function LaptopItem(props) {
                         <Image source={require('../assets/icons/ui-elements/chip.png')} style={styles.cpu} />
                         <Text style={{ color: colors.text }}>{item.chip}</Text>
                     </View>
+                    <View style={styles.ram}>
+                        <Image source={require('../assets/icons/ui-elements/ram.png')} style={styles.ram1}/>
+                        <Text style={{ color: colors.text }}>{item.ram}</Text>
+                    </View>
+                    <View style={styles.ssd}>
+                        <Image source={require('../assets/icons/ui-elements/ssd.png')} style={styles.ssd1}/>
+                        <Text style={{ color: colors.text }}>{item.hardDrive}</Text>
+                    </View>
                 </View>
             </View>
         </TouchableOpacity>
@@ -55,7 +62,6 @@ const styles = StyleSheet.create({
         overflow: "hidden",  
         height: 200, // Allow height to be determined by content
         width: 350
-        
     },
     img: {
         width: 110,
@@ -98,15 +104,44 @@ const styles = StyleSheet.create({
         width: 28,
         height: 21,
         marginEnd: 4,
-        tintColor: colors.text
+        tintColor: colors.text,
     },
     chip: {
         color: colors.subText,
         flexDirection: "row",
-        alignItems: "center"
+        alignItems: "center",
+        marginBottom: 10, // Add marginBottom to separate from next item
     },
     details: {
         flexDirection: "row",
+        flexWrap: "wrap", // Allow items to wrap to next line
         justifyContent: "space-between",
+    },
+    ram: {
+        color: colors.subText,
+        flexDirection: "row",
+        alignItems: "center",
+        width: '50%', // Set width to ensure two items per row
+        padding: 5,
+    },
+    ram1: {
+        width: 28,
+        height: 21,
+        marginEnd: 4,
+        tintColor: colors.text,
+    },
+    ssd: {
+        color: colors.subText,
+        flexDirection: "row",
+        alignItems: "center",
+        width: '50%', // Set width to ensure two items per row
+        padding: 5,
+    },
+    ssd1: {
+        width: 28,
+        height: 21,
+        marginEnd: 4,
+        tintColor: colors.text,
+        marginLeft: 23,
     }
 });
