@@ -9,7 +9,6 @@ export default function LaptopItem(props) {
             <Image source={{ uri: item.imageUrl }} style={styles.img} />
             <View style={styles.main}>
                 <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.description}>{item.stockQuantity}</Text>
                 <Text style={{
                     backgroundColor: item.stockQuantity == 0 ? colors.warning : item.stockQuantity == 1 ? colors.success : colors.green,
                     fontWeight: '700',
@@ -41,6 +40,8 @@ export default function LaptopItem(props) {
                         <Image source={require('../assets/icons/ui-elements/ssd.png')} style={styles.ssd1}/>
                         <Text style={{ color: colors.text }}>{item.hardDrive}</Text>
                     </View>
+                <Text style={styles.quantity}>Quantity: {item.stockQuantity}</Text>
+
                 </View>
             </View>
         </TouchableOpacity>
@@ -82,11 +83,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 10
     },
-    description: {
+    quantity: {
         color: colors.subText,
         fontSize: 16,
         fontWeight: "600",
-        marginBottom: 20
+        // marginBottom: 20
+        paddingTop: 20
+        
     },
     coin: {
         width: 18,
