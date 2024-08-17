@@ -13,7 +13,7 @@ const UpdateProfile = () => {
         <TouchableOpacity onPress={handleBackProfile}>
           <AntDesign name="arrowleft" size={24} color="black"  />
         </TouchableOpacity>
-        <Text style={styles.headerText}>Profile</Text>
+        <Text style={styles.headerText}>Update Profile</Text>
       </View>
       <View style={styles.profileContainer}>
         <View style={styles.avatarContainer}>
@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
     // paddingTop: 120,
     fontSize: 18,
     fontWeight: 'bold',
+    paddingRight: 21,
   },
   profileContainer: {
     alignItems: 'center',
