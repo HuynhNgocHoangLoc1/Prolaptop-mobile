@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, StatusBar } from "react-native";
 import React from "react";
 import colors from "../constants/colors";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -6,7 +6,7 @@ import { Welcome, Login, SignUp, Home, Profile, Search, Cart } from "../screens/
 import { NavigationContainer } from "@react-navigation/native";
 import UITab from "./UITab";
 import ProductDetail from "../screens/productDetail";
-
+import UpdateProfile from "../screens/profile/UpdateProfile";
 
 
 const Stack = createNativeStackNavigator();
@@ -45,7 +45,14 @@ export default function NavigationApp(props) {
           component={ProductDetail}
           options={{ headerShown: false }}
         />
-        
+       
+          <Stack.Screen
+          name="UpdateProfile"
+          component={UpdateProfile}
+          options={{ headerShown: false }}
+          listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
