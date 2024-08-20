@@ -12,11 +12,23 @@ import React, { useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import fakeData from "../../fakeData/Data.json";
 import LaptopItem from "../../components/LaptopItem";
+import { useEffect } from "react";
 export default function Search() {
   const [searchText, setSearchText] = useState("");
+  const [originProducts, setOriginProducts] = useState(fakeData.product && fakeData.product.length > 0 ? fakeData.product : []);
+  const [products, setProducts] = useState(fakeData.product && fakeData.product.length > 0 ? fakeData.product : []);
 
-  const product =
-    fakeData.product && fakeData.product.length > 0 ? fakeData.product : [];
+  useEffect(() => {
+    if(searchText === "") {
+      setProducts(originProducts);
+    }
+    else{
+      const filteredProducts = originProducts.filter((product) => product.name.toLowerCase().includes(searchText.toLowerCase()));
+      setProducts(filteredProducts);
+    }
+ 
+  }, [searchText]);
+ 
 
   // console.log(product);
 
@@ -40,7 +52,7 @@ export default function Search() {
 
       {/* Display the filtered products */}
       <FlatList
-        data={product}
+        data={products}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => <LaptopItem item={item} />}
         horizontal={false}

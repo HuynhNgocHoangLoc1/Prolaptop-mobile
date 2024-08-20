@@ -1,11 +1,19 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import React from 'react';
 import colors from '../constants/colors';
+import TruncateText from '../utils/helpers/TruncateText';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function LaptopItem(props) {
     const { item } = props;
+    const navigation = useNavigation();
+
+    const handleClickLaptopItem = () => {
+        navigation.navigate('ProductDetail', { productItem: item })
+    }
     return (
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={handleClickLaptopItem}>
             <Image source={{ uri: item.imageUrl }} style={styles.img} />
             <View style={styles.main}>
                 <Text style={styles.name}>{item.name}</Text>
@@ -24,22 +32,29 @@ export default function LaptopItem(props) {
                     {item.stockQuantity == 0 ? 'sold out' : item.stockQuantity == 1 ? 'On going' : 'in stock'}
                 </Text>
                 <View style={styles.details}>
-                    <View style={styles.price}>
-                        <Image source={require('../assets/icons/ui-elements/coin.png')} style={styles.coin} />
-                        <Text style={{ color: colors.text }}>{item.price}</Text>
+                    <View style={styles.detailItemWrapper}>
+                        <View style={styles.detailItem}>
+                            <Image source={require('../assets/icons/ui-elements/coin.png')} style={styles.coinIcon} />
+                            <Text style={{ color: colors.text }}>{item.price}</Text>
+                        </View>
+                        <View style={styles.detailItem}>
+                            <Image source={require('../assets/icons/ui-elements/ram.png')} style={styles.ramIcon}/>
+                            <Text style={{ color: colors.text }}>{TruncateText(item.ram,5)}</Text>
+                        </View>
                     </View>
-                    <View style={styles.chip}>
-                        <Image source={require('../assets/icons/ui-elements/chip.png')} style={styles.cpu} />
-                        <Text style={{ color: colors.text }}>{item.chip}</Text>
-                    </View>
-                    <View style={styles.ram}>
-                        <Image source={require('../assets/icons/ui-elements/ram.png')} style={styles.ram1}/>
-                        <Text style={{ color: colors.text }}>{item.ram}</Text>
-                    </View>
-                    <View style={styles.ssd}>
-                        <Image source={require('../assets/icons/ui-elements/ssd.png')} style={styles.ssd1}/>
-                        <Text style={{ color: colors.text }}>{item.hardDrive}</Text>
-                    </View>
+                   
+                   <View style={styles.detailItemWrapper}>
+                        <View style={styles.detailItem}>
+                            <Image source={require('../assets/icons/ui-elements/chip.png')} style={styles.cpuIcon} />
+                            <Text style={{ color: colors.text }}>{TruncateText(item.chip,7)}</Text>
+                        </View>
+                    
+                        <View style={styles.detailItem}>
+                            <Image source={require('../assets/icons/ui-elements/ssd.png')} style={styles.ssdIcon}/>
+                            <Text style={{ color: colors.text }}>{TruncateText(item.hardDrive,7)}</Text>
+                        </View>
+                   </View>
+                  
                 <Text style={styles.quantity}>Quantity: {item.stockQuantity}</Text>
 
                 </View>
@@ -61,8 +76,7 @@ const styles = StyleSheet.create({
         borderLeftWidth: 4,
         borderLeftColor: colors.primary,
         overflow: "hidden",  
-        height: 200, // Allow height to be determined by content
-        width: 350
+        width: 380
     },
     img: {
         width: 110,
@@ -88,63 +102,54 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "600",
         // marginBottom: 20
-        paddingTop: 20
         
     },
-    coin: {
+    coinIcon: {
         width: 18,
         height: 18,
         marginEnd: 4,
         tintColor: colors.text
     },
-    price: {
+    detailItem: {
         color: colors.subText,
         flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 4,
+        width: "100%",
+        marginBottom: 9,
+        // alignItems: "center",
+        // marginBottom: 4,
     },
-    cpu: {
+    cpuIcon: {
         width: 28,
         height: 21,
         marginEnd: 4,
         tintColor: colors.text,
     },
-    chip: {
-        color: colors.subText,
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 10, // Add marginBottom to separate from next item
-    },
+  
     details: {
         flexDirection: "row",
         flexWrap: "wrap", // Allow items to wrap to next line
         justifyContent: "space-between",
     },
-    ram: {
-        color: colors.subText,
-        flexDirection: "row",
-        alignItems: "center",
-        width: '50%', // Set width to ensure two items per row
-        padding: 5,
-    },
-    ram1: {
+   
+    ramIcon: {
         width: 28,
         height: 21,
         marginEnd: 4,
         tintColor: colors.text,
     },
-    ssd: {
-        color: colors.subText,
-        flexDirection: "row",
-        alignItems: "center",
-        width: '50%', // Set width to ensure two items per row
-        padding: 5,
-    },
-    ssd1: {
+   
+    ssdIcon: {
         width: 28,
         height: 21,
         marginEnd: 4,
         tintColor: colors.text,
-        marginLeft: 23,
-    }
+        // marginLeft: 23,
+    },
+    detailItemWrapper: {
+        flexDirection: "column",
+        alignItems: "center",
+        marginBottom: 10, 
+        width: "48%",
+        overflow: "hidden",
+    },
 });

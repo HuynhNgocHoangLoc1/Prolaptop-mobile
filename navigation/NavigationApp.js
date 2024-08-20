@@ -43,13 +43,13 @@ export default function NavigationApp(props) {
           <Stack.Screen
           name="ProductDetail"
           component={ProductDetail}
-          options={{ headerShown: false }}
+          options={{ headerShown: true, title: "Product Detail" }}
         />
        
           <Stack.Screen
           name="UpdateProfile"
           component={UpdateProfile}
-          options={{ headerShown: false }}
+          options={{ headerShown: true, title: "Update Profile" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
 
         />

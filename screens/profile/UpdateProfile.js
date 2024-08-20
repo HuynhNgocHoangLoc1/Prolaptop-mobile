@@ -9,12 +9,7 @@ const UpdateProfile = () => {
   };
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackProfile}>
-          <AntDesign name="arrowleft" size={24} color="black"  />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Update Profile</Text>
-      </View>
+      
       <View style={styles.profileContainer}>
         <View style={styles.avatarContainer}>
           <View style={styles.avatarCircle}>
@@ -55,29 +50,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
-    justifyContent: 'center',
+    // justifyContent: 'center',
     // alignItems: 'center',
   },
-  header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    // alignItems: 'center',
-    // paddingVertical: 10,
-    paddingHorizontal: 15,
-    // zIndex: 1, // Đảm bảo header nằm trên các thành phần khác
-    paddingTop: 50,
-  },
-  headerText: {
-    flex: 1,
-    textAlign: 'center',
-    // paddingTop: 120,
-    fontSize: 18,
-    fontWeight: 'bold',
-    paddingRight: 21,
-  },
+ 
   profileContainer: {
     alignItems: 'center',
   },
