@@ -9,7 +9,7 @@ import {
 import React from "react";
 import { useEffect, useState } from "react";
 import colors from "../../constants/colors";
-
+import { useNavigation } from "@react-navigation/native";
 export default function Category() {
   const [categories, setCategory] = useState([
     {
@@ -29,10 +29,16 @@ export default function Category() {
       icon: require("../../assets/icons/category/apple.png"),
     },
   ]);
+  const navigation = useNavigation();
+  
+  
 
   const renderItem = ({ item }) => {
+    const handleClick = () => {
+      navigation.navigate('Brand');
+    };
     return (
-      <TouchableOpacity style={styles.categoryItem}>
+      <TouchableOpacity style={styles.categoryItem} onPress={handleClick}>
         <View style={styles.shape} />
         <Image source={item.icon} style={styles.img} />
         <Text style={styles.text}>{item.name}</Text>

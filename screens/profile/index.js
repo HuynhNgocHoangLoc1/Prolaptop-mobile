@@ -20,14 +20,21 @@ export default function Profile() {
 
 
   const navigation = useNavigation();
+
   const handleLogout = () => {
     // console.log("success");
     navigation.navigate("Login")
   }
+
+  const handleToUpdateProfile = () => {
+    navigation.navigate("UpdateProfile");
+  };
+
   const [items, setItem] = useState([
     {
       name: "Update profile",
       icon: <FontAwesome name="user-circle" size={24} color="black" />,
+      onPress:  handleToUpdateProfile,
     },
     {
       name: "Change password",

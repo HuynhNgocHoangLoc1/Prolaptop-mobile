@@ -1,13 +1,18 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, Button } from 'react-native';
 import fakeData from "../../fakeData/Data.json";
+import { useRoute } from '@react-navigation/native';
+
 
 const ProductDetail = () => {
+  const route = useRoute();
+  const { productItem } = route.params;
+
   // Get a single product (e.g., the first product in the array)
-  const product = fakeData.product && fakeData.product.length > 0 ? fakeData.product[0] : null;
+  // const product = fakeData.product && fakeData.product.length > 0 ? fakeData.product[0] : null;
 
   // Check if product is available before rendering
-  if (!product) {
+  if (!productItem) {
     return (
       <View style={styles.container}>
         <Text>No Product Available</Text>
@@ -17,21 +22,20 @@ const ProductDetail = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title1}>Product detail</Text>
 
-      <Image source={{ uri: product.imageUrl }} style={styles.image} />
-      <Text style={styles.title}>{product.name}</Text>
-      <Text style={styles.price}>${product.price}</Text>
+      <Image source={{ uri: productItem.imageUrl }} style={styles.image} />
+      <Text style={styles.title}>{productItem.name}</Text>
+      <Text style={styles.price}>${productItem.price}</Text>
       
       <View style={styles.information}>
-        <Text style={styles.label}>Ram: {product.ram}</Text>
-        <Text style={styles.label}>CPU: {product.cpu}</Text>
-        <Text style={styles.label}>Card: {product.card}</Text>
-        <Text style={styles.label}>Chip: {product.chip}</Text>
-        <Text style={styles.label}>Hard Drive: {product.hardDrive}</Text>
+        <Text style={styles.label}>Ram: {productItem.ram}</Text>
+        <Text style={styles.label}>CPU: {productItem.cpu}</Text>
+        <Text style={styles.label}>Card: {productItem.card}</Text>
+        <Text style={styles.label}>Chip: {productItem.chip}</Text>
+        <Text style={styles.label}>Hard Drive: {productItem.hardDrive}</Text>
       </View>
       
-      <Text style={styles.description}>Description: {product.description}</Text>
+      <Text style={styles.description}>Description: {productItem.description}</Text>
       
       <View style={styles.footer}>
         <Button title="Add to Cart" onPress={() => {}} color="#FF6347" />
@@ -88,6 +92,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 20,
+    marginBottom: 40,
   },
   totalPrice: {
     fontSize: 20,

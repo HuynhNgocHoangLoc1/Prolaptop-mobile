@@ -10,17 +10,20 @@ import React from "react";
 import { useEffect, useState } from "react";
 import colors from "../../constants/colors";
 import fakeData from "../../fakeData/Data.json";
+import { useNavigation } from "@react-navigation/native";
 
 export default function BestSeller() {
-  
+  const navigation = useNavigation();
 
+  
   const renderItem = ({ item }) => {
+    const handleClick = () => {
+      navigation.navigate('ProductDetail', { productItem: item })
+    }
     // console.log(item.imageUrl);
     return (
-      <TouchableOpacity style={styles.categoryItem}>
-        {/* <View style={styles.shape} /> */}
+      <TouchableOpacity style={styles.categoryItem} onPress={handleClick}>
         <Image source={{uri : item.imageUrl}} style={styles.img} />
-        {/* <Text style={styles.text}>{item.name}</Text> */}
       </TouchableOpacity>
     );
   };
