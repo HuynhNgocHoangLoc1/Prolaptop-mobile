@@ -2,12 +2,16 @@ import React from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, Button } from 'react-native';
 import fakeData from "../../fakeData/Data.json";
 import { useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 
 const ProductDetail = () => {
   const route = useRoute();
   const { productItem } = route.params;
-
+  const navigation = useNavigation();
+  const handleToCart = () => {
+    navigation.navigate("Cart");
+  }
   // Get a single product (e.g., the first product in the array)
   // const product = fakeData.product && fakeData.product.length > 0 ? fakeData.product[0] : null;
 
@@ -38,7 +42,7 @@ const ProductDetail = () => {
       <Text style={styles.description}>Description: {productItem.description}</Text>
       
       <View style={styles.footer}>
-        <Button title="Add to Cart" onPress={() => {}} color="#FF6347" />
+        <Button title="Add to Cart" onPress={handleToCart} color="#FF6347" />
         <Text style={styles.totalPrice}>$5000</Text>
       </View>
     </ScrollView>
