@@ -9,8 +9,13 @@ import {
 } from "react-native";
 import fakeData from "../../fakeData/Data.json";
 import Colors from "../../constants/colors";
+import { useNavigation } from "@react-navigation/native";
 
 const Cart = () => {
+  const navigation = useNavigation();
+  const handlePaymentButton = () => {
+    navigation.navigate("PaymentMethod");
+  }
   const { product } = fakeData;
   const [cartItems, setCartItems] = useState(product);
 
@@ -69,7 +74,7 @@ const Cart = () => {
         <Text style={styles.totalText}>Total: {(getTotalPrice() + 10).toFixed(2)} $</Text>
       </View>
 
-      <TouchableOpacity style={styles.paymentButton}>
+      <TouchableOpacity style={styles.paymentButton} onPress={handlePaymentButton}>
         <Text style={styles.paymentButtonText}>Payment</Text>
       </TouchableOpacity>
     </View>

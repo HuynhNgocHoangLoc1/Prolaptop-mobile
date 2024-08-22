@@ -16,6 +16,8 @@ import UITab from "./UITab";
 import ProductDetail from "../screens/productDetail";
 import UpdateProfile from "../screens/profile/UpdateProfile";
 import Brand from "../screens/brand";
+import PaymentMethod from "../screens/cart/PaymentMethod";
+import ConfirmInformation from "../screens/cart/confirmInformation";
 
 
 const Stack = createNativeStackNavigator();
@@ -65,6 +67,18 @@ export default function NavigationApp(props) {
           name="Brand"
           component={Brand}
           options={{ headerShown: true, title: "Brand" }}
+          listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+        />
+         <Stack.Screen
+          name="PaymentMethod"
+          component={PaymentMethod}
+          options={{ headerShown: true, title: "Payment" }}
+          listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+        />
+        <Stack.Screen
+          name="ConfirmInformation"
+          component={ConfirmInformation}
+          options={{ headerShown: true, title: "Confirm" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
         
