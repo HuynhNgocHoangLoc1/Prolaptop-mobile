@@ -24,7 +24,7 @@ export default function NavigationApp(props) {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Welcome"
+        initialRouteName="UITab"
         screenOptions={{
           headerTintColor: colors.accent,
         }}
@@ -67,6 +67,7 @@ export default function NavigationApp(props) {
           options={{ headerShown: true, title: "Brand" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );
