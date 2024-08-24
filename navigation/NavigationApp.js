@@ -26,7 +26,7 @@ export default function NavigationApp(props) {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="UITab"
+        initialRouteName="Welcome"
         screenOptions={{
           headerTintColor: colors.accent,
         }}

@@ -11,18 +11,46 @@ import React from "react";
 import images from "../../constants/images";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
+import { useState } from 'react';
+import authAPI from "../../repositories/authApi";
 
 export default function Login() {
 
+  const [username,setUserName] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  
   const navigation = useNavigation();
-  const handleSignUp = () => {
+  const handleSignUp = async() => {
     // console.log("sign up");
     navigation.navigate("SignUp")
   };
-  const handleLogin = () => {
-    navigation.navigate("UITab")
-  };
+  const handleLogin = async () => {
+    if (username === "") {
+      setError("Username can't be blank");
+      return;
+    }
+    if (password === "") {
+      setError("Password can't be blank");
+      return;
+    }
+    try {
+      await authAPI.login({
+        userName: username,
+        password: password,
+      });
+      navigation.navigate("UITab")
 
+      // Add navigation to UITab or other functionality after successful login
+    } catch (e) {
+      if (e.response.data.statusCode === 401) {
+        setError("Wrong username or password");
+      } else if (e.response.data.statusCode === 500) {
+        setError("Server error occurred.");
+        console.error(e);
+      }
+    }
+  }
   return (
     <KeyboardAwareScrollView
       style={{ flex: 1 }}
@@ -41,12 +69,23 @@ export default function Login() {
         <TextInput
           style={styles.inputUserName}
           placeholder="Username"
+          value = {username}
+          onChangeText = {(value) =>{
+            setUserName(value)
+          }}
         ></TextInput>
         <TextInput
           style={styles.inputUserName}
           placeholder="Password"
           secureTextEntry
+          value ={password}
+          onChangeText ={(value) => {
+            setPassword(value)
+          }}
         ></TextInput>
+
+        {error != '' && <Text style={styles.errorLine}>{error}</Text>}
+
         <TouchableOpacity style={styles.buttonLogin} onPress={handleLogin}>
           <Text style={styles.loginTextButton}>login</Text>
         </TouchableOpacity>
@@ -122,4 +161,7 @@ const styles = StyleSheet.create({
     bottom: 10,
     position: "absolute", 
   },
+  errorLine: {
+    color: "red",                                                           
+  }
 });
