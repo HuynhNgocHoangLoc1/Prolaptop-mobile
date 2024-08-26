@@ -17,6 +17,7 @@ import ProductDetail from "../screens/productDetail";
 import UpdateProfile from "../screens/profile/UpdateProfile";
 import Brand from "../screens/brand";
 import PaymentMethod from "../screens/cart/PaymentMethod";
+import ChangePassword from "../screens/profile/ChangePassword";
 import ConfirmInformation from "../screens/cart/confirmInformation";
 
 
@@ -26,7 +27,7 @@ export default function NavigationApp(props) {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Welcome"
+        initialRouteName="UITab"
         screenOptions={{
           headerTintColor: colors.accent,
         }}
@@ -61,6 +62,12 @@ export default function NavigationApp(props) {
           name="UpdateProfile"
           component={UpdateProfile}
           options={{ headerShown: true, title: "Update Profile" }}
+          listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+        />
+          <Stack.Screen
+          name="ChangePassword"
+          component={ChangePassword}
+          options={{ headerShown: true, title: "Change password" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
         <Stack.Screen

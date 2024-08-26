@@ -30,6 +30,9 @@ export default function Profile() {
     navigation.navigate("UpdateProfile");
   };
 
+  const handleChangePassword = () => {
+    navigation.navigate("ChangePassword");
+  }
   const [items, setItem] = useState([
     {
       name: "Update profile",
@@ -39,6 +42,7 @@ export default function Profile() {
     {
       name: "Change password",
       icon: <MaterialIcons name="lock" size={24} color="black" />,
+      onPress: handleChangePassword,
     },
     {
       name: "List of liked laptops",

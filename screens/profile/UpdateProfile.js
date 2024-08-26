@@ -4,9 +4,7 @@ import { AntDesign } from '@expo/vector-icons'; // dùng để lấy icon chỉn
 import { useNavigation } from '@react-navigation/native';
 const UpdateProfile = () => {
   const navigation = useNavigation();
-  const handleBackProfile = () => {
-    navigation.navigate("UITab");
-  };
+  
   return (
     <View style={styles.container}>
       
