@@ -39,7 +39,7 @@ export default function Login() {
         userName: username,
         password: password,
       });
-      navigation.navigate("UITab")
+      navigation.navigate("UITab");
 
       // Add navigation to UITab or other functionality after successful login
     } catch (e) {

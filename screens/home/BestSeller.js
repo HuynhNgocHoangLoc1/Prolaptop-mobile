@@ -6,29 +6,39 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
-import { useEffect, useState } from "react";
-import colors from "../../constants/colors";
-import fakeData from "../../fakeData/Data.json";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import colors from "../../constants/colors";
+import authAPI from "../../repositories/authApi"; 
 
 export default function BestSeller() {
+  const [products, setProducts] = useState([]); 
   const navigation = useNavigation();
 
-  
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await authAPI.product(); 
+        setProducts(response.data.data); // Lưu dữ liệu vào state
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+
+    fetchProducts(); // Gọi hàm fetchProducts khi component được render
+  }, []);
+
   const renderItem = ({ item }) => {
     const handleClick = () => {
-      navigation.navigate('ProductDetail', { productItem: item })
+      navigation.navigate('ProductDetail', { productItem: item }) 
     }
-    // console.log(item.imageUrl);
+
     return (
       <TouchableOpacity style={styles.categoryItem} onPress={handleClick}>
-        <Image source={{uri : item.imageUrl}} style={styles.img} />
+        <Image source={{ uri: item.imageUrl }} style={styles.img} />
       </TouchableOpacity>
     );
   };
-
-  const product = fakeData.product && fakeData.product.length > 0 ? fakeData.product : [];
 
   return (
     <View style={styles.container}>
@@ -36,8 +46,8 @@ export default function BestSeller() {
         <Text style={styles.title}>Best Seller </Text>
       </View>
       <FlatList
-        data={product}
-        keyExtractor={(item, index) => index.toString()}
+        data={products} // Sử dụng dữ liệu từ state
+        keyExtractor={(item) => item.id}
         renderItem={renderItem}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -57,18 +67,11 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingBottom: 0,
   },
-  categoryText: {
-    color: colors.accent,
+  title: {
+    fontSize: 30,
     fontWeight: "700",
-    fontSize: 22,
-  },
-  shape: {
-    width: 220,
-    height: 200,
-    backgroundColor: colors.blue_main,
-    borderRadius: 100,
-    position: "absolute",
-    top: -50,
+    marginTop: 10,
+    color: colors.blue_text,
   },
   categoryItem: {
     marginTop: 10,
@@ -86,25 +89,10 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderWidth: 0.4,
     borderColor: colors.dark_gray,
-
-   
   },
   img: {
     width: "100%",
     height: "100%",
     objectFit: "contain",
-
-  },
-  text: {
-    fontSize: 25,
-    fontWeight: "500",
-    marginTop: 10,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "700",
-    marginTop: 10,
-    color: colors.blue_text,
-
   },
 });
