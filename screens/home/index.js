@@ -10,8 +10,8 @@ import fakeData from "../../fakeData/Data.json";
 export default function Home() {
   const users = fakeData.user && fakeData.user.length > 0 ? fakeData.user : [0];
   return (
-    <ScrollView style={styles.container}>
-       {/* <StatusBar
+    <View style={styles.container}>
+      {/* <StatusBar
         animated={true}
         backgroundColor="white"
         barStyle="dark-content"
@@ -21,16 +21,18 @@ export default function Home() {
         <Image source={{ uri: users[0].avatar }} style={styles.avatar} /> 
       </View>
 
-      <View>
-        <Slide style={styles.slider} />
-      </View>
-      <View style={styles.line}>
-        <Category />
-        <BestSeller />
-      </View>
+      <ScrollView>
+        <View>
+          <Slide style={styles.slider} />
+        </View>
+        <View style={styles.line}>
+          <Category />
+          <BestSeller />
+        </View>
+      </ScrollView>
      
       {/* <UITab style={styles} /> */}
-    </ScrollView>
+    </View>
   );
 }
 
@@ -38,6 +40,7 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
+    flex: 1,
   },
   header: {
     width: "100%",

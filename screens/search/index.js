@@ -6,31 +6,43 @@ import {
   TouchableOpacity,
   SafeAreaView,
   FlatList,
-  Image,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AntDesign } from "@expo/vector-icons";
-import fakeData from "../../fakeData/Data.json";
-import LaptopItem from "../../components/LaptopItem";
-import { useEffect } from "react";
+import authAPI from "../../repositories/authApi"; 
+import LaptopItem from "../../components/LaptopItem"; // Component để hiển thị sản phẩm
+
 export default function Search() {
   const [searchText, setSearchText] = useState("");
-  const [originProducts, setOriginProducts] = useState(fakeData.product && fakeData.product.length > 0 ? fakeData.product : []);
-  const [products, setProducts] = useState(fakeData.product && fakeData.product.length > 0 ? fakeData.product : []);
+  const [originProducts, setOriginProducts] = useState([]); // Dữ liệu gốc sản phẩm
+  const [products, setProducts] = useState([]); // Dữ liệu hiển thị sau khi lọc
 
+  // Gọi API lấy danh sách sản phẩm khi component được render
   useEffect(() => {
-    if(searchText === "") {
+    const fetchProducts = async () => {
+      try {
+        const response = await authAPI.product(); // Gọi API lấy dữ liệu sản phẩm
+        setOriginProducts(response.data.data); // Lưu dữ liệu gốc vào state
+        setProducts(response.data.data); // Cập nhật products với dữ liệu từ API
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+
+    fetchProducts(); // Gọi hàm fetchProducts khi component mount
+  }, []); // Chạy một lần khi component render lần đầu
+
+  // Lọc sản phẩm dựa trên searchText
+  useEffect(() => {
+    if (searchText === "") {
       setProducts(originProducts);
-    }
-    else{
-      const filteredProducts = originProducts.filter((product) => product.name.toLowerCase().includes(searchText.toLowerCase()));
+    } else {
+      const filteredProducts = originProducts.filter((product) =>
+        product.name.toLowerCase().includes(searchText.toLowerCase())
+      );
       setProducts(filteredProducts);
     }
- 
-  }, [searchText]);
- 
-
-  // console.log(product);
+  }, [searchText, originProducts]); // Chạy lại khi searchText hoặc originProducts thay đổi
 
   return (
     <SafeAreaView style={styles.container}>
@@ -50,7 +62,7 @@ export default function Search() {
         </TouchableOpacity>
       </View>
 
-      {/* Display the filtered products */}
+      {/* Hiển thị danh sách sản phẩm */}
       <FlatList
         data={products}
         keyExtractor={(item, index) => index.toString()}
@@ -58,7 +70,6 @@ export default function Search() {
         horizontal={false}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
-
       />
     </SafeAreaView>
   );
@@ -73,7 +84,6 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     width: "100%",
     height: "100%",
-    
   },
   title: {
     fontSize: 24,
@@ -99,10 +109,5 @@ const styles = StyleSheet.create({
   },
   search: {
     paddingHorizontal: 10,
-  },
-  img: {
-    width: 200,
-    height: 200,
-    borderRadius: 10,
   },
 });
