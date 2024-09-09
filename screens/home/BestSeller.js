@@ -9,7 +9,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import colors from "../../constants/colors";
-import authAPI from "../../repositories/authApi"; 
+import productAPI from "../../repositories/productApi";
 
 export default function BestSeller() {
   const [products, setProducts] = useState([]); 
@@ -18,7 +18,7 @@ export default function BestSeller() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await authAPI.product(); 
+        const response = await productAPI.getAllProduct(); 
         setProducts(response.data.data); // Lưu dữ liệu vào state
       } catch (error) {
         console.error("Failed to fetch products:", error);
