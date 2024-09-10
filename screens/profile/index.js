@@ -12,11 +12,14 @@ import React from "react";
 import images from "../../constants/images";
 import colors from "../../constants/colors";
 import fakeData from "../../fakeData/Data.json";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { AntDesign, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import AccountContext from "../../contexts/AccountContext";
 
 export default function Profile() {
+
+  const {account, token} = useContext(AccountContext);
 
 
   const navigation = useNavigation();
@@ -25,6 +28,7 @@ export default function Profile() {
     // console.log("success");
     navigation.navigate("Login")
   }
+  
 
   const handleToUpdateProfile = () => {
     navigation.navigate("UpdateProfile");
@@ -69,7 +73,7 @@ export default function Profile() {
   }
 
   // Kiểm tra URL hình ảnh
-  const avatarUrl = user.avatar;
+  const avatarUrl = account.avatar;
   if (!avatarUrl) {
     return (
       <View style={styles.container}>
@@ -100,8 +104,8 @@ export default function Profile() {
         <View style={styles.header}>
           <Image source={{ uri: avatarUrl }} style={styles.avatar} />
           <View style={styles.userInfo}>
-            <Text style={styles.userName}>{user.userName}</Text>
-            <Text style={styles.email}>{user.email}</Text>
+            <Text style={styles.userName}>{account.userName}</Text>
+            <Text style={styles.email}>{account.email}</Text>
           </View>
         </View>
       </ImageBackground>

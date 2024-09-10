@@ -1,25 +1,27 @@
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React ,{useContext} from 'react';
 import fakeData from '../../fakeData/Data.json';
 import Colors from '../../constants/colors';
+import AccountContext from "../../contexts/AccountContext";
+
 export default function ConfirmInformation() {
   const users = fakeData.user && fakeData.user.length > 0 ? fakeData.user : [0];
-
+  const {account, token} = useContext(AccountContext);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Confirm information</Text>
 
       <Text style={styles.label}>Name</Text>
-      <TextInput style={styles.input} value={users[0].userName}  />
+      <TextInput style={styles.input} value={account.userName}  />
 
       <Text style={styles.label}>Email</Text>
-      <TextInput style={styles.input} value={users[0].email} />
+      <TextInput style={styles.input} value={account.email} />
 
       <Text style={styles.label}>PhoneNumber</Text>
-      <TextInput style={styles.input} value={users[0].phone} />
+      <TextInput style={styles.input} value={account.phone} />
 
       <Text style={styles.label}>Address</Text>
-      <TextInput style={styles.input} value={users[0].address} />
+      <TextInput style={styles.input} value={account.address} />
 
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Confirm</Text>

@@ -42,7 +42,7 @@ const ProductDetail = () => {
       <Text style={styles.description}>Description: {productItem.description}</Text>
       
       <View style={styles.footer}>
-        <Button title="Add to Cart" onPress={handleToCart} color="#FF6347" />
+        <Button style={styles.button} title="Add to Cart" onPress={handleToCart}  color="red"/>
         <Text style={styles.totalPrice}>$5000</Text>
       </View>
     </ScrollView>
@@ -101,5 +101,8 @@ const styles = StyleSheet.create({
   totalPrice: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  button: {
+    backgroundColor: '#FF6347',
   },
 });

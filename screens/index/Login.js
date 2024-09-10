@@ -11,19 +11,20 @@ import React from "react";
 import images from "../../constants/images";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from 'react';
+import { useState } from "react";
 import authAPI from "../../repositories/authApi";
+import useAuth from "../../hooks/userAuth";
 
 export default function Login() {
+  const [username, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const { setAccount, setToken } = useAuth();
 
-  const [username,setUserName] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  
   const navigation = useNavigation();
-  const handleSignUp = async() => {
+  const handleSignUp = async () => {
     // console.log("sign up");
-    navigation.navigate("SignUp")
+    navigation.navigate("SignUp");
   };
   const handleLogin = async () => {
     if (username === "") {
@@ -35,22 +36,45 @@ export default function Login() {
       return;
     }
     try {
-      await authAPI.login({
+      // Gọi API đăng nhập và chờ phản hồi
+      const response = await authAPI.login({
         userName: username,
         password: password,
       });
-      navigation.navigate("UITab");
-
-      // Add navigation to UITab or other functionality after successful login
+    
+      // Sau khi nhận phản hồi từ API, tiếp tục xử lý
+      if (response.data && response.data.access_token) {
+        // Đặt token
+        setToken(response.data.access_token);
+        
+        // Đặt thông tin tài khoản
+        setAccount({
+          userName: response.data.userName,
+          address: response.data.address,
+          email: response.data.email,
+          gender: response.data.gender,
+          phone: response.data.phone,
+          role: response.data.role,
+          avatar: response.data.avatar,
+        });
+    
+        // Điều hướng đến UITab sau khi đăng nhập thành công
+        navigation.navigate("UITab");
+      }
+    
     } catch (e) {
-      if (e.response.data.statusCode === 401) {
+      // Xử lý lỗi khi có vấn đề trong quá trình đăng nhập
+      if (e.response && e.response.data.statusCode === 401) {
         setError("Wrong username or password");
-      } else if (e.response.data.statusCode === 500) {
+      } else if (e.response && e.response.data.statusCode === 500) {
         setError("Server error occurred.");
         console.error(e);
+      } else {
+        console.error("Unknown error occurred: ", e);
       }
     }
-  }
+    
+  };
   return (
     <KeyboardAwareScrollView
       style={{ flex: 1 }}
@@ -64,27 +88,27 @@ export default function Login() {
           source={images.backgroundWelcome}
         />
         <TouchableOpacity onPress={handleLogin}>
-        <Text style={styles.loginText}>Login</Text>
+          <Text style={styles.loginText}>Login</Text>
         </TouchableOpacity>
         <TextInput
           style={styles.inputUserName}
           placeholder="Username"
-          value = {username}
-          onChangeText = {(value) =>{
-            setUserName(value)
+          value={username}
+          onChangeText={(value) => {
+            setUserName(value);
           }}
         ></TextInput>
         <TextInput
           style={styles.inputUserName}
           placeholder="Password"
           secureTextEntry
-          value ={password}
-          onChangeText ={(value) => {
-            setPassword(value)
+          value={password}
+          onChangeText={(value) => {
+            setPassword(value);
           }}
         ></TextInput>
 
-        {error != '' && <Text style={styles.errorLine}>{error}</Text>}
+        {error != "" && <Text style={styles.errorLine}>{error}</Text>}
 
         <TouchableOpacity style={styles.buttonLogin} onPress={handleLogin}>
           <Text style={styles.loginTextButton}>login</Text>
@@ -112,7 +136,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   container: {
     flex: 1,
@@ -144,7 +168,7 @@ const styles = StyleSheet.create({
     marginBottom: 20, // Cách ly văn bản khỏi các phần tử khác
   },
   buttonLogin: {
-    width:100,
+    width: 100,
     height: 50,
     backgroundColor: "#D9D9D9",
     borderRadius: 30,
@@ -152,16 +176,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
     alignItems: "center",
     justifyContent: "center",
-    },
+  },
   loginTextButton: {
     fontSize: 20,
     fontWeight: "600",
   },
   bottom: {
     bottom: 10,
-    position: "absolute", 
+    position: "absolute",
   },
   errorLine: {
-    color: "red",                                                           
-  }
+    color: "red",
+  },
 });
