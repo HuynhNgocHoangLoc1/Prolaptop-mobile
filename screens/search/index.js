@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   FlatList,
+  ActivityIndicator, // Import ActivityIndicator
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { AntDesign } from "@expo/vector-icons";
@@ -17,6 +18,7 @@ export default function Search() {
   const [originProducts, setOriginProducts] = useState([]); // Dữ liệu gốc sản phẩm
   const [products, setProducts] = useState([]); // Dữ liệu hiển thị sau khi lọc
   const [isSortedAZ, setIsSortedAZ] = useState(true); // Trạng thái sắp xếp A-Z ban đầu
+  const [loading, setLoading] = useState(true); // Thêm state loading
 
   // Gọi API lấy danh sách sản phẩm khi component được render
   useEffect(() => {
@@ -25,8 +27,10 @@ export default function Search() {
         const response = await productAPI.getAllProduct(); // Gọi API lấy dữ liệu sản phẩm
         setOriginProducts(response.data.data); // Lưu dữ liệu gốc vào state
         setProducts(response.data.data); // Cập nhật products với dữ liệu từ API
+        setLoading(false); // Tắt loading khi dữ liệu đã tải xong
       } catch (error) {
         console.error("Failed to fetch products:", error);
+        setLoading(false); // Tắt loading khi có lỗi
       }
     };
 
@@ -51,7 +55,7 @@ export default function Search() {
       isSortedAZ ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
     );
     setProducts(sortedProducts); // Cập nhật danh sách đã sắp xếp
-    setIsSortedAZ(!isSortedAZ); 
+    setIsSortedAZ(!isSortedAZ); // Thay đổi trạng thái sắp xếp
   };
 
   return (
@@ -65,23 +69,29 @@ export default function Search() {
           style={styles.input}
           placeholder="search product"
           value={searchText}
-          onChangeText={(text) => setSearchText(text)}
+          onChangeText={(text) => setSearchText(text)} // Cập nhật searchText khi thay đổi
         />
         <TouchableOpacity style={styles.search}>
           <AntDesign name="search1" size={24} color="rgba(0, 0, 0, 0.5)" />
         </TouchableOpacity>
       </View>
 
-      {/* Hiển thị danh sách sản phẩm */}
-      <FlatList
-        data={products}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => <LaptopItem item={item} />}
-        horizontal={false}
-        showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}
-        style={{ width: "100%" }}
-      />
+      
+      {loading ? (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="blue" />
+        </View>
+      ) : (
+        <FlatList
+          data={products}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => <LaptopItem item={item} />} // Sử dụng LaptopItem để hiển thị sản phẩm
+          horizontal={false}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          style={{ width: "100%" }}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -120,5 +130,10 @@ const styles = StyleSheet.create({
   },
   search: {
     paddingHorizontal: 10,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
