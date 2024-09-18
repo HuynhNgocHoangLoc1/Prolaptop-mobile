@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -6,72 +6,119 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import fakeData from "../../fakeData/Data.json";
 import Colors from "../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
+import cartAPI from "../../repositories/cartApi";
+import AccountContext from "../../contexts/AccountContext";
 
 const Cart = () => {
   const navigation = useNavigation();
+  const { account, token } = useContext(AccountContext);
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        console.log("Account details:", account); // Debug thông tin account
+        if (account && account.id) {
+          const response = await cartAPI.getAllCart(account);
+          console.log("API response:", response); // Debug dữ liệu từ API
+          if (response?.data?.data) {
+            setCartItems(response.data.data);
+          } else {
+            setCartItems([]);
+          }
+        } else {
+          console.log("No account id available");
+          setCartItems([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch cart items:", error);
+        setError("Failed to load cart items");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCart();
+  }, [account]);
+  
+
   const handlePaymentButton = () => {
     navigation.navigate("PaymentMethod");
-  }
-  const { product } = fakeData;
-  const [cartItems, setCartItems] = useState(product);
+  };
 
   const incrementQuantity = (id) => {
-    setCartItems(cartItems.map(item =>
-      item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-    ));
+    setCartItems(
+      cartItems.map((item) =>
+        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+      )
+    );
   };
 
   const decrementQuantity = (id) => {
-    setCartItems(cartItems.map(item =>
-      item.id === id && item.quantity > 1
-        ? { ...item, quantity: item.quantity - 1 }
-        : item
-    ));
+    setCartItems(
+      cartItems.map((item) =>
+        item.id === id && item.quantity > 1
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
+    );
   };
 
   const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    return cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0);
   };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color={Colors.primary} />;
+  }
+
+  if (error) {
+    return <Text style={styles.errorText}>{error}</Text>;
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.cartTitle}>Cart ({cartItems.length} products)</Text>
-      
+
       <ScrollView contentContainerStyle={styles.productList}>
-        {cartItems.map((item) => (
-          <View key={item.id} style={styles.cartItem}>
-            <View style={styles.imageContainer}>
-              <Image source={{ uri: item.imageUrl }} style={styles.image} />
-              <View style={styles.quantityBadge}>
-                <Text style={styles.quantityBadgeText}>{item.quantity}</Text>
-              </View>
-            </View>
-            <View style={styles.info}>
-              <Text style={styles.name}>{item.name}</Text>
-              <Text style={styles.stockText}>Quantities {item.stockQuantity}</Text>
-              <View style={styles.quantityControl}>
-                <TouchableOpacity onPress={() => decrementQuantity(item.id)}>
-                  <Text style={styles.quantityButton}>-</Text>
-                </TouchableOpacity>
-                <Text style={styles.quantityText}>{item.quantity}</Text>
-                <TouchableOpacity onPress={() => incrementQuantity(item.id)}>
-                  <Text style={styles.quantityButton}>+</Text>
-                </TouchableOpacity>
-                <Text style={styles.price}>{item.price} $</Text>
-              </View>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
+  {cartItems.map((item) => (
+    <View key={item.id} style={styles.cartItem}>
+      <View style={styles.imageContainer}>
+        <Image source={{ uri: item.product.imageUrl }} style={styles.image} />
+        <View style={styles.quantityBadge}>
+          <Text style={styles.quantityBadgeText}>{item.quantity}</Text>
+        </View>
+      </View>
+      <View style={styles.info}>
+        <Text style={styles.name}>{item.product.name}</Text>
+        <Text style={styles.stockText}>Quantities {item.product.stockQuantity}</Text>
+        <View style={styles.quantityControl}>
+          <TouchableOpacity onPress={() => decrementQuantity(item.id)}>
+            <Text style={styles.quantityButton}>-</Text>
+          </TouchableOpacity>
+          <Text style={styles.quantityText}>{item.quantity}</Text>
+          <TouchableOpacity onPress={() => incrementQuantity(item.id)}>
+            <Text style={styles.quantityButton}>+</Text>
+          </TouchableOpacity>
+          <Text style={styles.price}>{item.product.price} $</Text>
+        </View>
+      </View>
+    </View>
+  ))}
+</ScrollView>
 
       <View style={styles.summary}>
         <Text style={styles.summaryText}>Total products: {getTotalPrice()} $</Text>
         <Text style={styles.summaryText}>Shipping fee: 10 $</Text>
-        <Text style={styles.totalText}>Total: {(getTotalPrice() + 10).toFixed(2)} $</Text>
+        <Text style={styles.totalText}>
+          Total: {(getTotalPrice() + 10).toFixed(2)} $
+        </Text>
       </View>
 
       <TouchableOpacity style={styles.paymentButton} onPress={handlePaymentButton}>
