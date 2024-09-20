@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import colors from '../../constants/colors';
 
 export default function PaymentMethod() {
   const navigation = useNavigation();
@@ -87,8 +88,8 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     marginTop: 'auto',
-    backgroundColor: '#1c0a07',
-    borderRadius: 25,
+    backgroundColor: colors.dark_blu,
+    borderRadius: 10,
     paddingVertical: 15,
     alignItems: 'center',
     width: '50%',

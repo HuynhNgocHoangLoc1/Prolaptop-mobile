@@ -1,17 +1,26 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, Button } from 'react-native';
 import fakeData from "../../fakeData/Data.json";
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import useAuth from '../../hooks/userAuth';
+import cartAPI from '../../repositories/cartApi';
 
 
 const ProductDetail = () => {
   const route = useRoute();
   const { productItem } = route.params;
+  const {account} = useAuth();
   const navigation = useNavigation();
-  const handleToCart = () => {
+  const handleToCart = async () => {
     navigation.navigate("Cart");
+    await cartAPI.addProductToCart({
+      userId: account.id,
+      productId: productItem.id,
+      quantity: 1
+    });
   }
+
   // Get a single product (e.g., the first product in the array)
   // const product = fakeData.product && fakeData.product.length > 0 ? fakeData.product[0] : null;
 
@@ -42,7 +51,7 @@ const ProductDetail = () => {
       <Text style={styles.description}>Description: {productItem.description}</Text>
       
       <View style={styles.footer}>
-        <Button style={styles.button} title="Add to Cart" onPress={handleToCart}  color="red"/>
+        <Button style={styles.button} title="Add to Cart" onPress={handleToCart}/>
         <Text style={styles.totalPrice}>$5000</Text>
       </View>
     </ScrollView>
@@ -103,6 +112,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   button: {
-    backgroundColor: '#FF6347',
+    color: '#fff',
   },
 });

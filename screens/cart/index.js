@@ -8,31 +8,31 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import fakeData from "../../fakeData/Data.json";
 import Colors from "../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
 import cartAPI from "../../repositories/cartApi";
 import AccountContext from "../../contexts/AccountContext";
+import useAuth from "../../hooks/userAuth";
+import colors from "../../constants/colors";
+import icons from "../../constants/icons";
 
 const Cart = () => {
   const navigation = useNavigation();
-  const { account, token } = useContext(AccountContext);
+  const { account } = useAuth();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch cart items when providerValue changes
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        console.log("Account details:", account); // Debug thông tin account
-        if (account && account.id) {
+        // console.log(account)
+        if (account.id) {
           const response = await cartAPI.getAllCart(account);
-          console.log("API response:", response); // Debug dữ liệu từ API
-          if (response?.data?.data) {
-            setCartItems(response.data.data);
-          } else {
-            setCartItems([]);
-          }
+          // console.log("API response:", response);
+          // console.log(response.data.cart);
+          setCartItems(response.data.cart);
         } else {
           console.log("No account id available");
           setCartItems([]);
@@ -41,17 +41,20 @@ const Cart = () => {
         console.error("Failed to fetch cart items:", error);
         setError("Failed to load cart items");
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
-    fetchCart();
-  }, [account]);
-  
 
+    // Only call API if providerValue exists
+      fetchCart();
+  });
+
+  // Navigate to Payment Method
   const handlePaymentButton = () => {
     navigation.navigate("PaymentMethod");
   };
 
+  // Increment product quantity
   const incrementQuantity = (id) => {
     setCartItems(
       cartItems.map((item) =>
@@ -60,6 +63,7 @@ const Cart = () => {
     );
   };
 
+  // Decrement product quantity
   const decrementQuantity = (id) => {
     setCartItems(
       cartItems.map((item) =>
@@ -69,14 +73,20 @@ const Cart = () => {
       )
     );
   };
+  const removeItem = async (id) => {
+    const response = await cartAPI.deleteProductOnCart(id);
+    setCartItems(cartItems.filter((item) => item.id !== id));
 
+  }
+
+  // Calculate total price of cart items
   const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0);
+    return cartItems.reduce(
+      (total, item) => total + item.product.price * item.quantity,
+      0
+    );
   };
 
-  if (loading) {
-    return <ActivityIndicator size="large" color={Colors.primary} />;
-  }
 
   if (error) {
     return <Text style={styles.errorText}>{error}</Text>;
@@ -87,34 +97,49 @@ const Cart = () => {
       <Text style={styles.cartTitle}>Cart ({cartItems.length} products)</Text>
 
       <ScrollView contentContainerStyle={styles.productList}>
-  {cartItems.map((item) => (
-    <View key={item.id} style={styles.cartItem}>
-      <View style={styles.imageContainer}>
-        <Image source={{ uri: item.product.imageUrl }} style={styles.image} />
-        <View style={styles.quantityBadge}>
-          <Text style={styles.quantityBadgeText}>{item.quantity}</Text>
-        </View>
-      </View>
-      <View style={styles.info}>
-        <Text style={styles.name}>{item.product.name}</Text>
-        <Text style={styles.stockText}>Quantities {item.product.stockQuantity}</Text>
-        <View style={styles.quantityControl}>
-          <TouchableOpacity onPress={() => decrementQuantity(item.id)}>
-            <Text style={styles.quantityButton}>-</Text>
-          </TouchableOpacity>
-          <Text style={styles.quantityText}>{item.quantity}</Text>
-          <TouchableOpacity onPress={() => incrementQuantity(item.id)}>
-            <Text style={styles.quantityButton}>+</Text>
-          </TouchableOpacity>
-          <Text style={styles.price}>{item.product.price} $</Text>
-        </View>
-      </View>
-    </View>
-  ))}
-</ScrollView>
+        {cartItems.length === 0 ? (
+          <Text style={styles.emptyText}>Your cart is empty</Text>
+        ) : (
+          cartItems.map((item) => (
+            <View key={item.id} style={styles.cartItem}>
+              <View style={styles.imageContainer}>
+                <Image
+                  source={{ uri: item.product.imageUrl }}
+                  style={styles.image}
+                />
+                <View style={styles.quantityBadge}>
+                  <Text style={styles.quantityBadgeText}>{item.quantity}</Text>
+                </View>
+              </View>
+              <View style={styles.info}>
+                <Text style={styles.name}>{item.product.name}</Text>
+                <Text style={styles.stockText}>
+                  Quantities {item.product.stockQuantity}
+                </Text>
+                <View style={styles.quantityControl}>
+                  <TouchableOpacity onPress={() => decrementQuantity(item.id)}>
+                    <Text style={styles.quantityButton}>-</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.quantityText}>{item.quantity}</Text>
+                  <TouchableOpacity onPress={() => incrementQuantity(item.id)}>
+                    <Text style={styles.quantityButton}>+</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.price}>{item.product.price} $</Text>
+                </View>
+                <TouchableOpacity style={styles.deleteIcon} onPress={() => removeItem(item.id)}> 
+                  <Image style={styles.deleteIcon}  source={icons.deleteFuntion}/>
+                </TouchableOpacity>
+              </View>
+            </View>
+            
+          ))
+        )}
+      </ScrollView>
 
       <View style={styles.summary}>
-        <Text style={styles.summaryText}>Total products: {getTotalPrice()} $</Text>
+        <Text style={styles.summaryText}>
+          Total products: {getTotalPrice()} $
+        </Text>
         <Text style={styles.summaryText}>Shipping fee: 10 $</Text>
         <Text style={styles.totalText}>
           Total: {(getTotalPrice() + 10).toFixed(2)} $
@@ -188,6 +213,7 @@ const styles = StyleSheet.create({
   },
   info: {
     flex: 1,
+    position: "relative",
   },
   name: {
     fontSize: 16,
@@ -219,34 +245,52 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   summary: {
-    borderTopWidth: 1,
-    borderColor: "#eee",
-    paddingTop: 15,
+    paddingVertical: 15,
     paddingHorizontal: 20,
-    paddingBottom: 10,
+    borderTopColor: "#ddd",
+    borderTopWidth: 1,
+    backgroundColor: "#fff",
   },
   summaryText: {
-    fontSize: 16,
+    fontSize: 18,
+    color: "#333",
     marginBottom: 5,
   },
   totalText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
   },
   paymentButton: {
-    backgroundColor: "#FF6347",
-    padding: 15,
-    marginHorizontal: 20,
-    borderRadius: 20,
-    alignItems: "center",
-    marginBottom: 20,
-    width: "60%",
+    backgroundColor: colors.dark_blu,
+    paddingVertical: 15,
+    borderRadius: 10,
+    marginVertical: 15,
+    width: "70%",
     alignSelf: "center",
   },
   paymentButtonText: {
-    color: "#fff",
-    fontSize: 15,
+    color: colors.white,
+    fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 20,
+  },
+  emptyText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#aaa",
+    marginVertical: 20,
+  },
+  deleteIcon: {
+    width: 20,
+    height: 20,
+    position: "absolute",
+    right: 5,
+    top: 5    
   },
 });
 

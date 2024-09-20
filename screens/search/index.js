@@ -35,7 +35,7 @@ export default function Search() {
     };
 
     fetchProducts(); // Gọi hàm fetchProducts khi component mount
-  }, []); // Chạy một lần khi component render lần đầu
+  },[]);
 
   // Lọc sản phẩm dựa trên searchText
   useEffect(() => {

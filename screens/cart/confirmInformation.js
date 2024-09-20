@@ -3,6 +3,7 @@ import React ,{useContext} from 'react';
 import fakeData from '../../fakeData/Data.json';
 import Colors from '../../constants/colors';
 import AccountContext from "../../contexts/AccountContext";
+import colors from '../../constants/colors';
 
 export default function ConfirmInformation() {
   const users = fakeData.user && fakeData.user.length > 0 ? fakeData.user : [0];
@@ -56,10 +57,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    backgroundColor: '#1c0a07',
+    backgroundColor: colors.dark_blu,
     paddingVertical: 15,
     paddingHorizontal: 30,
-    borderRadius: 25,
+    borderRadius: 10,
     marginTop: 20,
     alignItems: 'center',
     width: '50%',

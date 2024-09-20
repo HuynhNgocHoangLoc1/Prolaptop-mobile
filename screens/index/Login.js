@@ -41,14 +41,13 @@ export default function Login() {
         userName: username,
         password: password,
       });
-    
-      // Sau khi nhận phản hồi từ API, tiếp tục xử lý
       if (response.data && response.data.access_token) {
         // Đặt token
         setToken(response.data.access_token);
         
         // Đặt thông tin tài khoản
         setAccount({
+          id: response.data.id, 
           userName: response.data.userName,
           address: response.data.address,
           email: response.data.email,

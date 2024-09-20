@@ -82,7 +82,7 @@ export default function Profile() {
     );
   }
 
-  console.log("User Avatar URL:", avatarUrl); // Debugging
+  //console.log("User Avatar URL:", avatarUrl); // Debugging
 
   const renderItem = ({ item }) => {
     return (
