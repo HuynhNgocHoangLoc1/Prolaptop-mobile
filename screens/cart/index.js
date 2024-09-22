@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Colors from "../../constants/colors";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import cartAPI from "../../repositories/cartApi";
 import AccountContext from "../../contexts/AccountContext";
 import useAuth from "../../hooks/userAuth";
@@ -24,7 +24,7 @@ const Cart = () => {
   const [error, setError] = useState(null);
 
   // Fetch cart items when providerValue changes
-  useEffect(() => {
+  useFocusEffect(() => {
     const fetchCart = async () => {
       try {
         // console.log(account)
@@ -55,24 +55,35 @@ const Cart = () => {
   };
 
   // Increment product quantity
-  const incrementQuantity = (id) => {
+  const incrementQuantity = async (id, quantity) => {
     setCartItems(
       cartItems.map((item) =>
         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
+    try {
+      await cartAPI.updateProductQuantity(id, {quantity : quantity + 1});
+    } catch (error) {
+      console.error("Failed to increment quantity:", error);
+      setError("Failed to update quantity");
+    }
   };
 
-  // Decrement product quantity
-  const decrementQuantity = (id) => {
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
+  const decrementQuantity = async (id, quantity) => {
+    setCartItems((prevItems) => {
+      const updatedItems = prevItems.map((item) =>
+        item.id === id ? { ...item, quantity: item.quantity - 1 } : item
+      );
+      return updatedItems.filter(item => item.quantity > 0);
+    });
+    try {
+      await cartAPI.updateProductQuantity(id, { quantity : quantity - 1 });
+    } catch (error) {
+      console.error("Failed to decrement quantity:", error);
+      setError("Failed to update quantity");
+    }
   };
+  
   const removeItem = async (id) => {
     const response = await cartAPI.deleteProductOnCart(id);
     setCartItems(cartItems.filter((item) => item.id !== id));
@@ -117,11 +128,11 @@ const Cart = () => {
                   Quantities {item.product.stockQuantity}
                 </Text>
                 <View style={styles.quantityControl}>
-                  <TouchableOpacity onPress={() => decrementQuantity(item.id)}>
+                  <TouchableOpacity onPress={() => decrementQuantity(item.id, item.quantity)}>
                     <Text style={styles.quantityButton}>-</Text>
                   </TouchableOpacity>
                   <Text style={styles.quantityText}>{item.quantity}</Text>
-                  <TouchableOpacity onPress={() => incrementQuantity(item.id)}>
+                  <TouchableOpacity onPress={() => incrementQuantity(item.id, item.quantity)}>
                     <Text style={styles.quantityButton}>+</Text>
                   </TouchableOpacity>
                   <Text style={styles.price}>{item.product.price} $</Text>
@@ -131,7 +142,6 @@ const Cart = () => {
                 </TouchableOpacity>
               </View>
             </View>
-            
           ))
         )}
       </ScrollView>

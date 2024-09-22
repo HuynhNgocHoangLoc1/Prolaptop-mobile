@@ -15,5 +15,9 @@ const cartAPI = {
         const url = "/cart";
         return await axiosClient.applicationNoAuth.post(url, addToNewCart);
     },
+    updateProductQuantity: async (id, data) => {
+        const url = `/cart/${id}`; 
+        return await axiosClient.applicationNoAuth.patch(url, data); 
+    },
 }
  export default cartAPI;
