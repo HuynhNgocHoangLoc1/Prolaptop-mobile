@@ -28,12 +28,15 @@ const Cart = () => {
   useFocusEffect(() => {
     const fetchCart = async () => {
       try {
-        // console.log(account)
         if (account.id) {
           const response = await cartAPI.getAllCart(account);
-          // console.log("API response:", response);
-          // console.log(response.data.cart);
-          setCartItems(response.data.cart);
+          
+          // Sắp xếp cartItems theo tên sản phẩm từ A-Z
+          const sortedCart = response.data.cart.sort((a, b) => 
+            a.product.name.localeCompare(b.product.name)
+          );
+          
+          setCartItems(sortedCart);
         } else {
           console.log("No account id available");
           setCartItems([]);
@@ -41,14 +44,12 @@ const Cart = () => {
       } catch (error) {
         console.error("Failed to fetch cart items:", error);
         setError("Failed to load cart items");
-      } finally {
-        // setLoading(false);
       }
     };
-
-    // Only call API if providerValue exists
+  
     fetchCart();
   });
+  
 
   // Navigate to Payment Method
   const handlePaymentButton = () => {
@@ -71,19 +72,25 @@ const Cart = () => {
   };
 
   const decrementQuantity = async (id, quantity) => {
-    setCartItems((prevItems) => {
-      const updatedItems = prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity - 1 } : item
-      );
-      return updatedItems.filter((item) => item.quantity > 0);
-    });
-    try {
-      await cartAPI.updateProductQuantity(id, { quantity: quantity - 1 });
-    } catch (error) {
-      console.error("Failed to decrement quantity:", error);
-      setError("Failed to update quantity");
+    if (quantity <= 1) {
+      await removeItem(id);
+    } else {
+      // Nếu số lượng sản phẩm > 1, giảm số lượng và cập nhật qua API
+      setCartItems((prevItems) => {
+        return prevItems.map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
+        );
+      });
+  
+      try {
+        await cartAPI.updateProductQuantity(id, { quantity: quantity - 1 });
+      } catch (error) {
+        console.error("Failed to decrement quantity:", error);
+        setError("Failed to update quantity");
+      }
     }
   };
+  
 
   const removeItem = async (id) => {
     const response = await cartAPI.deleteProductOnCart(id);
@@ -183,9 +190,9 @@ const Cart = () => {
         <Text style={styles.summaryText}>
           Total products: {getTotalPrice()} $
         </Text>
-        <Text style={styles.summaryText}>Shipping fee: 10 $</Text>
+        <Text style={styles.summaryText}>Shipping fee    : 10 $</Text>
         <Text style={styles.totalText}>
-          Total: {(getTotalPrice() + 10).toFixed(2)} $
+          Total               : {(getTotalPrice() + 10).toFixed(2)} $
         </Text>
       </View>
 
