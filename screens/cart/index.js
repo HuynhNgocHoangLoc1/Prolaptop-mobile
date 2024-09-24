@@ -22,6 +22,7 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedItems, setSelectedItems] = useState([]);
 
   // Fetch cart items when providerValue changes
   useFocusEffect(() => {
@@ -46,12 +47,12 @@ const Cart = () => {
     };
 
     // Only call API if providerValue exists
-      fetchCart();
+    fetchCart();
   });
 
   // Navigate to Payment Method
   const handlePaymentButton = () => {
-    navigation.navigate("PaymentMethod");
+    navigation.navigate("PaymentMethod", { selectedItems });
   };
 
   // Increment product quantity
@@ -62,7 +63,7 @@ const Cart = () => {
       )
     );
     try {
-      await cartAPI.updateProductQuantity(id, {quantity : quantity + 1});
+      await cartAPI.updateProductQuantity(id, { quantity: quantity + 1 });
     } catch (error) {
       console.error("Failed to increment quantity:", error);
       setError("Failed to update quantity");
@@ -74,21 +75,21 @@ const Cart = () => {
       const updatedItems = prevItems.map((item) =>
         item.id === id ? { ...item, quantity: item.quantity - 1 } : item
       );
-      return updatedItems.filter(item => item.quantity > 0);
+      return updatedItems.filter((item) => item.quantity > 0);
     });
     try {
-      await cartAPI.updateProductQuantity(id, { quantity : quantity - 1 });
+      await cartAPI.updateProductQuantity(id, { quantity: quantity - 1 });
     } catch (error) {
       console.error("Failed to decrement quantity:", error);
       setError("Failed to update quantity");
     }
   };
-  
+
   const removeItem = async (id) => {
     const response = await cartAPI.deleteProductOnCart(id);
     setCartItems(cartItems.filter((item) => item.id !== id));
-
-  }
+    setSelectedItems(selectedItems.filter((itemId) => itemId !== id));
+  };
 
   // Calculate total price of cart items
   const getTotalPrice = () => {
@@ -98,21 +99,43 @@ const Cart = () => {
     );
   };
 
-
   if (error) {
     return <Text style={styles.errorText}>{error}</Text>;
   }
 
+  // Select/Deselect item
+  const toggleSelectItem = (id) => {
+    if (selectedItems.includes(id)) {
+      setSelectedItems(selectedItems.filter((itemId) => itemId !== id));
+    } else {
+      setSelectedItems([...selectedItems, id]);
+    }
+  };
+
+  // Check if item is selected
+  const isSelected = (id) => selectedItems.includes(id);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.cartTitle}>Cart ({cartItems.length} products)</Text>
+      <Text style={styles.cartTitle}>Cart</Text>
 
       <ScrollView contentContainerStyle={styles.productList}>
         {cartItems.length === 0 ? (
           <Text style={styles.emptyText}>Your cart is empty</Text>
         ) : (
           cartItems.map((item) => (
-            <View key={item.id} style={styles.cartItem}>
+            <View key={item.id} style={[styles.cartItem]}>
+              <TouchableOpacity
+                style={styles.selectCircleContainer}
+                onPress={() => toggleSelectItem(item.id)}
+              >
+                <View
+                  style={[
+                    styles.circle,
+                    isSelected(item.id) && styles.circleSelected,
+                  ]}
+                />
+              </TouchableOpacity>
               <View style={styles.imageContainer}>
                 <Image
                   source={{ uri: item.product.imageUrl }}
@@ -128,17 +151,27 @@ const Cart = () => {
                   Quantities {item.product.stockQuantity}
                 </Text>
                 <View style={styles.quantityControl}>
-                  <TouchableOpacity onPress={() => decrementQuantity(item.id, item.quantity)}>
+                  <TouchableOpacity
+                    onPress={() => decrementQuantity(item.id, item.quantity)}
+                  >
                     <Text style={styles.quantityButton}>-</Text>
                   </TouchableOpacity>
                   <Text style={styles.quantityText}>{item.quantity}</Text>
-                  <TouchableOpacity onPress={() => incrementQuantity(item.id, item.quantity)}>
+                  <TouchableOpacity
+                    onPress={() => incrementQuantity(item.id, item.quantity)}
+                  >
                     <Text style={styles.quantityButton}>+</Text>
                   </TouchableOpacity>
                   <Text style={styles.price}>{item.product.price} $</Text>
                 </View>
-                <TouchableOpacity style={styles.deleteIcon} onPress={() => removeItem(item.id)}> 
-                  <Image style={styles.deleteIcon}  source={icons.deleteFuntion}/>
+                <TouchableOpacity
+                  style={styles.deleteIcon}
+                  onPress={() => removeItem(item.id)}
+                >
+                  <Image
+                    style={styles.deleteIcon}
+                    source={icons.deleteFuntion}
+                  />
                 </TouchableOpacity>
               </View>
             </View>
@@ -156,8 +189,13 @@ const Cart = () => {
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.paymentButton} onPress={handlePaymentButton}>
-        <Text style={styles.paymentButtonText}>Payment</Text>
+      <TouchableOpacity
+        style={styles.paymentButton}
+        onPress={handlePaymentButton}
+      >
+        <Text style={styles.paymentButtonText}>
+          Payment ({selectedItems.length} products)
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -232,7 +270,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 16,
     color: "#FF6347",
-    marginLeft: 70,
+    marginLeft: 50,
   },
   stockText: {
     fontSize: 14,
@@ -300,7 +338,23 @@ const styles = StyleSheet.create({
     height: 20,
     position: "absolute",
     right: 5,
-    top: 5    
+    top: 5,
+  },
+  selectCircleContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+  },
+  circle: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#ccc",
+    backgroundColor: "transparent",
+  },
+  circleSelected: {
+    backgroundColor: "#4CAF50", // Màu của dấu chọn
   },
 });
 
