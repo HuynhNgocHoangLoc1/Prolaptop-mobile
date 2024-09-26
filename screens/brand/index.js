@@ -1,17 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import fakeData from '../../fakeData/Data.json';
 import colors from '../../constants/colors';
-import { useNavigation } from '@react-navigation/native';
-
-const products = fakeData.product && fakeData.product.length > 0 ? fakeData.product : [];
+import { useNavigation, useRoute } from '@react-navigation/native';
+import categoryAPI from '../../repositories/categoryApi';
+import productAPI from '../../repositories/productApi'
 
 export default function Brand() {
+    const [products, setProducts] = useState([]);
+   
     const navigation = useNavigation();
-
+    const route = useRoute();
     const handleClickCategories = (item) => {
         navigation.navigate('ProductDetail', { productItem: item });
     }
+
+    useEffect(() => {
+        if (route.params?.title) {
+          navigation.setOptions({ title: route.params.title });
+          const fetchProducts = async () => {
+             await productAPI.getProductByCategoryId(route.params?.categoryId)
+              .then((res) => {
+                setProducts(res.data);
+                // console.log(res.data)
+              })
+              .catch((e) => {
+                console.log(e);
+              });
+          }
+          fetchProducts();
+        }
+        
+      }, [route.params?.title]);
+
    
     return (
         <ScrollView contentContainerStyle={styles.grid}>

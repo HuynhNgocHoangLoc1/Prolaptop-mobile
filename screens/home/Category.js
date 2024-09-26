@@ -10,37 +10,34 @@ import React from "react";
 import { useEffect, useState } from "react";
 import colors from "../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
+import categoryAPI from "../../repositories/categoryApi";
 export default function Category() {
-  const [categories, setCategory] = useState([
-    {
-      name: "Asus",
-      icon: require("../../assets/icons/category/asus.png"),
-    },
-
-    { name: "Hp", icon: require("../../assets/icons/category/hp.png") },
-
-    {
-      name: "Msi",
-      icon: require("../../assets/icons/category/msi.png"),
-    },
-
-    {
-      name: "Apple",
-      icon: require("../../assets/icons/category/apple.png"),
-    },
-  ]);
+  const [categories, setCategory] = useState([]);
   const navigation = useNavigation();
-  
-  
+  useEffect(() => {
+    const fetchCategories = async () => {
+      await categoryAPI
+        .getAllCategory()
+        .then((res) => {
+          setCategory(res.data.data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    };
+    fetchCategories();
+  }, []);
+
+ 
 
   const renderItem = ({ item }) => {
     const handleClick = () => {
-      navigation.navigate('Brand');
+      navigation.navigate("Brand", { title: item.name, categoryId: item.id });
     };
     return (
       <TouchableOpacity style={styles.categoryItem} onPress={handleClick}>
         <View style={styles.shape} />
-        <Image source={item.icon} style={styles.img} />
+        <Image source={{ uri: item.iconUrl }} style={styles.img} />
         <Text style={styles.text}>{item.name}</Text>
       </TouchableOpacity>
     );
@@ -68,7 +65,7 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "white",
     marginBottom: 15,
-    marginTop: 5
+    marginTop: 5,
   },
   header: {
     padding: 10,
@@ -79,7 +76,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 22,
   },
-  
+
   categoryItem: {
     marginTop: 10,
     width: 130,
