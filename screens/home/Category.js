@@ -5,6 +5,7 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React from "react";
 import { useEffect, useState } from "react";
@@ -13,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import categoryAPI from "../../repositories/categoryApi";
 export default function Category() {
   const [categories, setCategory] = useState([]);
+  const [loading, setLoading] = useState(true); // Thêm state loading
   const navigation = useNavigation();
   useEffect(() => {
     const fetchCategories = async () => {
@@ -20,9 +22,11 @@ export default function Category() {
         .getAllCategory()
         .then((res) => {
           setCategory(res.data.data);
+          setLoading(false);
         })
         .catch((e) => {
           console.log(e);
+          setLoading(false);
         });
     };
     fetchCategories();
@@ -47,6 +51,11 @@ export default function Category() {
       <View style={styles.header}>
         <Text style={styles.title}>Categories </Text>
       </View>
+      {loading ? ( // Hiển thị loading khi dữ liệu chưa có
+        <View style={[styles.loader, styles.horizontal]}>
+          <ActivityIndicator size="large" color="blue" />
+        </View>
+      ) : (
       <FlatList
         data={categories}
         keyExtractor={(item, index) => index.toString()}
@@ -54,6 +63,7 @@ export default function Category() {
         horizontal={true}
         showsHorizontalScrollIndicator={false}
       />
+    )}
     </View>
   );
 }
