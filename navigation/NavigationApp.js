@@ -19,7 +19,7 @@ import Brand from "../screens/brand";
 import PaymentMethod from "../screens/cart/PaymentMethod";
 import ChangePassword from "../screens/profile/ChangePassword";
 import ConfirmInformation from "../screens/cart/confirmInformation";
-
+import Order from "../screens/order";
 
 const Stack = createNativeStackNavigator();
 
@@ -88,7 +88,13 @@ export default function NavigationApp(props) {
           options={{ headerShown: true, title: "Confirm" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
-        
+         <Stack.Screen
+          name="Order"
+          component={Order}
+          options={{ headerShown: true, title: "Order" }}
+          listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+        />
+      
       </Stack.Navigator>
     </NavigationContainer>
   );

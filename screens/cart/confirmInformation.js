@@ -4,10 +4,16 @@ import fakeData from '../../fakeData/Data.json';
 import Colors from '../../constants/colors';
 import AccountContext from "../../contexts/AccountContext";
 import colors from '../../constants/colors';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function ConfirmInformation() {
   const users = fakeData.user && fakeData.user.length > 0 ? fakeData.user : [0];
   const {account, token} = useContext(AccountContext);
+  const navigation = useNavigation();
+  const handleConfirm = () => {
+    navigation.navigate('Order');
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Confirm information</Text>
@@ -24,7 +30,7 @@ export default function ConfirmInformation() {
       <Text style={styles.label}>Address</Text>
       <TextInput style={styles.input} value={account.address} />
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleConfirm}>
         <Text style={styles.buttonText}>Confirm</Text>
       </TouchableOpacity>
     </View>
