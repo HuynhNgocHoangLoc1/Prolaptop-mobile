@@ -11,7 +11,6 @@ import {
 import Colors from "../../constants/colors";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import cartAPI from "../../repositories/cartApi";
-import AccountContext from "../../contexts/AccountContext";
 import useAuth from "../../hooks/userAuth";
 import colors from "../../constants/colors";
 import icons from "../../constants/icons";
@@ -50,7 +49,6 @@ const Cart = () => {
     fetchCart();
   });
   
-
   // Navigate to Payment Method
   const handlePaymentButton = () => {
     navigation.navigate("PaymentMethod", { selectedItems });
@@ -90,7 +88,6 @@ const Cart = () => {
       }
     }
   };
-  
 
   const removeItem = async (id) => {
     const response = await cartAPI.deleteProductOnCart(id);
@@ -98,12 +95,14 @@ const Cart = () => {
     setSelectedItems(selectedItems.filter((itemId) => itemId !== id));
   };
 
-  // Calculate total price of cart items
+  // Calculate total price of selected cart items
   const getTotalPrice = () => {
-    return cartItems.reduce(
-      (total, item) => total + item.product.price * item.quantity,
-      0
-    );
+    return cartItems
+      .filter(item => selectedItems.includes(item.id)) // Chỉ tính các sản phẩm đã được chọn
+      .reduce(
+        (total, item) => total + item.product.price * item.quantity,
+        0
+      );
   };
 
   if (error) {
