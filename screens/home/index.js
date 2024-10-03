@@ -6,6 +6,7 @@ import {
   StatusBar,
   Image,
   ImageBackground,
+  TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useContext } from "react";
 import Slide from "./Slider";
@@ -16,19 +17,26 @@ import colors from "../../constants/colors";
 import fakeData from "../../fakeData/Data.json";
 import useAuth from "../../hooks/userAuth";
 import AccountContext from "../../contexts/AccountContext";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Home() {
   const { account, token } = useContext(AccountContext);
+  const navigation = useNavigation();
+  const onClickChat = () => {
+    navigation.navigate("Chat");
+  };
 
   // const users = fakeData.user && fakeData.user.length > 0 ? fakeData.user : [0];
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.textname}>Hi, {account.userName}</Text>
-        <ImageBackground
-          source={require("../../assets/icons/funtion/chat.png")}
-          style={styles.avatar}
-        />
+        <TouchableOpacity onPress={onClickChat}>
+          <Image
+            source={require("../../assets/icons/funtion/chat.png")}
+            style={styles.avatar}
+          />
+        </TouchableOpacity>
       </View>
       <ScrollView>
         <View>
@@ -53,9 +61,9 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 80,
     backgroundColor: "#fff",
-    flexDirection: "row", 
-    alignItems: "center", 
-    paddingHorizontal: 16, 
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
     justifyContent: "space-between",
   },
   category: {
@@ -71,7 +79,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: 30,
     height: 30,
-    // borderRadius: 20, 
+    // borderRadius: 20,
     marginTop: 30,
   },
   line: {

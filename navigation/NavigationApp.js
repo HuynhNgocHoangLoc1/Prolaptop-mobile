@@ -20,6 +20,7 @@ import PaymentMethod from "../screens/cart/PaymentMethod";
 import ChangePassword from "../screens/profile/ChangePassword";
 import ConfirmInformation from "../screens/cart/confirmInformation";
 import Order from "../screens/order";
+import Chat from "../screens/chat/Chat"
 
 const Stack = createNativeStackNavigator();
 
@@ -94,7 +95,12 @@ export default function NavigationApp(props) {
           options={{ headerShown: true, title: "Order" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
-      
+         <Stack.Screen
+          name="Chat"
+          component={Chat}
+          options={{ headerShown: true, title: "Chat" }}
+          listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
