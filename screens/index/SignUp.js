@@ -16,7 +16,7 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
   const [gender, setGender] = useState('');
-  const [phonenumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   
 
@@ -42,8 +42,8 @@ const handleRegister = async () => {
     setError("Gender can't be blank");
     return;
   }
-  if (phonenumber === "") {
-    setError("Phonenumber can't be blank");
+  if (phoneNumber === "") {
+    setError("PhoneNumber can't be blank");
     return;
   }
   if (address === "") {
@@ -62,19 +62,19 @@ const handleRegister = async () => {
   }
 
   const phoneRegex = /^\d{9,11}$/;
-  if (!phoneRegex.test(phonenumber)) {
+  if (!phoneRegex.test(phoneNumber)) {
     setError("Invalid phone number format. It should contain 9 to 11 digits.");
     return;
   }
 
-  const formData = new FormData();
-  formData.append('userName', username);
-  formData.append('password', password);
-  formData.append('confirmPassword', confirmPassword);
-  formData.append('email', email);
-  formData.append('gender', gender);
-  formData.append('phone', phonenumber);
-  formData.append('address', address);
+  // const formData = new FormData();
+  // formData.append('userName', username);
+  // formData.append('password', password);
+  // formData.append('confirmPassword', confirmPassword);
+  // formData.append('email', email);
+  // formData.append('gender', gender);
+  // formData.append('phoneNumber', phoneNumber);
+  // formData.append('address', address);
 
   try {
     await authAPI.register(formData);
@@ -97,7 +97,7 @@ const handleRegister = async () => {
   formData.append('confirmPassword', confirmPassword);
   formData.append('email', email);
   formData.append('gender', gender);
-  formData.append('phonenumber', phonenumber);
+  formData.append('phoneNumber', phoneNumber);
   formData.append('address', address);
   return (
     <KeyboardAwareScrollView
@@ -143,7 +143,7 @@ const handleRegister = async () => {
         }}
       ></TextInput>
       <TextInput style={styles.input} placeholder="phone number"
-        value = {phonenumber}
+        value = {phoneNumber}
         onChangeText = {(value) =>{
           setPhoneNumber(value)
         }}

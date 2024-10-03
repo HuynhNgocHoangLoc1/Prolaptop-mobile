@@ -1,4 +1,12 @@
-import { ScrollView, StyleSheet, Text, View, StatusBar, Image } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  StatusBar,
+  Image,
+  ImageBackground,
+} from "react-native";
 import React, { useEffect, useContext } from "react";
 import Slide from "./Slider";
 import Category from "./Category";
@@ -10,21 +18,18 @@ import useAuth from "../../hooks/userAuth";
 import AccountContext from "../../contexts/AccountContext";
 
 export default function Home() {
-  const {account, token} = useContext(AccountContext);
+  const { account, token } = useContext(AccountContext);
 
-  const users = fakeData.user && fakeData.user.length > 0 ? fakeData.user : [0];
+  // const users = fakeData.user && fakeData.user.length > 0 ? fakeData.user : [0];
   return (
     <View style={styles.container}>
-      {/* <StatusBar
-        animated={true}
-        backgroundColor="white"
-        barStyle="dark-content"
-      /> */}
       <View style={styles.header}>
         <Text style={styles.textname}>Hi, {account.userName}</Text>
-        <Image source={{ uri: account.avatar }} style={styles.avatar} /> 
+        <ImageBackground
+          source={require("../../assets/icons/funtion/chat.png")}
+          style={styles.avatar}
+        />
       </View>
-
       <ScrollView>
         <View>
           <Slide style={styles.slider} />
@@ -34,8 +39,6 @@ export default function Home() {
           <BestSeller />
         </View>
       </ScrollView>
-     
-      {/* <UITab style={styles} /> */}
     </View>
   );
 }
@@ -50,13 +53,10 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 80,
     backgroundColor: "#fff",
-    flexDirection: "row", // Align children in a row
-    alignItems: "center", // Center items vertically
-    paddingHorizontal: 16, // Add some horizontal padding
-    justifyContent: "space-between", // Space out the text and image
-  },
-  slider: {
-    // Add your styles here
+    flexDirection: "row", 
+    alignItems: "center", 
+    paddingHorizontal: 16, 
+    justifyContent: "space-between",
   },
   category: {
     fontWeight: "bold",
@@ -69,14 +69,14 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20, // Make the image circular
+    width: 30,
+    height: 30,
+    // borderRadius: 20, 
     marginTop: 30,
   },
   line: {
     marginTop: 10,
     marginBottom: 10,
-    backgroundColor: colors.light_gray
+    backgroundColor: colors.light_gray,
   },
 });

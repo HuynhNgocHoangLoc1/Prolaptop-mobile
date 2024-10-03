@@ -17,5 +17,5 @@ export{
     Profile,
     Search,
     Cart,
-    UpdateProfile
+    UpdateProfile,
 }
