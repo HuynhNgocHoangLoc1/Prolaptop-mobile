@@ -22,7 +22,7 @@ const Cart = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
-
+  
   // Fetch cart items when providerValue changes
   useFocusEffect(() => {
     const fetchCart = async () => {
@@ -51,7 +51,7 @@ const Cart = () => {
   
   // Navigate to Payment Method
   const handlePaymentButton = () => {
-    navigation.navigate("PaymentMethod", { selectedItems });
+    navigation.navigate("PaymentMethod", { selectedItems,totalPrice: getTotalPrice() });
   };
 
   // Increment product quantity
@@ -92,13 +92,13 @@ const Cart = () => {
   const removeItem = async (id) => {
     const response = await cartAPI.deleteProductOnCart(id);
     setCartItems(cartItems.filter((item) => item.id !== id));
-    setSelectedItems(selectedItems.filter((itemId) => itemId !== id));
+    setSelectedItems(selectedItems.filter((item) => item.id !== id));
   };
 
   // Calculate total price of selected cart items
   const getTotalPrice = () => {
     return cartItems
-      .filter(item => selectedItems.includes(item.id)) // Chỉ tính các sản phẩm đã được chọn
+      .filter(item => selectedItems.some((itemSelect)=> itemSelect.id === item.id)) // Chỉ tính các sản phẩm đã được chọn
       .reduce(
         (total, item) => total + item.product.price * item.quantity,
         0
@@ -110,16 +110,16 @@ const Cart = () => {
   }
 
   // Select/Deselect item
-  const toggleSelectItem = (id) => {
-    if (selectedItems.includes(id)) {
-      setSelectedItems(selectedItems.filter((itemId) => itemId !== id));
+  const toggleSelectItem = ({id, quantity, price}) => {
+    if (selectedItems.some((item) => item.id === id)) {
+      setSelectedItems(selectedItems.filter((item) => item.id !== id));
     } else {
-      setSelectedItems([...selectedItems, id]);
+      setSelectedItems([...selectedItems, {id, quantity, price}]);
     }
   };
 
   // Check if item is selected
-  const isSelected = (id) => selectedItems.includes(id);
+  const isSelected = (id) => selectedItems.some((item) => item.id === id);
 
   return (
     <View style={styles.container}>
@@ -133,7 +133,11 @@ const Cart = () => {
             <View key={item.id} style={[styles.cartItem]}>
               <TouchableOpacity
                 style={styles.selectCircleContainer}
-                onPress={() => toggleSelectItem(item.id)}
+                onPress={() => toggleSelectItem({
+                  id: item.id,
+                  quantity: item.quantity,
+                  price : item.product.price
+                })}
               >
                 <View
                   style={[

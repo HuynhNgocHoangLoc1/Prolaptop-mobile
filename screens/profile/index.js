@@ -49,7 +49,7 @@ export default function Profile() {
       onPress: handleChangePassword,
     },
     {
-      name: "List of liked laptops",
+      name: "List of orders",
       icon: <AntDesign name="hearto" size={24} color="black" />,
     },
     {

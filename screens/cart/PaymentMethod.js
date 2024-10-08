@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import colors from '../../constants/colors';
+import PaymentMethodEnum from '../../constants/PaymentMethodEnum';
 
 export default function PaymentMethod() {
   const navigation = useNavigation();
   const handleNext = () => {
-    navigation.navigate('ConfirmInformation');
-  }  
-  const [selectedMethod, setSelectedMethod] = useState('Cash on Delivery');
+    navigation.navigate('ConfirmInformation', { selectedItem, totalPrice, paytmentMethod: selectedMethod });
+  };
 
-  const paymentMethods = ['Cash on Delivery', 'QR code', 'MOMO'];
+  // Sử dụng enum thay vì chuỗi trực tiếp
+  const [selectedMethod, setSelectedMethod] = useState(PaymentMethodEnum.CASHONDELIVERY);
+
+  const paymentMethods = [PaymentMethodEnum.CASHONDELIVERY, PaymentMethodEnum.VNPAY];
+
+  const router = useRoute();
+  const { selectedItem, totalPrice } = router.params;
 
   return (
     <View style={styles.container}>
