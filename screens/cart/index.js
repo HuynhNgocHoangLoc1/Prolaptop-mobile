@@ -110,11 +110,11 @@ const Cart = () => {
   }
 
   // Select/Deselect item
-  const toggleSelectItem = ({id, quantity, price}) => {
+  const toggleSelectItem = ({id, productId, quantity, price}) => {
     if (selectedItems.some((item) => item.id === id)) {
       setSelectedItems(selectedItems.filter((item) => item.id !== id));
     } else {
-      setSelectedItems([...selectedItems, {id, quantity, price}]);
+      setSelectedItems([...selectedItems, {id, productId, quantity, price}]);
     }
   };
 
@@ -135,6 +135,7 @@ const Cart = () => {
                 style={styles.selectCircleContainer}
                 onPress={() => toggleSelectItem({
                   id: item.id,
+                  productId: item.product.id,
                   quantity: item.quantity,
                   price : item.product.price
                 })}

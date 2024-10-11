@@ -5,7 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import fakeData from "../../fakeData/Data.json";
 import Colors from "../../constants/colors";
 import AccountContext from "../../contexts/AccountContext";
@@ -17,20 +17,19 @@ export default function ConfirmInformation() {
   const users = fakeData.user && fakeData.user.length > 0 ? fakeData.user : [0];
   const { account, token } = useContext(AccountContext);
 
-  const [inputAccount, setInputAccount] = useState(account.username);
+  const [inputAccount, setInputAccount] = useState(account.userName);
   const [email, setEmail] = useState(account.email);
   const [phone, setPhone] = useState(account.phone);
   const [address, setAddress] = useState(account.address);
 
   const navigation = useNavigation();
   const route = useRoute();
-  const { selectedItem, totalPrice, paymentMethod } = route.params;
+  const { selectedItems , totalPrice, paymentMethod } = route.params;
   const handleConfirm = () => {
-    // navigation.navigate('Order');
     const createOrderApi = async () => {
       await orderAPI
         .createOrderFromCart({
-          carts: selectedItem,
+          carts: selectedItems,
           paymentMethod: paymentMethod,
           name: inputAccount,
           email: email,
@@ -47,23 +46,33 @@ export default function ConfirmInformation() {
         .catch((e) => {
           console.log(e);
         });
+        console.log({
+          carts: selectedItems,
+          paymentMethod: paymentMethod,
+          name: inputAccount,
+          email: email,
+          phoneNumber: phone,
+          shippingAddress: address,
+          totalPrice: totalPrice,
+        })
     };
+    createOrderApi();
   };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Confirm information</Text>
 
       <Text style={styles.label}>Name</Text>
-      <TextInput style={styles.input} value={account.userName} />
+      <TextInput style={styles.input} value={inputAccount} onChangeText ={(value) => setInputAccount(value)} />
 
       <Text style={styles.label}>Email</Text>
-      <TextInput style={styles.input} value={account.email} />
+      <TextInput style={styles.input} value={email} onChangeText={(value) => setEmail(value)} />
 
       <Text style={styles.label}>PhoneNumber</Text>
-      <TextInput style={styles.input} value={account.phone} />
+      <TextInput style={styles.input} value={phone} onChangeText={(value)=> setPhone(value)} />
 
       <Text style={styles.label}>Address</Text>
-      <TextInput style={styles.input} value={account.address} />
+      <TextInput style={styles.input} value={address} onChangeText={(value)=> setAddress(value)} />
 
       <TouchableOpacity style={styles.button} onPress={handleConfirm}>
         <Text style={styles.buttonText}>Confirm</Text>

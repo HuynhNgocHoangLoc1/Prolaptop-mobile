@@ -8,7 +8,8 @@ import PaymentMethodEnum from '../../constants/PaymentMethodEnum';
 export default function PaymentMethod() {
   const navigation = useNavigation();
   const handleNext = () => {
-    navigation.navigate('ConfirmInformation', { selectedItem, totalPrice, paytmentMethod: selectedMethod });
+    // console.log(selectedItems, totalPrice, selectedMethod);
+    navigation.navigate('ConfirmInformation', { selectedItems, totalPrice, paymentMethod: selectedMethod });
   };
 
   // Sử dụng enum thay vì chuỗi trực tiếp
@@ -17,7 +18,9 @@ export default function PaymentMethod() {
   const paymentMethods = [PaymentMethodEnum.CASHONDELIVERY, PaymentMethodEnum.VNPAY];
 
   const router = useRoute();
-  const { selectedItem, totalPrice } = router.params;
+  const { selectedItems, totalPrice } = router.params;
+
+
 
   return (
     <View style={styles.container}>
