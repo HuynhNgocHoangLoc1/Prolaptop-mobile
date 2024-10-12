@@ -1,53 +1,103 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView } from "react-native";
-
-const fakeOrders = {
-  product: [
-    { id: 1, product: { name: "Macbook 2015", price: 2000, imageUrl: "https://via.placeholder.com/100" }, quantity: 2 },
-    { id: 2, product: { name: "MSI", price: 2000, imageUrl: "https://via.placeholder.com/100" }, quantity: 2 },
-  ],
-  pending: [
-    { id: 3, product: { name: "Product C", price: 40, imageUrl: "https://via.placeholder.com/100" }, quantity: 1 },
-  ],
-  delivering: [
-    { id: 4, product: { name: "Product D", price: 70, imageUrl: "https://via.placeholder.com/100" }, quantity: 3 },
-  ],
-  success: [
-    { id: 5, product: { name: "Product E", price: 90, imageUrl: "https://via.placeholder.com/100" }, quantity: 1 },
-  ],
-};
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Image,
+  ScrollView,
+} from "react-native";
+import orderAPI from "../../repositories/orderApi";
 
 const stages = [
-  { name: "Product", icon: require("../../assets/icons/orderIcons/box.png") },
-  { name: "Pending", icon: require("../../assets/icons/orderIcons/pending.png") },
-  { name: "Delivering", icon: require("../../assets/icons/orderIcons/transport.png") },
-  { name: "Success", icon: require("../../assets/icons/orderIcons/check.png") },
+  { name: "all", icon: require("../../assets/icons/orderIcons/box.png") },
+  {
+    name: "pending",
+    icon: require("../../assets/icons/orderIcons/pending.png"),
+  },
+  {
+    name: "delivering",
+    icon: require("../../assets/icons/orderIcons/transport.png"),
+  },
+  { name: "success", icon: require("../../assets/icons/orderIcons/check.png") },
+  { name: "success", icon: require("../../assets/icons/orderIcons/check.png") },
 ];
 
 const Order = () => {
-  const [activeSection, setActiveSection] = useState("Product");
+  const [activeSection, setActiveSection] = useState("all");
+  const [orderItems, setOrderItems] = useState([]);
+  const [filterOrderItems, setFilterOrderItems] = useState(orderItems);
+  const fetchOrder = async () => {
+    try {
+      const response = await orderAPI.getListOrderByUser();
+      if (response.data.order) {
+        // console.log(response.data.order.length);
+        setOrderItems(response.data.order);
+      } else {
+        console.error(
+          "API response does not contain 'orders' array"
+        );
+      }
+    } catch (error) {
+      console.error("Failed to fetch order items:", error);
+    }
+  };
 
-  const renderItem = ({ item }) => {
+  useEffect(()=>{
+    setFilterOrderItems(orderItems)
+  },[orderItems])
+
+  useEffect(() => {
+    fetchOrder();
+  }, []);
+
+  const renderOrder = (order) => {
+    const orderDetail = order.orderDetail ? order.orderDetail : [];
     return (
-      <View style={styles.orderItem}>
+      <View key={order.id}>
+        {orderDetail.map((item) => renderProduct(item))}
+      </View>
+    );
+  };
+
+  const renderProduct = (item) => {
+    console.log(item)
+    return (
+      <View style={styles.orderItem} key={item.id}>
         <View style={styles.imageContainer}>
-          <Image source={{ uri: item.product.imageUrl }} style={styles.productImage} />
+          <Image
+            source={{ uri: item.product.imageUrl }}
+            style={styles.productImage}
+          />
           {item.quantity > 1 && (
             <View style={styles.badge}>
               <Text style={styles.badgeText}>{item.quantity}</Text>
             </View>
           )}
-          <Text style={styles.productQuantity}>Quantities: {item.quantity}</Text>
+          <Text style={styles.productQuantity}>
+            Quantities: {item.quantity}
+          </Text>
         </View>
         <Text style={styles.productName}>{item.product.name}</Text>
         <View style={styles.productDetails}>
-          <Text style={styles.productPrice}>Price: {item.product.price} $</Text>
+          <Text style={styles.productPrice}>Price: {item.price} $</Text>
         </View>
       </View>
     );
   };
 
-  const orderItems = fakeOrders[activeSection.toLowerCase()];
+  // const orderItems = fakeOrders[activeSection.toLowerCase()];
+
+  useEffect(() => {
+    if (activeSection === "all") {
+      setFilterOrderItems(orderItems);
+    } else {
+      setFilterOrderItems(
+        orderItems.filter((order) => order.statusDelivery === activeSection)
+      );
+    }
+  }, [activeSection]);
 
   return (
     <View style={styles.container}>
@@ -66,14 +116,10 @@ const Order = () => {
         ))}
       </View>
       <ScrollView style={styles.scrollView}>
-        {orderItems.length === 0 ? (
+        {filterOrderItems && filterOrderItems.length === 0 ? (
           <Text style={styles.emptyText}>No orders in this section</Text>
         ) : (
-          <FlatList
-            data={orderItems}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id.toString()}
-          />
+          filterOrderItems.map((order) => renderOrder(order))
         )}
       </ScrollView>
     </View>

@@ -37,6 +37,11 @@ export default function Profile() {
   const handleChangePassword = () => {
     navigation.navigate("ChangePassword");
   }
+
+  const handleClickListOrders = () => {
+    navigation.navigate("Order");
+  }
+
   const [items, setItem] = useState([
     {
       name: "Update profile",
@@ -51,6 +56,7 @@ export default function Profile() {
     {
       name: "List of orders",
       icon: <AntDesign name="hearto" size={24} color="black" />,
+      onPress: handleClickListOrders,
     },
     {
       name: "Logout",
