@@ -173,7 +173,7 @@ const Cart = () => {
                   >
                     <Text style={styles.quantityButton}>+</Text>
                   </TouchableOpacity>
-                  <Text style={styles.price}>{item.product.price} $</Text>
+                <Text style={styles.price}>{item.product.price} $</Text>
                 </View>
                 <TouchableOpacity
                   style={styles.deleteIcon}
@@ -281,7 +281,8 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 16,
     color: "#FF6347",
-    marginLeft: 50,
+   paddingVertical: 5,
+    fontWeight: "bold",
   },
   stockText: {
     fontSize: 14,

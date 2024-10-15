@@ -3,7 +3,7 @@ import axiosClient from "./axiosClient";
 const cartAPI = {
     getAllCart: async (account) => {
         const url = `/user/${account.id}/carts`; // Correct URL
-        return await axiosClient.applicationNoAuth.get(url); // Ensure token is included
+        return await axiosClient.applicationNoAuth.get(url); 
     },
 
     deleteProductOnCart: async (id) => {

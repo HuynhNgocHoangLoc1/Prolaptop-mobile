@@ -46,7 +46,7 @@ export default function NavigationApp(props) {
         <Stack.Screen
           name="SignUp"
           component={SignUp}
-          options={{ headerShown: false }}
+          options={{ headerShown: true, title: "" }}
         />
         <Stack.Screen
           name="UITab"
