@@ -51,7 +51,14 @@ const Cart = () => {
   
   // Navigate to Payment Method
   const handlePaymentButton = () => {
-    navigation.navigate("PaymentMethod", { selectedItems,totalPrice: getTotalPrice() });
+    if (selectedItems.length === 0) {
+      alert("Please select at least one product before proceeding to payment.");
+      return;
+    }
+    navigation.navigate("PaymentMethod", {
+      selectedItems,
+      totalPrice: getTotalPrice(),
+    });
   };
 
   // Increment product quantity
@@ -196,7 +203,7 @@ const Cart = () => {
         </Text>
         <Text style={styles.summaryText}>Shipping fee    : 10 $</Text>
         <Text style={styles.totalText}>
-          Total               : {(getTotalPrice() + 10).toFixed(2)} $
+          Total            : {(getTotalPrice() + 10)} $
         </Text>
       </View>
 
@@ -223,7 +230,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     marginBottom: 10,
-    marginTop: 25,
+    marginTop: 40,
+    textAlign: "center",
+    textDecorationLine: "underline",
+    color: colors.light_blu
   },
   productList: {
     flexGrow: 1,
@@ -281,8 +291,8 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 16,
     color: "#FF6347",
-   paddingVertical: 5,
     fontWeight: "bold",
+    marginTop: 5,
   },
   stockText: {
     fontSize: 14,
@@ -312,13 +322,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   summaryText: {
-    fontSize: 18,
+    fontSize: 16,
     color: "#333",
     marginBottom: 5,
   },
   totalText: {
     fontSize: 20,
     fontWeight: "bold",
+    color: colors.light_blu,
   },
   paymentButton: {
     backgroundColor: colors.dark_blu,

@@ -1,109 +1,158 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import fakeData from '../../fakeData/Data.json';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+  FlatList,
+} from 'react-native';
 import colors from '../../constants/colors';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import categoryAPI from '../../repositories/categoryApi';
-import productAPI from '../../repositories/productApi'
+import productAPI from '../../repositories/productApi';
 
 export default function Brand() {
-    const [products, setProducts] = useState([]);
-   
-    const navigation = useNavigation();
-    const route = useRoute();
-    const handleClickCategories = (item) => {
-        navigation.navigate('ProductDetail', { productItem: item });
-    }
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
+  const route = useRoute();
 
-    useEffect(() => {
-        if (route.params?.title) {
-          navigation.setOptions({ title: route.params.title });
-          const fetchProducts = async () => {
-             await productAPI.getProductByCategoryId(route.params?.categoryId)
-              .then((res) => {
-                setProducts(res.data);
-                // console.log(res.data)
-              })
-              .catch((e) => {
-                console.log(e);
-              });
-          }
-          fetchProducts();
+  const handleClickCategories = (item) => {
+    navigation.navigate('ProductDetail', { productItem: item });
+  };
+
+  useEffect(() => {
+    if (route.params?.title) {
+      navigation.setOptions({ title: route.params.title });
+      const fetchProducts = async () => {
+        try {
+          const res = await productAPI.getProductByCategoryId(route.params?.categoryId);
+          setProducts(res.data);
+          setLoading(false);
+        } catch (e) {
+          console.log(e);
+          setLoading(false);
         }
-        
-      }, [route.params?.title]);
+      };
+      fetchProducts();
+    }
+  }, [route.params?.title]);
 
-   
-    return (
-        <ScrollView contentContainerStyle={styles.grid}>
-            {products.map((item, index) => (
-                <TouchableOpacity 
-                    key={index} 
-                    style={styles.productContainer} 
-                    onPress={() => handleClickCategories(item)}
-                >
-                    <View style={styles.product}>
-                        <Image style={styles.image} source={{ uri: item.imageUrl }} />
-                        <Text style={styles.productName}>{item.name}</Text>
-                        <Text style={styles.productPrice}>${item.price}</Text>
-                        <Text 
-                            style={{
-                                backgroundColor: item.stockQuantity === 0 ? colors.warning : item.stockQuantity === 1 ? colors.success : colors.green,
-                                fontWeight: '700',
-                                color: colors.white,
-                                width: 90,
-                                textAlign: 'center',
-                                borderRadius: 20,
-                                marginBottom: 8,
-                                paddingVertical: 4,
-                                justifyContent: 'center',
-                                alignItems: 'center'
-                            }}
-                        >
-                            {item.stockQuantity === 0 ? 'sold out' : item.stockQuantity === 1 ? 'On going' : 'in stock'}
-                        </Text>
-                    </View>
-                </TouchableOpacity>
-            ))}
-        </ScrollView>
-    );
+  const renderProductItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.productContainer}
+      onPress={() => handleClickCategories(item)}
+    >
+      <View style={styles.product}>
+        <Image style={styles.image} source={{ uri: item.imageUrl }} />
+        <Text style={styles.productName}>{item.name}</Text>
+        <Text style={styles.productPrice}>${item.price}</Text>
+        <Text
+          style={[
+            styles.stockBadge,
+            {
+              backgroundColor:
+                item.stockQuantity === 0
+                  ? colors.warning
+                  : item.stockQuantity === 1
+                  ? colors.success
+                  : colors.green,
+            },
+          ]}
+        >
+          {item.stockQuantity === 0
+            ? 'Sold out'
+            : item.stockQuantity === 1
+            ? 'On going'
+            : 'In stock'}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={styles.container}>
+      {loading ? (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="blue" />
+        </View>
+      ) : (
+        <FlatList
+          data={products}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderProductItem}
+          numColumns={2}
+          columnWrapperStyle={styles.row}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.grid}
+        />
+      )}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    grid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        padding: 10,
-    },
-    productContainer: {
-        width: '48%', // Ensures two items per row with some spacing
-        marginBottom: 15,
-    },
-    product: {
-        padding: 10,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        alignItems: 'center',
-        backgroundColor: '#fff',
-    },
-    image: {
-        width: '100%',
-        height: 100,
-        resizeMode: 'contain',
-        marginBottom: 10,
-    },
-    productName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    productPrice: {
-        fontSize: 16,
-        color: 'red',
-        marginTop: 5,
-        marginBottom: 5,
-        textAlign: 'center',
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+    padding: 15,
+  },
+  grid: {
+    justifyContent: 'space-between',
+    paddingBottom: 20,
+  },
+  row: {
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  productContainer: {
+    width: '48%',
+    marginBottom: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  product: {
+    padding: 15,
+    alignItems: 'center',
+  },
+  image: {
+    width: '100%',
+    height: 120,
+    resizeMode: 'contain',
+    marginBottom: 10,
+  },
+  productName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#333',
+  },
+  productPrice: {
+    fontSize: 18,
+    color: '#FF6347',
+    marginTop: 5,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  stockBadge: {
+    fontWeight: '700',
+    color: '#fff',
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    textAlign: 'center',
+    fontSize: 12,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

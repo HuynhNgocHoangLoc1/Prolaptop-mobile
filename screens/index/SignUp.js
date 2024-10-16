@@ -120,12 +120,14 @@ const handleRegister = async () => {
        ></TextInput>
       <TextInput style={styles.input} placeholder="password"
         value = {password}
+        secureTextEntry
         onChangeText = {(value) =>{
           setPassword(value)
         }}
         ></TextInput>
       <TextInput style={styles.input} placeholder="confirm password"
         value = {confirmPassword}
+        secureTextEntry
         onChangeText = {(value) =>{
           setConfirmPassword(value)
         }}
@@ -204,18 +206,16 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
    },
    buttonRegis:{
-    width:100,
-    height: 50,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 30,
-    elevation: 10,
-    marginTop: 10,
+    width: 111,
+    padding: 15,
+    borderRadius: 20,
+    backgroundColor: '#362620',
     alignItems: "center",
-    justifyContent: "center",
    },
    regisTextButton:{
-    fontSize: 20,
-    fontWeight: "600",
+    color: '#fff',
+    fontSize: 19,
+    fontWeight: 'bold',
    },
    errorLine: {
     color: "red",                                                           

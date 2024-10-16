@@ -10,7 +10,7 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import AccountContext from "../../contexts/AccountContext";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
 import userAPI from "../../repositories/userApi";
 
 const UpdateProfile = () => {
@@ -37,8 +37,8 @@ const UpdateProfile = () => {
       try {
         const response = await userAPI.updateAvatar(selectedAvatar, account.id);
         if (response.data) {
-          setAvatar(response.data.avatar); 
-          setAccount({ ...account, avatar: response.data.avatar }); 
+          setAvatar(response.data.avatar);
+          setAccount({ ...account, avatar: response.data.avatar });
         }
       } catch (error) {
         console.error("Error updating avatar:", error);
@@ -58,7 +58,7 @@ const UpdateProfile = () => {
     try {
       // Update user profile
       const response = await userAPI.updateUser(account.id, updateUserDto);
-      
+
       // Check if the avatar was changed
       if (avatar !== account.avatar) {
         const avatarResponse = await userAPI.updateAvatar(avatar, account.id);
@@ -70,7 +70,7 @@ const UpdateProfile = () => {
 
       // Update context with new user details
       setAccount({ ...account, userName, email, phoneNumber: phone, address });
-      
+
       alert("Update successfully");
       navigation.goBack();
     } catch (error) {
@@ -82,10 +82,22 @@ const UpdateProfile = () => {
     <View style={styles.container}>
       <View style={styles.profileContainer}>
         <View style={styles.avatarContainer}>
-          <View style={styles.avatarCircle}>
-            <Image style={styles.avatar} source={{ uri: avatar }} resizeMode="cover"/>
+          <View
+            style={[
+              styles.avatarCircle,
+              { borderWidth: 2, borderColor: "black" },
+            ]}
+          >
+            <Image
+              style={styles.avatar}
+              source={{ uri: avatar }}
+              resizeMode="cover"
+            />
           </View>
-          <TouchableOpacity style={styles.editIcon} onPress={handleUpdateAvatar}> 
+          <TouchableOpacity
+            style={styles.editIcon}
+            onPress={handleUpdateAvatar}
+          >
             <AntDesign name="edit" size={20} color="black" />
           </TouchableOpacity>
         </View>
@@ -183,17 +195,17 @@ const styles = StyleSheet.create({
     width: "40%",
     padding: 15,
     borderRadius: 20,
-    backgroundColor: '#362620',
+    backgroundColor: colors.dark_blu,
     alignItems: "center",
   },
   saveButtonText: {
-     color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   avatar: {
     width: "100%",
     height: "100%",
     borderRadius: 60,
-  }
+  },
 });

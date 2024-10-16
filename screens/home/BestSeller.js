@@ -79,10 +79,9 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   title: {
-    fontSize: 30,
-    fontWeight: "700",
-    marginTop: 10,
-    color: colors.blue_text,
+    color: colors.dark_blu,
+    fontWeight: '700',
+    fontSize: 22
   },
   categoryItem: {
     marginTop: 10,

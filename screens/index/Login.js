@@ -10,8 +10,8 @@ import {
 import React from "react";
 import images from "../../constants/images";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useState, useCallback, useEffect } from "react";
 import authAPI from "../../repositories/authApi";
 import useAuth from "../../hooks/userAuth";
 
@@ -20,8 +20,16 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { setAccount, setToken } = useAuth();
-
   const navigation = useNavigation();
+
+  useFocusEffect(
+    useCallback(() => {
+      setUserName("");
+      setPassword("");
+      setError("");
+    }, [])
+  );
+  
   const handleSignUp = async () => {
     // console.log("sign up");
     navigation.navigate("SignUp");
@@ -168,17 +176,15 @@ const styles = StyleSheet.create({
   },
   buttonLogin: {
     width: 100,
-    height: 50,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 30,
-    elevation: 10,
-    marginTop: 10,
+    padding: 15,
+    borderRadius: 20,
+    backgroundColor: '#362620',
     alignItems: "center",
-    justifyContent: "center",
   },
   loginTextButton: {
-    fontSize: 20,
-    fontWeight: "600",
+    color: '#fff',
+    fontSize: 19,
+    fontWeight: 'bold',
   },
   bottom: {
     bottom: 10,

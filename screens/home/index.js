@@ -30,10 +30,13 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.textname}>Hi, {account.userName}</Text>
+      <View style={styles.welcome}>
+        <Text style={styles.textname}>Hello, {account.userName}</Text>
+        <Text style={styles.slogan}>Welcome to Prolaptop, your best choice for laptop</Text>
+        </View>
         <TouchableOpacity onPress={onClickChat}>
           <Image
-            source={require("../../assets/icons/funtion/chat.png")}
+            source={require("../../assets/icons/funtion/comments.png")}
             style={styles.avatar}
           />
         </TouchableOpacity>
@@ -58,13 +61,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    width: "100%",
-    height: 80,
-    backgroundColor: "#fff",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    paddingBottom: 20,
+    paddingTop: 20,
   },
   category: {
     fontWeight: "bold",
@@ -73,18 +75,28 @@ const styles = StyleSheet.create({
   textname: {
     fontWeight: "bold",
     fontSize: 20,
-    color: "black",
+    color: colors.dark_blu,
     marginTop: 30,
   },
   avatar: {
     width: 30,
     height: 30,
-    // borderRadius: 20,
     marginTop: 30,
   },
   line: {
-    marginTop: 10,
-    marginBottom: 10,
+    paddingTop: 10,
     backgroundColor: colors.light_gray,
   },
+  slogan: {
+    color: colors.light_blu,
+    marginTop: 2
+},
+  welcome: {
+    marginEnd: 20,
+  },
+  slider: {
+    width: '100%',
+    height: 160,
+}
+
 });

@@ -16,8 +16,8 @@ export default colors = {
     success: '#07a14f',
     border: '#B8B4B4',
     button: '#A3D2B1',
-    dark_blu: '#1720FA', // Thêm '#'
-    light_blu: '#0D6EFA', // Thêm '#'
+    dark_blu: '#053971', // Thêm '#'
+    light_blu: '#296CB5', // Thêm '#'
     blue_main: '#617EB7', // Thêm '#'
     silver_gray : "#EBEBEB",
     blue_text: '#171B4D',

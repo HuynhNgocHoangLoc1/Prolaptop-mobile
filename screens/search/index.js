@@ -72,7 +72,7 @@ export default function Search() {
           onChangeText={(text) => setSearchText(text)} // Cập nhật searchText khi thay đổi
         />
         <TouchableOpacity style={styles.search}>
-          <AntDesign name="search1" size={24} color="rgba(0, 0, 0, 0.5)" />
+          <AntDesign name="search1" size={24}  />
         </TouchableOpacity>
       </View>
 
@@ -85,7 +85,7 @@ export default function Search() {
         <FlatList
           data={products}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => <LaptopItem item={item} />} // Sử dụng LaptopItem để hiển thị sản phẩm
+          renderItem={({ item }) => <LaptopItem item={item} />} 
           horizontal={false}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
@@ -100,16 +100,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    justifyContent: "flex-start",
     alignItems: "center",
-    paddingTop: 50,
-    width: "100%",
-    height: "100%",
+    paddingTop: 50,    
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    color: colors.light_blu,
+    textDecorationLine: "underline",
+
   },
   inputContainer: {
     flexDirection: "row",

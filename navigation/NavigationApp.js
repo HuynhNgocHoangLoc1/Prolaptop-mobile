@@ -68,7 +68,7 @@ export default function NavigationApp(props) {
           <Stack.Screen
           name="ChangePassword"
           component={ChangePassword}
-          options={{ headerShown: true, title: "Change password" }}
+          options={{ headerShown: true, title: "" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
         <Stack.Screen
