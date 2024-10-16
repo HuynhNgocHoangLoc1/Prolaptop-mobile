@@ -5,13 +5,11 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  TouchableHighlightComponent,
 } from "react-native";
-import React from "react";
+import React, { useState, useCallback } from "react";
 import images from "../../constants/images";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import authAPI from "../../repositories/authApi";
 import useAuth from "../../hooks/userAuth";
 
@@ -20,12 +18,20 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { setAccount, setToken } = useAuth();
-
   const navigation = useNavigation();
+
+  useFocusEffect(
+    useCallback(() => {
+      setUserName("");
+      setPassword("");
+      setError("");
+    }, [])
+  );
+
   const handleSignUp = async () => {
-    // console.log("sign up");
     navigation.navigate("SignUp");
   };
+
   const handleLogin = async () => {
     if (username === "") {
       setError("Username can't be blank");
@@ -41,13 +47,19 @@ export default function Login() {
         userName: username,
         password: password,
       });
-      if (response.data && response.data.access_token) {
-        // Đặt token
+      // console.log("Login response:", response.data);
+  
+      if (response.data) {
+        // console.log("Login successful:", response.data);
+  
+        if (response.data.isBlock) {
+          setError("Tài khoản của bạn đã bị chặn."); 
+          return;
+        }
+  
         setToken(response.data.access_token);
-        
-        // Đặt thông tin tài khoản
         setAccount({
-          id: response.data.id, 
+          id: response.data.id,
           userName: response.data.userName,
           address: response.data.address,
           email: response.data.email,
@@ -55,16 +67,17 @@ export default function Login() {
           phone: response.data.phone,
           role: response.data.role,
           avatar: response.data.avatar,
+          isBlock: response.data.isBlock, 
         });
-    
-        // Điều hướng đến UITab sau khi đăng nhập thành công
+        // console.log("isBlock:", response.data.isBlock);
+  
         navigation.navigate("UITab");
       }
-    
+  
     } catch (e) {
       // Xử lý lỗi khi có vấn đề trong quá trình đăng nhập
       if (e.response && e.response.data.statusCode === 401) {
-        setError("Wrong username or password");
+        setError("Sai tên đăng nhập hoặc mật khẩu."); // Thay đổi thông báo lỗi cho chính xác
       } else if (e.response && e.response.data.statusCode === 500) {
         setError("Server error occurred.");
         console.error(e);
@@ -72,8 +85,9 @@ export default function Login() {
         console.error("Unknown error occurred: ", e);
       }
     }
-    
   };
+  
+
   return (
     <KeyboardAwareScrollView
       style={{ flex: 1 }}
@@ -96,7 +110,7 @@ export default function Login() {
           onChangeText={(value) => {
             setUserName(value);
           }}
-        ></TextInput>
+        />
         <TextInput
           style={styles.inputUserName}
           placeholder="Password"
@@ -105,12 +119,12 @@ export default function Login() {
           onChangeText={(value) => {
             setPassword(value);
           }}
-        ></TextInput>
+        />
 
         {error != "" && <Text style={styles.errorLine}>{error}</Text>}
 
         <TouchableOpacity style={styles.buttonLogin} onPress={handleLogin}>
-          <Text style={styles.loginTextButton}>login</Text>
+          <Text style={styles.loginTextButton}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.bottom} onPress={handleSignUp}>
           <Text>
@@ -162,23 +176,22 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
   },
   loginText: {
-    fontSize: 45,
+    fontSize: 50,
     fontWeight: "bold",
-    marginBottom: 20, // Cách ly văn bản khỏi các phần tử khác
+    marginBottom: 20,
+    color: colors.dark_blu,
   },
   buttonLogin: {
-    width: 100,
-    height: 50,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 30,
-    elevation: 10,
-    marginTop: 10,
+    width: "100%",
+    padding: 15,
+    borderRadius: 20,
+    backgroundColor: colors.dark_blu,
     alignItems: "center",
-    justifyContent: "center",
   },
   loginTextButton: {
-    fontSize: 20,
-    fontWeight: "600",
+    color: "#fff",
+    fontSize: 17,
+    fontWeight: "bold",
   },
   bottom: {
     bottom: 10,

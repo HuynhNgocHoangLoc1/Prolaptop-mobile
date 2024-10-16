@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   buttonStart: {
     width: "auto",
     height: "auto",
-    backgroundColor: "#D9D9D9",
+    backgroundColor: colors.dark_blu,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 30,
@@ -48,13 +48,15 @@ const styles = StyleSheet.create({
     bottom: 50,
   },
   welcomeText: {
-    fontSize: 30,
+    fontSize: 50,
     fontWeight: "900",
+    color: colors.dark_blu,
   },
   startText: {
     fontSize: 30,
     fontWeight: "bold",
     paddingHorizontal: 40,
     paddingVertical: 10,
+    color: "#fff",
   },
 });

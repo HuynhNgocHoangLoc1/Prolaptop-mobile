@@ -10,12 +10,13 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import AccountContext from "../../contexts/AccountContext";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
 import userAPI from "../../repositories/userApi";
+import useAuth from "../../hooks/userAuth";
 
 const UpdateProfile = () => {
   const navigation = useNavigation();
-  const { account, setAccount } = useContext(AccountContext);
+  const { account, setAccount } = useAuth();
   const [avatar, setAvatar] = useState(account.avatar);
   const [userName, setUserName] = useState(account.userName);
   const [email, setEmail] = useState(account.email);
@@ -34,15 +35,6 @@ const UpdateProfile = () => {
     if (!result.canceled) {
       const selectedAvatar = result.assets[0].uri;
       setAvatar(selectedAvatar);
-      try {
-        const response = await userAPI.updateAvatar(selectedAvatar, account.id);
-        if (response.data) {
-          setAvatar(response.data.avatar); 
-          setAccount({ ...account, avatar: response.data.avatar }); 
-        }
-      } catch (error) {
-        console.error("Error updating avatar:", error);
-      }
     }
   };
 
@@ -58,19 +50,27 @@ const UpdateProfile = () => {
     try {
       // Update user profile
       const response = await userAPI.updateUser(account.id, updateUserDto);
-      
+
       // Check if the avatar was changed
       if (avatar !== account.avatar) {
         const avatarResponse = await userAPI.updateAvatar(avatar, account.id);
-        if (avatarResponse.data) {
-          // Update avatar in context and local state if the avatar was updated successfully
-          setAccount({ ...account, avatar: avatarResponse.data.avatar });
-        }
-      }
 
+        console.log(avatarResponse.result.avatar, account);
+        // Update avatar in context and local state if the avatar was updated successfully
+        setAccount({
+          address: address,
+          email: email,
+          phone: phone,
+          userName: userName,
+          gender: account.gender,
+          id: account.id,
+          role: account.role,
+          avatar: avatarResponse.result.avatar,
+        });
+        // console.log(account);
+      }
       // Update context with new user details
-      setAccount({ ...account, userName, email, phoneNumber: phone, address });
-      
+
       alert("Update successfully");
       navigation.goBack();
     } catch (error) {
@@ -82,10 +82,22 @@ const UpdateProfile = () => {
     <View style={styles.container}>
       <View style={styles.profileContainer}>
         <View style={styles.avatarContainer}>
-          <View style={styles.avatarCircle}>
-            <Image style={styles.avatar} source={{ uri: avatar }} resizeMode="cover"/>
+          <View
+            style={[
+              styles.avatarCircle,
+              { borderWidth: 2, borderColor: "black" },
+            ]}
+          >
+            <Image
+              style={styles.avatar}
+              source={{ uri: avatar }}
+              resizeMode="cover"
+            />
           </View>
-          <TouchableOpacity style={styles.editIcon} onPress={handleUpdateAvatar}> 
+          <TouchableOpacity
+            style={styles.editIcon}
+            onPress={handleUpdateAvatar}
+          >
             <AntDesign name="edit" size={20} color="black" />
           </TouchableOpacity>
         </View>
@@ -183,17 +195,17 @@ const styles = StyleSheet.create({
     width: "40%",
     padding: 15,
     borderRadius: 20,
-    backgroundColor: '#362620',
+    backgroundColor: colors.dark_blu,
     alignItems: "center",
   },
   saveButtonText: {
-     color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   avatar: {
     width: "100%",
     height: "100%",
     borderRadius: 60,
-  }
+  },
 });

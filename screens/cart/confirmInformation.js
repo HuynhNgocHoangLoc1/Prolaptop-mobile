@@ -39,22 +39,22 @@ export default function ConfirmInformation() {
         })
         .then((res) => {
           if (res) {
-            console.log(res);
+            // console.log(res);
             navigation.navigate("Order");
           }
         })
         .catch((e) => {
           console.log(e);
         });
-        console.log({
-          carts: selectedItems,
-          paymentMethod: paymentMethod,
-          name: inputAccount,
-          email: email,
-          phoneNumber: phone,
-          shippingAddress: address,
-          totalPrice: totalPrice,
-        })
+        // console.log({
+        //   carts: selectedItems,
+        //   paymentMethod: paymentMethod,
+        //   name: inputAccount,
+        //   email: email,
+        //   phoneNumber: phone,
+        //   shippingAddress: address,
+        //   totalPrice: totalPrice,
+        // })
     };
     createOrderApi();
   };

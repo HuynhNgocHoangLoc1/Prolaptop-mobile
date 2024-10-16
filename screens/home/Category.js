@@ -53,7 +53,6 @@ export default function Category() {
       </View>
       {loading ? ( // Hiển thị loading khi dữ liệu chưa có
         <View style={[styles.loader, styles.horizontal]}>
-          <ActivityIndicator size="large" color="blue" />
         </View>
       ) : (
       <FlatList
@@ -81,12 +80,6 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingBottom: 0,
   },
-  categoryText: {
-    color: colors.accent,
-    fontWeight: "700",
-    fontSize: 22,
-  },
-
   categoryItem: {
     marginTop: 10,
     width: 130,
@@ -94,16 +87,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: colors.white,
-    margin: 8,
+    margin: 4,
     borderRadius: 10,
     elevation: 5, // Android shadow
-    shadowColor: "rgba(0, 0, 0, 0.1)", // iOS shadow color
-    shadowOpacity: 0.5, // iOS shadow opacity
-    shadowOffset: { width: 0, height: 2 }, // iOS shadow offset
     overflow: "hidden",
-    borderWidth: 0.4,
-    borderColor: colors.dark_gray,
-    borderWidth: 1, // Tăng độ dày của viền
+    borderWidth: 0, // Tăng độ dày của viền
     borderColor: "black", // Đặt màu viền là đen
   },
   img: {
@@ -111,9 +99,10 @@ const styles = StyleSheet.create({
     height: 60,
   },
   text: {
-    fontSize: 25,
-    fontWeight: "500",
-    marginTop: 10,
+    fontSize: 18,
+    marginTop: 16,
+    color: colors.light_blu,
+    fontWeight: '600',
   },
   shape: {
     width: 150,
@@ -124,9 +113,8 @@ const styles = StyleSheet.create({
     top: -50,
   },
   title: {
-    fontSize: 30,
-    fontWeight: "700",
-    marginTop: 10,
-    color: colors.blue_text,
+    color: colors.dark_blu,
+    fontWeight: '700',
+    fontSize: 22
   },
 });

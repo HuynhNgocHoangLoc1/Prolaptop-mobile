@@ -5,6 +5,7 @@ import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import useAuth from '../../hooks/userAuth';
 import cartAPI from '../../repositories/cartApi';
+import colors from '../../constants/colors';
 
 const ProductDetail = () => {
   const route = useRoute();
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
     color: '#FF6347',
   },
   button: {
-    backgroundColor: '#FF6347', // Button background color
+    backgroundColor: colors.dark_blu, // Button background color
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,

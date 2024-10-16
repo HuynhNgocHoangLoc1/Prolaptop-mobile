@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, StatusBar } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import colors from "../constants/colors";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
@@ -20,17 +20,58 @@ import PaymentMethod from "../screens/cart/PaymentMethod";
 import ChangePassword from "../screens/profile/ChangePassword";
 import ConfirmInformation from "../screens/cart/confirmInformation";
 import Order from "../screens/order";
-import Chat from "../screens/chat/Chat"
+import Chat from "../screens/chat/Chat";
+import Success from "../screens/paymentSuccess";
+import * as Linking from "expo-linking";
 
 const Stack = createNativeStackNavigator();
 
+const linking = {
+  prefixes: ["prolaptop://"],
+  config: {
+    screens: {
+      Success: "Success",
+    },
+  },
+};
+// function handleDeepLink(event) {
+//   let data = Linking.parse(event.url);
+//   setData(data);
+// }
+
 export default function NavigationApp(props) {
+  const [initialRoute, setInitialRoute] = useState("Success");
+  useEffect(() => {
+    const handleDeepLink = ({ url }) => {
+      console.log("Deep link URL received:", url);
+      const route = Linking.parse(url).path; 
+      if (route === "Success") {
+        setInitialRoute("Success");
+      }
+    };
+
+    const initialUrl = async () => {
+      const url = await Linking.getInitialURL();
+      console.log("Initial URL:", url);
+      if (url) {
+        handleDeepLink({ url });
+      }
+    };
+
+    const subscription = Linking.addEventListener("url", handleDeepLink);
+    initialUrl();
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Stack.Navigator
         initialRouteName="Welcome"
         screenOptions={{
-          headerTintColor: colors.accent,
+          headerTintColor: colors.dark_blu,
         }}
       >
         <Stack.Screen
@@ -65,10 +106,10 @@ export default function NavigationApp(props) {
           options={{ headerShown: true, title: "Update Profile" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
-          <Stack.Screen
+        <Stack.Screen
           name="ChangePassword"
           component={ChangePassword}
-          options={{ headerShown: true, title: "Change password" }}
+          options={{ headerShown: true, title: "" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
         <Stack.Screen
@@ -77,7 +118,7 @@ export default function NavigationApp(props) {
           options={{ headerShown: true, title: "Brand" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="PaymentMethod"
           component={PaymentMethod}
           options={{ headerShown: true, title: "Payment" }}
@@ -89,16 +130,22 @@ export default function NavigationApp(props) {
           options={{ headerShown: true, title: "Confirm" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="Order"
           component={Order}
           options={{ headerShown: true, title: "Order" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="Chat"
           component={Chat}
           options={{ headerShown: true, title: "Chat" }}
+          listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+        />
+        <Stack.Screen
+          name="Success"
+          component={Success}
+          options={{ headerShown: true, title: "Success" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
       </Stack.Navigator>

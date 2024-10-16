@@ -105,7 +105,7 @@ export default function Profile() {
        
       <ImageBackground
         style={styles.background}
-        source={images.profileBackground}
+        source={images.profileImage}
       >
         <View style={styles.header}>
           <Image source={{ uri: avatarUrl }} style={styles.avatar} />
@@ -140,23 +140,23 @@ const styles = StyleSheet.create({
     margin: 50,
   },
   avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 100,
+    height: 100,
+    borderRadius: 60,
     
   },
   userInfo: {
     flexDirection: 'column',
   },
   userName: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     color: colors.white,
     marginTop: 10,
     textAlign: 'center',
   },
   email: {
-    fontSize: 14,
+    fontSize: 13,
     color: colors.gray,
     marginLeft: 18,
     justifyContent: 'center',

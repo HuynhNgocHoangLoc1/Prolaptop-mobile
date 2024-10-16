@@ -11,7 +11,8 @@ import {
 import orderAPI from "../../repositories/orderApi";
 
 const stages = [
-  { name: "all", icon: require("../../assets/icons/orderIcons/box.png") },
+  { name: "all", 
+    icon: require("../../assets/icons/orderIcons/box.png") },
   {
     name: "pending",
     icon: require("../../assets/icons/orderIcons/pending.png"),
@@ -20,8 +21,12 @@ const stages = [
     name: "delivering",
     icon: require("../../assets/icons/orderIcons/transport.png"),
   },
-  { name: "success", icon: require("../../assets/icons/orderIcons/check.png") },
-  { name: "success", icon: require("../../assets/icons/orderIcons/check.png") },
+  { 
+    name: "success", 
+    icon: require("../../assets/icons/orderIcons/check.png") },
+  {
+     name: "cancelled", 
+    icon: require("../../assets/icons/orderIcons/multiply.png") },
 ];
 
 const Order = () => {
@@ -31,22 +36,20 @@ const Order = () => {
   const fetchOrder = async () => {
     try {
       const response = await orderAPI.getListOrderByUser();
-      if (response.data.order) {
+      if (response.data.order) {qq
         // console.log(response.data.order.length);
         setOrderItems(response.data.order);
       } else {
-        console.error(
-          "API response does not contain 'orders' array"
-        );
+        console.error("API response does not contain 'orders' array");
       }
     } catch (error) {
       console.error("Failed to fetch order items:", error);
     }
   };
 
-  useEffect(()=>{
-    setFilterOrderItems(orderItems)
-  },[orderItems])
+  useEffect(() => {
+    setFilterOrderItems(orderItems);
+  }, [orderItems]);
 
   useEffect(() => {
     fetchOrder();
@@ -62,7 +65,7 @@ const Order = () => {
   };
 
   const renderProduct = (item) => {
-    console.log(item)
+    // console.log(item);
     return (
       <View style={styles.orderItem} key={item.id}>
         <View style={styles.imageContainer}>
@@ -133,26 +136,31 @@ const styles = StyleSheet.create({
   },
   grid: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-between", // Đảm bảo các phần tử được chia đều
     marginVertical: 10,
+    paddingHorizontal: 10, // Thêm padding cho lề ngoài
   },
   card: {
+    flex: 1, // Đảm bảo kích thước các thẻ đồng đều
     alignItems: "center",
-    padding: 10,
+    paddingVertical: 10,
     borderRadius: 10,
     backgroundColor: "#fff",
+    marginHorizontal: 5, // Khoảng cách giữa các card
     elevation: 3,
+    maxWidth: 80, // Đặt maxWidth để card không quá to
   },
   iconContainer: {
     marginBottom: 5,
   },
   icon: {
-    width: 40,
-    height: 40,
+    width: 30, // Kích thước icon nhỏ lại
+    height: 30,
   },
   stageName: {
-    fontSize: 16,
+    fontSize: 12, // Font chữ nhỏ hơn
     fontWeight: "bold",
+    textAlign: "center", // Đảm bảo tên stage luôn ở giữa
   },
   scrollView: {
     flex: 1,
@@ -220,5 +228,6 @@ const styles = StyleSheet.create({
     color: "#aaa",
   },
 });
+
 
 export default Order;
