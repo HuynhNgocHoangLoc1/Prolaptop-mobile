@@ -23,6 +23,7 @@ import Order from "../screens/order";
 import Chat from "../screens/chat/Chat";
 import Success from "../screens/paymentSuccess";
 import * as Linking from "expo-linking";
+import Review from "../screens/order/Review";
 
 const Stack = createNativeStackNavigator();
 
@@ -146,6 +147,12 @@ export default function NavigationApp(props) {
           name="Success"
           component={Success}
           options={{ headerShown: true, title: "Success" }}
+          listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+        />
+         <Stack.Screen
+          name="Review"
+          component={Review}
+          options={{ headerShown: true, title: "Review" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
       </Stack.Navigator>

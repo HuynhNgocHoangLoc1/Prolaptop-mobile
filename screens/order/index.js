@@ -9,10 +9,10 @@ import {
   ScrollView,
 } from "react-native";
 import orderAPI from "../../repositories/orderApi";
+import { useNavigation } from "@react-navigation/native";
 
 const stages = [
-  { name: "all", 
-    icon: require("../../assets/icons/orderIcons/box.png") },
+  { name: "all", icon: require("../../assets/icons/orderIcons/box.png") },
   {
     name: "pending",
     icon: require("../../assets/icons/orderIcons/pending.png"),
@@ -21,23 +21,29 @@ const stages = [
     name: "delivering",
     icon: require("../../assets/icons/orderIcons/transport.png"),
   },
-  { 
-    name: "success", 
-    icon: require("../../assets/icons/orderIcons/check.png") },
   {
-     name: "cancelled", 
-    icon: require("../../assets/icons/orderIcons/multiply.png") },
+    name: "success",
+    icon: require("../../assets/icons/orderIcons/check.png"),
+  },
+  {
+    name: "cancelled",
+    icon: require("../../assets/icons/orderIcons/multiply.png"),
+  },
 ];
 
 const Order = () => {
+  const navigation = useNavigation();
+  const handleReviewButton = (productId, id) => {
+    navigation.navigate("Review", { productId, id });
+  };
   const [activeSection, setActiveSection] = useState("all");
   const [orderItems, setOrderItems] = useState([]);
   const [filterOrderItems, setFilterOrderItems] = useState(orderItems);
   const fetchOrder = async () => {
     try {
       const response = await orderAPI.getListOrderByUser();
-      if (response.data.order) {qq
-        // console.log(response.data.order.length);
+      if (response.data.order) {
+        // console.log(response.data.order);
         setOrderItems(response.data.order);
       } else {
         console.error("API response does not contain 'orders' array");
@@ -46,6 +52,7 @@ const Order = () => {
       console.error("Failed to fetch order items:", error);
     }
   };
+  
 
   useEffect(() => {
     setFilterOrderItems(orderItems);
@@ -56,6 +63,7 @@ const Order = () => {
   }, []);
 
   const renderOrder = (order) => {
+    // console.log(order);
     const orderDetail = order.orderDetail ? order.orderDetail : [];
     return (
       <View key={order.id}>
@@ -84,6 +92,14 @@ const Order = () => {
         </View>
         <Text style={styles.productName}>{item.product.name}</Text>
         <View style={styles.productDetails}>
+          {activeSection === "success" && !item.review  && (
+            <TouchableOpacity
+              style={styles.reviewButton}
+              onPress={() => handleReviewButton(item.productId, item.id)} 
+            >
+              <Text style={styles.reviewButtonText}>Review product</Text>
+            </TouchableOpacity>
+          )}
           <Text style={styles.productPrice}>Price: {item.price} $</Text>
         </View>
       </View>
@@ -227,7 +243,16 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: "#aaa",
   },
+  reviewButton: {
+    backgroundColor: colors.dark_blu,
+    borderRadius: 10,
+    padding: 10,
+  },
+  reviewButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
 });
-
 
 export default Order;
