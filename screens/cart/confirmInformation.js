@@ -24,10 +24,12 @@ export default function ConfirmInformation() {
 
   const navigation = useNavigation();
   const route = useRoute();
-  const { selectedItems , totalPrice, paymentMethod } = route.params;
+  const { selectedItems , totalPrice, paymentMethod,productId } = route.params;
+  // console.log(selectedItems, totalPrice, paymentMethod);
   const handleConfirm = () => {
     const createOrderApi = async () => {
-      await orderAPI
+    
+     const res = await orderAPI
         .createOrderFromCart({
           carts: selectedItems,
           paymentMethod: paymentMethod,
@@ -36,28 +38,42 @@ export default function ConfirmInformation() {
           phoneNumber: phone,
           shippingAddress: address,
           totalPrice: totalPrice,
+          productId: productId
         })
         .then((res) => {
           if (res) {
-            // console.log(res);
-            navigation.navigate("Order");
+            if (paymentMethod === "Cash on Delivery") {
+              navigation.navigate("Success", {
+                selectedItems,
+                totalPrice,
+                paymentMethod,
+                name: inputAccount,
+                email,
+                phoneNumber: phone,
+                shippingAddress: address,
+                productId,
+              });
+            } else if (paymentMethod === "ZALOPAY") {
+              navigation.navigate("CheckStatusPayment", {
+                selectedItems,
+                totalPrice,
+                paymentMethod,
+                name: inputAccount,
+                email,
+                phoneNumber: phone,
+                shippingAddress: address,
+                productId,
+              });
+            }
           }
         })
         .catch((e) => {
           console.log(e);
         });
-        // console.log({
-        //   carts: selectedItems,
-        //   paymentMethod: paymentMethod,
-        //   name: inputAccount,
-        //   email: email,
-        //   phoneNumber: phone,
-        //   shippingAddress: address,
-        //   totalPrice: totalPrice,
-        // })
     };
     createOrderApi();
   };
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Confirm information</Text>

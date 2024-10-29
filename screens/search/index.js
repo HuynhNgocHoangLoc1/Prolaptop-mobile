@@ -63,7 +63,7 @@ export default function Search() {
       <Text style={styles.title}>Search</Text>
       <View style={styles.inputContainer}>
         <TouchableOpacity style={styles.menu} onPress={sortProducts}>
-          <AntDesign name="menu-fold" size={24} color="rgba(0, 0, 0, 0.5)" />
+          <AntDesign name="menu-fold" size={24} color="rgba(0, 0, 0, 0.1)" />
         </TouchableOpacity>
         <TextInput
           style={styles.input}

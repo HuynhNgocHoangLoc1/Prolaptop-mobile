@@ -24,6 +24,7 @@ import Chat from "../screens/chat/Chat";
 import Success from "../screens/paymentSuccess";
 import * as Linking from "expo-linking";
 import Review from "../screens/order/Review";
+import CheckStatusPayment from "../screens/paymentSuccess/CheckStatusPayment";
 
 const Stack = createNativeStackNavigator();
 
@@ -70,7 +71,7 @@ export default function NavigationApp(props) {
   return (
     <NavigationContainer linking={linking}>
       <Stack.Navigator
-        initialRouteName="Welcome"
+        initialRouteName="Login"
         screenOptions={{
           headerTintColor: colors.dark_blu,
         }}
@@ -122,13 +123,13 @@ export default function NavigationApp(props) {
         <Stack.Screen
           name="PaymentMethod"
           component={PaymentMethod}
-          options={{ headerShown: true, title: "Payment" }}
+          options={{ headerShown: true, title: "" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
         <Stack.Screen
           name="ConfirmInformation"
           component={ConfirmInformation}
-          options={{ headerShown: true, title: "Confirm" }}
+          options={{ headerShown: true, title: "" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
         <Stack.Screen
@@ -153,6 +154,12 @@ export default function NavigationApp(props) {
           name="Review"
           component={Review}
           options={{ headerShown: true, title: "Review" }}
+          listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+        />
+          <Stack.Screen
+          name="CheckStatusPayment"
+          component={CheckStatusPayment}
+          options={{ headerShown: true, title: "CheckStatusPayment" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
       </Stack.Navigator>

@@ -83,20 +83,20 @@ const styles = StyleSheet.create({
   categoryItem: {
     marginTop: 10,
     width: 130,
-    height: 160,
+    height:160,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.white,
+    backgroundColor: colors.white,  
     margin: 4,
     borderRadius: 10,
     elevation: 5, // Android shadow
     overflow: "hidden",
-    borderWidth: 0, // Tăng độ dày của viền
-    borderColor: "black", // Đặt màu viền là đen
+    borderWidth: 0.1, // Tăng độ dày của viền
+    borderColor: "black", 
   },
   img: {
-    width: 60,
-    height: 60,
+    width: 70,
+    height: 70,
   },
   text: {
     fontSize: 18,

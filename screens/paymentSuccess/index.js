@@ -1,7 +1,12 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Success() {
+  const navigation = useNavigation();
+  const handleContinueShopping = () => {
+    navigation.navigate('Order');
+  }
   return (
     <View style={styles.container}>
       {/* Hình ảnh giỏ hàng */}
@@ -17,11 +22,11 @@ export default function Success() {
       />
 
       {/* Text "Thank you for buying" */}
-      <Text style={styles.thankYouText}>Thank you for buying</Text>
+      <Text style={styles.thankYouText}>Order Successfully</Text>
 
       {/* Nút "Continue shopping" */}
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Continue shopping</Text>
+      <TouchableOpacity style={styles.button} onPress={handleContinueShopping}>
+        <Text style={styles.buttonText}>Order page</Text>
       </TouchableOpacity>
     </View>
   );

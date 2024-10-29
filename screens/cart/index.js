@@ -107,7 +107,7 @@ const Cart = () => {
     return cartItems
       .filter(item => selectedItems.some((itemSelect)=> itemSelect.id === item.id)) // Chỉ tính các sản phẩm đã được chọn
       .reduce(
-        (total, item) => total + item.product.price * item.quantity,
+        (totalPrice, item) => totalPrice + item.product.price * item.quantity,
         0
       );
   };
@@ -117,11 +117,11 @@ const Cart = () => {
   }
 
   // Select/Deselect item
-  const toggleSelectItem = ({id, productId, quantity, price}) => {
+  const toggleSelectItem = ({id, productId, quantity, price, imageUrl, name, totalPrice}) => {
     if (selectedItems.some((item) => item.id === id)) {
       setSelectedItems(selectedItems.filter((item) => item.id !== id));
     } else {
-      setSelectedItems([...selectedItems, {id, productId, quantity, price}]);
+      setSelectedItems([...selectedItems, {id, productId, quantity, price, imageUrl, name, totalPrice}]);
     }
   };
 
@@ -144,7 +144,10 @@ const Cart = () => {
                   id: item.id,
                   productId: item.product.id,
                   quantity: item.quantity,
-                  price : item.product.price
+                  price : item.product.price,
+                  imageUrl: item.product.imageUrl,
+                  name: item.product.name,
+                  totalPrice: item.product.price * item.quantity 
                 })}
               >
                 <View
@@ -198,18 +201,18 @@ const Cart = () => {
       </ScrollView>
 
       <View style={styles.summary}>
-        <Text style={styles.summaryText}>
+        {/* <Text style={styles.summaryText}>
           Total products: {getTotalPrice()} $
-        </Text>
-        <Text style={styles.summaryText}>Shipping fee    : 10 $</Text>
+        </Text> */}
+        {/* <Text style={styles.summaryText}>Shipping fee    : 10 $</Text> */}
         <Text style={styles.totalText}>
-          Total            : {(getTotalPrice() + 10)} $
+          Total            : {(getTotalPrice() )} $
         </Text>
       </View>
 
       <TouchableOpacity
         style={styles.paymentButton}
-        onPress={handlePaymentButton}
+        onPress={handlePaymentButton }
       >
         <Text style={styles.paymentButtonText}>
           Payment ({selectedItems.length} products)

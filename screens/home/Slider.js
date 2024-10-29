@@ -61,8 +61,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   img: {
-    width: "100%",
-    height: 146,
+    width: "99%",
+    height: 180,
   },
   dotStyle: {
     backgroundColor: "lightgray",

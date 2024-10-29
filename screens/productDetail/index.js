@@ -19,7 +19,7 @@ const ProductDetail = () => {
       productId: productItem.id,
       quantity: 1
     });
-    navigation.navigate("Cart");
+    navigation.navigate("Cart", { productId: productItem.id });
   };
 
   // Check if product is available before rendering
