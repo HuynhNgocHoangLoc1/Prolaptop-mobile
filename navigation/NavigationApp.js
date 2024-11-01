@@ -71,7 +71,7 @@ export default function NavigationApp(props) {
   return (
     <NavigationContainer linking={linking}>
       <Stack.Navigator
-        initialRouteName="Login"
+        initialRouteName="Welcome"
         screenOptions={{
           headerTintColor: colors.dark_blu,
         }}
@@ -147,7 +147,7 @@ export default function NavigationApp(props) {
         <Stack.Screen
           name="Success"
           component={Success}
-          options={{ headerShown: true, title: "Success" }}
+          options={{ headerShown: false, title: "Success" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
          <Stack.Screen

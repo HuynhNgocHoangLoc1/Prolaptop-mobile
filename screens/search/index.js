@@ -69,7 +69,7 @@ export default function Search() {
           style={styles.input}
           placeholder="search product"
           value={searchText}
-          onChangeText={(text) => setSearchText(text)} // Cập nhật searchText khi thay đổi
+          onChangeText={(text) => setSearchText(text)} 
         />
         <TouchableOpacity style={styles.search}>
           <AntDesign name="search1" size={24}  />

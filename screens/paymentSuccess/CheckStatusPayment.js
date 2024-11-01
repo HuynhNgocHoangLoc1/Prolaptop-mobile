@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -25,9 +25,50 @@ export default function CheckStatusPayment() {
     email,
     phoneNumber,
     shippingAddress,
-    productId
+    productId,
   } = route.params;
   const [appTransId, setAppTransId] = useState(null);
+
+  const callApi = async () => {
+    try {
+      const paymentData = {
+        carts: selectedItems,
+        paymentMethod: paymentMethod,
+        totalPrice: totalPrice,
+        name: name,
+        email: email,
+        phoneNumber: phoneNumber,
+        shippingAddress: shippingAddress,
+      };
+      console.log("Payment Data:", paymentData);
+
+      const paymentResponse = await zaloPayAPI.createZaloPayment(paymentData);
+      console.log("Payment Response:", paymentResponse.data);
+
+      const { order_url, error_code, message, app_trans_id } =
+        paymentResponse.data;
+      setAppTransId(app_trans_id);
+      // console.log( app_trans_id);
+      if (order_url) {
+        Linking.openURL(order_url);
+      } else {
+        // Kiểm tra error_code và thông điệp từ phản hồi
+        Alert.alert(
+          "Error",
+          error_code
+            ? `Error: ${message}`
+            : "Cannot create ZaloPay order. Please try again."
+        );
+      }
+    } catch (error) {
+      console.error("Chi tiết lỗi:", error.response?.data || error.message);
+      Alert.alert("Lỗi", `Đã xảy ra lỗi khi thanh toán: ${error.message}`);
+    }
+  };
+
+  useEffect(() => {
+    callApi();
+  }, []);
 
   // Nhóm các sản phẩm giống nhau
   const groupedItems = selectedItems.reduce((acc, item) => {
@@ -43,51 +84,23 @@ export default function CheckStatusPayment() {
 
   const handleCheckStatus = async () => {
     try {
-      const paymentData = {
-        carts: selectedItems,
-        paymentMethod: paymentMethod,
-        totalPrice: totalPrice,
-        name: name,
-        email: email,
-        phoneNumber: phoneNumber,
-        shippingAddress: shippingAddress,
-      };
-      console.log("Payment Data:", paymentData);
-  
-      const paymentResponse = await zaloPayAPI.createZaloPayment(paymentData);
-      console.log("Payment Response:", paymentResponse.data); 
-  
-      const { order_url, error_code, message, app_trans_id } = paymentResponse.data; 
-      setAppTransId(app_trans_id);
-      // console.log( app_trans_id);
-      if (order_url) {
-        Linking.openURL(order_url);
-        setTimeout(async () => {
-          try {
-            const statusResponse = await zaloPayAPI.checkOrderStatus(paymentMethod);
-            const { return_code } = statusResponse.data;
-            console.log(return_code);
-  
-            if (return_code === '1') {
-              navigation.navigate('Success');
-            } else {
-              Alert.alert("Thông báo", "Failed to check order status.");
-            }
-          } catch (statusError) {
-            console.error("Error checking order status:", statusError);
-            Alert.alert("Lỗi", `Không thể kiểm tra trạng thái đơn hàng: ${statusError.message}`);
-          }
-        }, 5000);
+      const statusResponse = await zaloPayAPI.checkOrderStatus(appTransId);
+      const { return_code } = statusResponse.data;
+      console.log(return_code);
+
+      if (return_code == "1") {
+        navigation.navigate("Success");
       } else {
-        // Kiểm tra error_code và thông điệp từ phản hồi
-        Alert.alert('Error', error_code ? `Error: ${message}` : 'Cannot create ZaloPay order. Please try again.');
+        Alert.alert("Thông báo", "Failed to check order status.");
       }
-    } catch (error) {
-      console.error("Chi tiết lỗi:", error.response?.data || error.message);
-      Alert.alert("Lỗi", `Đã xảy ra lỗi khi thanh toán: ${error.message}`);
+    } catch (statusError) {
+      console.error("Error checking order status:", statusError);
+      Alert.alert(
+        "Lỗi",
+        `Không thể kiểm tra trạng thái đơn hàng: ${statusError.message}`
+      );
     }
   };
-  
 
   return (
     <View style={styles.container}>

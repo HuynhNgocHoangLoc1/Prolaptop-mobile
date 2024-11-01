@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 5, // Android shadow
     overflow: "hidden",
-    borderWidth: 0.1, // Tăng độ dày của viền
+    borderWidth: 0.2, // Tăng độ dày của viền
     borderColor: "black", 
   },
   img: {

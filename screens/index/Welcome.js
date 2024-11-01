@@ -12,7 +12,7 @@ export default function Welcome() {
   
   return (
     <View style={styles.container}>
-      <Image style={styles.background} source={images.backgroundWelcome} />
+      {/* <Image style={styles.background} source={images.backgroundWelcome} /> */}
         <Text style ={styles.welcomeText}>Welcome</Text>
       <TouchableOpacity style={styles.buttonStart} onPress={handleStart}>
         <Text style={styles.startText}>Start</Text>
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: colors.dark_blu,
   },
   background: {
     width: 252,
@@ -37,9 +37,8 @@ const styles = StyleSheet.create({
 
   },
   buttonStart: {
-    width: "auto",
-    height: "auto",
-    backgroundColor: colors.dark_blu,
+    width: "80%",
+    backgroundColor: colors.white,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 30,
@@ -50,13 +49,13 @@ const styles = StyleSheet.create({
   welcomeText: {
     fontSize: 50,
     fontWeight: "900",
-    color: colors.dark_blu,
+    color: colors.white,
   },
   startText: {
     fontSize: 30,
     fontWeight: "bold",
     paddingHorizontal: 40,
     paddingVertical: 10,
-    color: "#fff",
+    color: colors.dark_blu,
   },
 });
