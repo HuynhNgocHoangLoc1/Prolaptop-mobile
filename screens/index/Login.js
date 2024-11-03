@@ -32,6 +32,10 @@ export default function Login() {
     navigation.navigate("SignUp");
   };
 
+  const handleForgotPassword = async () => {
+    navigation.navigate("ForgotPassword");
+  };
+
   const handleLogin = async () => {
     if (username === "") {
       setError("Username can't be blank");
@@ -48,15 +52,15 @@ export default function Login() {
         password: password,
       });
       // console.log("Login response:", response.data);
-  
+
       if (response.data) {
         // console.log("Login successful:", response.data);
-  
+
         if (response.data.isBlock) {
-          setError("Tài khoản của bạn đã bị chặn."); 
+          setError("Tài khoản của bạn đã bị chặn.");
           return;
         }
-  
+
         setToken(response.data.access_token);
         setAccount({
           id: response.data.id,
@@ -67,13 +71,12 @@ export default function Login() {
           phone: response.data.phone,
           role: response.data.role,
           avatar: response.data.avatar,
-          isBlock: response.data.isBlock, 
+          isBlock: response.data.isBlock,
         });
         // console.log("isBlock:", response.data.isBlock);
-  
+
         navigation.navigate("UITab");
       }
-  
     } catch (e) {
       // Xử lý lỗi khi có vấn đề trong quá trình đăng nhập
       if (e.response && e.response.data.statusCode === 401) {
@@ -86,7 +89,6 @@ export default function Login() {
       }
     }
   };
-  
 
   return (
     <KeyboardAwareScrollView
@@ -125,6 +127,10 @@ export default function Login() {
 
         <TouchableOpacity style={styles.buttonLogin} onPress={handleLogin}>
           <Text style={styles.loginTextButton}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleForgotPassword}
+        >
+          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.bottom} onPress={handleSignUp}>
           <Text>
@@ -199,5 +205,11 @@ const styles = StyleSheet.create({
   },
   errorLine: {
     color: "red",
+  },
+  forgotPasswordText: {
+    marginTop: 10, 
+    color: colors.blue_background_profile,
+    textDecorationLine: "underline",
+    fontSize: 16,
   },
 });

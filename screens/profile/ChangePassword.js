@@ -8,12 +8,6 @@ export default function ChangePassword() {
       
       <TextInput 
         style={styles.input} 
-        placeholder="Current password" 
-        secureTextEntry 
-      />
-      
-      <TextInput 
-        style={styles.input} 
         placeholder="New password" 
         secureTextEntry 
       />

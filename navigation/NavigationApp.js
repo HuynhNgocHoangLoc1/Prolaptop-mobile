@@ -25,6 +25,8 @@ import Success from "../screens/paymentSuccess";
 import * as Linking from "expo-linking";
 import Review from "../screens/order/Review";
 import CheckStatusPayment from "../screens/paymentSuccess/CheckStatusPayment";
+import ForgotPassword from "../screens/index/ForgotPassword";
+import CheckToken from "../screens/index/CheckToken";
 
 const Stack = createNativeStackNavigator();
 
@@ -46,7 +48,7 @@ export default function NavigationApp(props) {
   useEffect(() => {
     const handleDeepLink = ({ url }) => {
       console.log("Deep link URL received:", url);
-      const route = Linking.parse(url).path; 
+      const route = Linking.parse(url).path;
       if (route === "Success") {
         setInitialRoute("Success");
       }
@@ -135,7 +137,12 @@ export default function NavigationApp(props) {
         <Stack.Screen
           name="Order"
           component={Order}
-          options={{ headerShown: true, title: "Order" }}
+          options={{
+            headerShown: true,
+            title: "Order",
+            headerLeft: () => null, // Ẩn nút quay lại
+            headerBackVisible: false, // Ẩn nút back
+          }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
         <Stack.Screen
@@ -150,16 +157,28 @@ export default function NavigationApp(props) {
           options={{ headerShown: false, title: "Success" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="Review"
           component={Review}
           options={{ headerShown: true, title: "Review" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
-          <Stack.Screen
+        <Stack.Screen
           name="CheckStatusPayment"
           component={CheckStatusPayment}
           options={{ headerShown: true, title: "CheckStatusPayment" }}
+          listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+        />
+         <Stack.Screen
+          name="ForgotPassword"
+          component={ForgotPassword}
+          options={{ headerShown: true, title: "" }}
+          listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+        />
+         <Stack.Screen
+          name="CheckToken"
+          component={CheckToken}
+          options={{ headerShown: true, title: "" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
       </Stack.Navigator>

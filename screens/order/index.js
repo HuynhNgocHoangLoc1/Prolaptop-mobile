@@ -36,14 +36,18 @@ const Order = () => {
   const handleReviewButton = (productId, id) => {
     navigation.navigate("Review", { productId, id });
   };
+  const handleBack = () => {
+    navigation.navigate("Home");
+  };
+
   const [activeSection, setActiveSection] = useState("all");
   const [orderItems, setOrderItems] = useState([]);
   const [filterOrderItems, setFilterOrderItems] = useState(orderItems);
+
   const fetchOrder = async () => {
     try {
       const response = await orderAPI.getListOrderByUser();
       if (response.data.order) {
-        // console.log(response.data.order);
         setOrderItems(response.data.order);
       } else {
         console.error("API response does not contain 'orders' array");
@@ -52,7 +56,6 @@ const Order = () => {
       console.error("Failed to fetch order items:", error);
     }
   };
-  
 
   useEffect(() => {
     setFilterOrderItems(orderItems);
@@ -63,7 +66,6 @@ const Order = () => {
   }, []);
 
   const renderOrder = (order) => {
-    // console.log(order);
     const orderDetail = order.orderDetail ? order.orderDetail : [];
     return (
       <View key={order.id}>
@@ -73,7 +75,6 @@ const Order = () => {
   };
 
   const renderProduct = (item) => {
-    // console.log(item);
     return (
       <View style={styles.orderItem} key={item.id}>
         <View style={styles.imageContainer}>
@@ -92,7 +93,7 @@ const Order = () => {
         </View>
         <Text style={styles.productName}>{item.product.name}</Text>
         <View style={styles.productDetails}>
-          {activeSection === "success" && !item.review  && (
+          {activeSection === "success" && !item.review && (
             <TouchableOpacity
               style={styles.reviewButton}
               onPress={() => handleReviewButton(item.productId, item.id)} 
@@ -105,8 +106,6 @@ const Order = () => {
       </View>
     );
   };
-
-  // const orderItems = fakeOrders[activeSection.toLowerCase()];
 
   useEffect(() => {
     if (activeSection === "all") {
@@ -141,6 +140,12 @@ const Order = () => {
           filterOrderItems.map((order) => renderOrder(order))
         )}
       </ScrollView>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={handleBack}
+      >
+        <Text style={styles.backButtonText}>Back to Home</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -152,31 +157,31 @@ const styles = StyleSheet.create({
   },
   grid: {
     flexDirection: "row",
-    justifyContent: "space-between", // Đảm bảo các phần tử được chia đều
+    justifyContent: "space-between",
     marginVertical: 10,
-    paddingHorizontal: 10, // Thêm padding cho lề ngoài
+    paddingHorizontal: 10,
   },
   card: {
-    flex: 1, // Đảm bảo kích thước các thẻ đồng đều
+    flex: 1,
     alignItems: "center",
     paddingVertical: 10,
     borderRadius: 10,
     backgroundColor: "#fff",
-    marginHorizontal: 5, // Khoảng cách giữa các card
+    marginHorizontal: 5,
     elevation: 3,
-    maxWidth: 80, // Đặt maxWidth để card không quá to
+    maxWidth: 80,
   },
   iconContainer: {
     marginBottom: 5,
   },
   icon: {
-    width: 30, // Kích thước icon nhỏ lại
+    width: 30,
     height: 30,
   },
   stageName: {
-    fontSize: 12, // Font chữ nhỏ hơn
+    fontSize: 12,
     fontWeight: "bold",
-    textAlign: "center", // Đảm bảo tên stage luôn ở giữa
+    textAlign: "center",
   },
   scrollView: {
     flex: 1,
@@ -244,7 +249,7 @@ const styles = StyleSheet.create({
     color: "#aaa",
   },
   reviewButton: {
-    backgroundColor: colors.dark_blu,
+    backgroundColor:colors.dark_blu,
     borderRadius: 10,
     padding: 10,
   },
@@ -252,6 +257,19 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  backButton: {
+    backgroundColor: colors.dark_blu,
+    padding: 9,
+    borderRadius: 10,
+    alignItems: "center",
+    margin: 10,
+    width: "80%",
+    alignSelf: "center",
+  },
+  backButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
 
