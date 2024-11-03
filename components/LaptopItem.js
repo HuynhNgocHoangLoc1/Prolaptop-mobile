@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     borderRadius: 10,
     borderLeftWidth: 4,
-    borderLeftColor: colors.primary,
+    borderLeftColor: colors.light_blu,
     overflow: "hidden",
     width: "94%",
   },

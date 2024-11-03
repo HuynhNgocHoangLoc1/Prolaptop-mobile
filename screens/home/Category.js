@@ -51,7 +51,7 @@ export default function Category() {
       <View style={styles.header}>
         <Text style={styles.title}>Categories </Text>
       </View>
-      {loading ? ( // Hiển thị loading khi dữ liệu chưa có
+      {loading ? ( 
         <View style={[styles.loader, styles.horizontal]}>
         </View>
       ) : (
