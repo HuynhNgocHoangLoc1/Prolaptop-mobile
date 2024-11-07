@@ -23,18 +23,14 @@ const Cart = () => {
   const [error, setError] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
   
-  // Fetch cart items when providerValue changes
   useFocusEffect(() => {
     const fetchCart = async () => {
       try {
         if (account.id) {
           const response = await cartAPI.getAllCart(account);
-          
-          // Sắp xếp cartItems theo tên sản phẩm từ A-Z
           const sortedCart = response.data.cart.sort((a, b) => 
             a.product.name.localeCompare(b.product.name)
           );
-          
           setCartItems(sortedCart);
         } else {
           console.log("No account id available");
@@ -45,12 +41,10 @@ const Cart = () => {
         setError("Failed to load cart items");
       }
     };
-  
     fetchCart();
   });
   
-  // Navigate to Payment Method
-  const handlePaymentButton = () => {
+  const handlePaymentButton = async () => {
     if (selectedItems.length === 0) {
       alert("Please select at least one product before proceeding to payment.");
       return;
@@ -59,9 +53,20 @@ const Cart = () => {
       selectedItems,
       totalPrice: getTotalPrice(),
     });
+
+    // Xoá các sản phẩm đã thanh toán sau khi chuyển hướng
+    try {
+      await Promise.all(
+        selectedItems.map((item) => cartAPI.deleteProductOnCart(item.id))
+      );
+      setCartItems(cartItems.filter((item) => !selectedItems.some((selectedItem) => selectedItem.id === item.id)));
+      setSelectedItems([]);
+    } catch (error) {
+      console.error("Failed to clear paid items:", error);
+      setError("Failed to update cart after payment");
+    }
   };
 
-  // Increment product quantity
   const incrementQuantity = async (id, quantity) => {
     setCartItems(
       cartItems.map((item) =>
@@ -80,13 +85,11 @@ const Cart = () => {
     if (quantity <= 1) {
       await removeItem(id);
     } else {
-      // Nếu số lượng sản phẩm > 1, giảm số lượng và cập nhật qua API
       setCartItems((prevItems) => {
         return prevItems.map((item) =>
           item.id === id ? { ...item, quantity: item.quantity - 1 } : item
         );
       });
-  
       try {
         await cartAPI.updateProductQuantity(id, { quantity: quantity - 1 });
       } catch (error) {
@@ -102,21 +105,15 @@ const Cart = () => {
     setSelectedItems(selectedItems.filter((item) => item.id !== id));
   };
 
-  // Calculate total price of selected cart items
   const getTotalPrice = () => {
     return cartItems
-      .filter(item => selectedItems.some((itemSelect)=> itemSelect.id === item.id)) // Chỉ tính các sản phẩm đã được chọn
+      .filter(item => selectedItems.some((itemSelect) => itemSelect.id === item.id))
       .reduce(
         (totalPrice, item) => totalPrice + item.product.price * item.quantity,
         0
       );
   };
 
-  if (error) {
-    return <Text style={styles.errorText}>{error}</Text>;
-  }
-
-  // Select/Deselect item
   const toggleSelectItem = ({id, productId, quantity, price, imageUrl, name, totalPrice}) => {
     if (selectedItems.some((item) => item.id === id)) {
       setSelectedItems(selectedItems.filter((item) => item.id !== id));
@@ -125,7 +122,6 @@ const Cart = () => {
     }
   };
 
-  // Check if item is selected
   const isSelected = (id) => selectedItems.some((item) => item.id === id);
 
   return (
@@ -201,10 +197,6 @@ const Cart = () => {
       </ScrollView>
 
       <View style={styles.summary}>
-        {/* <Text style={styles.summaryText}>
-          Total products: {getTotalPrice()} $
-        </Text> */}
-        {/* <Text style={styles.summaryText}>Shipping fee    : 10 $</Text> */}
         <Text style={styles.totalText}>
           Total            : {(getTotalPrice() )} $
         </Text>
@@ -212,7 +204,7 @@ const Cart = () => {
 
       <TouchableOpacity
         style={styles.paymentButton}
-        onPress={handlePaymentButton }
+        onPress={handlePaymentButton}
       >
         <Text style={styles.paymentButtonText}>
           Payment ({selectedItems.length} products)
@@ -221,7 +213,6 @@ const Cart = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

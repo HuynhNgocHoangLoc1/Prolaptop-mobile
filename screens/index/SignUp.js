@@ -77,7 +77,8 @@ const handleRegister = async () => {
   // formData.append('address', address);
 
   try {
-    await authAPI.register(formData);
+    const response = await authAPI.register(formData);
+    // console.log(response);
     console.log("register success");
     navigation.navigate("Login"); // Chuyển hướng sau khi đăng ký thành công
 } catch (e) {

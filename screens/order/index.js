@@ -47,6 +47,7 @@ const Order = () => {
   const fetchOrder = async () => {
     try {
       const response = await orderAPI.getListOrderByUser();
+      console.log(response.data);
       if (response.data.order) {
         setOrderItems(response.data.order);
       } else {
