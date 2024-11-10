@@ -7,16 +7,19 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import messagesApi from "../../repositories/messageApi";
 import AccountContext from "../../contexts/AccountContext";
 import { io } from "socket.io-client";
 
-const socket = io("https://prolaptop-server.onrender.com", { transports: ['websocket'] });
+const socket = io("https://prolaptop-server.onrender.com", { transports: ["websocket"] });
+
 export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
-  const { account, token } = useContext(AccountContext);
+  const { account } = useContext(AccountContext);
   const admin = "1d9c91b5-404c-4e26-9ba8-ed571a037cb1";
   const flatListRef = useRef();
 
@@ -24,10 +27,10 @@ export default function Chat() {
     socket.on("receive_message", (newMessage) => {
       if (newMessage.receiverId === account.id) {
         setMessages((prevMessages) => [...prevMessages, newMessage]);
-        scrollToEnd(); // Cuộn xuống cuối khi nhận tin nhắn mới
+        scrollToEnd();
       }
     });
-  
+
     return () => {
       socket.off("receive_message");
     };
@@ -43,13 +46,9 @@ export default function Chat() {
             text: msg.content,
           }));
           setMessages(messageData);
-          scrollToEnd(); // Cuộn xuống cuối khi tải tin nhắn từ API
         }
       } catch (error) {
-        console.error(
-          "Failed to fetch messages:",
-          error.response ? error.response.data : error.message
-        );
+        console.error("Failed to fetch messages:", error.response ? error.response.data : error.message);
       }
     };
     fetchMessages();
@@ -66,15 +65,17 @@ export default function Chat() {
         senderId: account.id,
         receiverId: admin,
       };
-  
+
       try {
         socket.emit("sendMessage", newMessage);
+
         setMessages((prevMessages) => [
           ...prevMessages,
           { ...newMessage, id: Date.now().toString(), senderRole: "user" },
         ]);
+
         setInputText("");
-        scrollToEnd(); // Cuộn xuống cuối sau khi gửi tin nhắn
+        scrollToEnd();
       } catch (error) {
         console.error("Failed to send message:", error);
       }
@@ -93,7 +94,11 @@ export default function Chat() {
   );
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={90} // Điều chỉnh theo chiều cao header của bạn
+    >
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
           <Image
@@ -111,7 +116,7 @@ export default function Chat() {
         renderItem={renderMessage}
         keyExtractor={(item) => item.id}
         style={styles.messagesList}
-        onContentSizeChange={scrollToEnd} // Cuộn xuống cuối khi nội dung thay đổi
+        onContentSizeChange={scrollToEnd}
       />
 
       {/* Input field */}
@@ -121,6 +126,7 @@ export default function Chat() {
           placeholder="Aa"
           value={inputText}
           onChangeText={setInputText}
+          autoFocus={true} // Focus tự động vào ô nhập khi mở chat
         />
         <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
           <Image
@@ -129,7 +135,7 @@ export default function Chat() {
           />
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -168,7 +174,7 @@ const styles = StyleSheet.create({
     maxWidth: "80%",
   },
   userMessage: {
-    backgroundColor: "#98FB98", // Màu xanh lá cây
+    backgroundColor: "#32CD32",
     alignSelf: "flex-end",
   },
   adminMessage: {

@@ -39,22 +39,15 @@ export const disconnectSocket = () => {
   }
 };
 
-// export const sendMessage = (message) => {
-//   if (socket && isConnected) { // Chỉ gửi tin nhắn nếu đã kết nối
-//     socket.emit('send_message', message);
-//     console.log('Message sent:', message);
-//   } else {
-//     console.warn('Socket is not connected, cannot send message');
-//   }
-// };
-
+// Gửi tin nhắn qua socket với sự kiện "send_message"
 export const sendMessage = (message) => {
   if (socket) {
-    socket.emit('sendMessage', message); // Đảm bảo tên sự kiện là 'sendMessage'
+    socket.emit('send_message', message); // Đảm bảo tên sự kiện là 'send_message'
     console.log('Message sent:', message);
   }
 };
 
+// Lắng nghe tin nhắn mới với sự kiện "receive_message"
 export const onNewMessage = (callback) => {
   if (socket) {
     socket.on('receive_message', callback);

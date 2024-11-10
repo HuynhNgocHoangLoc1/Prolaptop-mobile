@@ -15,7 +15,7 @@ export default function CheckToken() {
 
         try {
             const response = await mailApi.confirmMail({ email, otp: otpCode }); // Gửi email và otp
-            console.log(response.data);
+            // console.log(response.data);
             Alert.alert("Success", "OTP verified successfully.");
             navigation.navigate('ChangePassword', { email }); // Điều hướng đến trang đổi mật khẩu
         } catch (error) {

@@ -47,7 +47,7 @@ export default function NavigationApp(props) {
   const [initialRoute, setInitialRoute] = useState("Success");
   useEffect(() => {
     const handleDeepLink = ({ url }) => {
-      console.log("Deep link URL received:", url);
+      // console.log("Deep link URL received:", url);
       const route = Linking.parse(url).path;
       if (route === "Success") {
         setInitialRoute("Success");
@@ -56,7 +56,7 @@ export default function NavigationApp(props) {
 
     const initialUrl = async () => {
       const url = await Linking.getInitialURL();
-      console.log("Initial URL:", url);
+      // console.log("Initial URL:", url);
       if (url) {
         handleDeepLink({ url });
       }

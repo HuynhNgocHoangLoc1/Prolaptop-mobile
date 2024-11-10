@@ -34,7 +34,6 @@ const styles = StyleSheet.create({
     justAlign: "center",
     resizeMode: "cover",
     transform: [{ scale: 1.0 }],
-
   },
   buttonStart: {
     width: "80%",

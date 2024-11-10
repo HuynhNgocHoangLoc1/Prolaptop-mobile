@@ -10,7 +10,7 @@ export default function ForgotPassword() {
     const handleNext = async () => {
         try {
             const response = await mailApi.sendMail({ email });
-            console.log(response.data);
+            // console.log(response.data);
     
             Alert.alert("Success", "Please check your email for a reset link.");
             navigation.navigate('CheckToken', { email });
