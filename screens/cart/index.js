@@ -67,12 +67,18 @@ const Cart = () => {
     }
   };
 
-  const incrementQuantity = async (id, quantity) => {
+  const incrementQuantity = async (id, quantity, stockQuantity) => {
+    if (quantity >= stockQuantity) {
+      alert("The product quantity has reached the stock limit!");
+      return;
+    }
+  
     setCartItems(
       cartItems.map((item) =>
         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
+  
     try {
       await cartAPI.updateProductQuantity(id, { quantity: quantity + 1 });
     } catch (error) {
@@ -80,8 +86,10 @@ const Cart = () => {
       setError("Failed to update quantity");
     }
   };
+  
 
-  const decrementQuantity = async (id, quantity) => {
+  const decrementQuantity = async (id, quantity, stockQuantity) => {
+    console.log("Decrement quantity:", id, quantity, stockQuantity);
     if (quantity <= 1) {
       await removeItem(id);
     } else {
@@ -169,13 +177,13 @@ const Cart = () => {
                 </Text>
                 <View style={styles.quantityControl}>
                   <TouchableOpacity
-                    onPress={() => decrementQuantity(item.id, item.quantity)}
+                    onPress={() => decrementQuantity(item.id, item.quantity, item.product.stockQuantity)}
                   >
                     <Text style={styles.quantityButton}>-</Text>
                   </TouchableOpacity>
                   <Text style={styles.quantityText}>{item.quantity}</Text>
                   <TouchableOpacity
-                    onPress={() => incrementQuantity(item.id, item.quantity)}
+                    onPress={() => incrementQuantity(item.id, item.quantity,item.product.stockQuantity)}
                   >
                     <Text style={styles.quantityButton}>+</Text>
                   </TouchableOpacity>

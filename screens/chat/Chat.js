@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,24 +10,40 @@ import {
 } from "react-native";
 import messagesApi from "../../repositories/messageApi";
 import AccountContext from "../../contexts/AccountContext";
+import { io } from "socket.io-client";
 
+const socket = io("https://prolaptop-server.onrender.com", { transports: ['websocket'] });
 export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const { account, token } = useContext(AccountContext);
+  const admin = "1d9c91b5-404c-4e26-9ba8-ed571a037cb1";
+  const flatListRef = useRef();
 
-  console.log("userID: ", account.id);
-  // Fetch messages on component mount
+  useEffect(() => {
+    socket.on("receive_message", (newMessage) => {
+      if (newMessage.receiverId === account.id) {
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        scrollToEnd(); // Cuộn xuống cuối khi nhận tin nhắn mới
+      }
+    });
+  
+    return () => {
+      socket.off("receive_message");
+    };
+  }, []);
+
   useEffect(() => {
     const fetchMessages = async () => {
       try {
         if (account.id) {
           const response = await messagesApi.getMessages(account.id);
-          const messageData = response.data.map(msg => ({
+          const messageData = response.data.map((msg) => ({
             ...msg,
-            text: msg.content // Map `content` to `text` if needed
+            text: msg.content,
           }));
-          setMessages(messageData); // Set mapped messages
+          setMessages(messageData);
+          scrollToEnd(); // Cuộn xuống cuối khi tải tin nhắn từ API
         }
       } catch (error) {
         console.error(
@@ -39,26 +55,31 @@ export default function Chat() {
     fetchMessages();
   }, [account.id]);
 
-  // Handle sending a new message
+  const scrollToEnd = () => {
+    flatListRef.current?.scrollToEnd({ animated: true });
+  };
+
   const handleSendMessage = async () => {
     if (inputText.trim()) {
       const newMessage = {
-        content: inputText, // Message text
-        senderId: account.id, // Sender ID from account context
-        receiverId: "0d9ac0ad-a385-48da-9c2e-f80d16602625", // Fixed receiver ID
+        content: inputText,
+        senderId: account.id,
+        receiverId: admin,
       };
   
       try {
-        await messagesApi.sendMessage(newMessage);
-        // Add the new message to the UI
-        setMessages([{ ...newMessage, id: Date.now().toString(), senderRole: 'user' }, ...messages]);
-        setInputText(""); // Clear input field after sending
+        socket.emit("sendMessage", newMessage);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { ...newMessage, id: Date.now().toString(), senderRole: "user" },
+        ]);
+        setInputText("");
+        scrollToEnd(); // Cuộn xuống cuối sau khi gửi tin nhắn
       } catch (error) {
         console.error("Failed to send message:", error);
       }
     }
   };
-  
 
   const renderMessage = ({ item }) => (
     <View
@@ -71,10 +92,8 @@ export default function Chat() {
     </View>
   );
 
-
   return (
     <View style={styles.container}>
-      {/* Header with avatar */}
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
           <Image
@@ -87,11 +106,12 @@ export default function Chat() {
 
       {/* Messages */}
       <FlatList
+        ref={flatListRef}
         data={messages}
         renderItem={renderMessage}
         keyExtractor={(item) => item.id}
         style={styles.messagesList}
-        inverted // Scrolls from the bottom
+        onContentSizeChange={scrollToEnd} // Cuộn xuống cuối khi nội dung thay đổi
       />
 
       {/* Input field */}
@@ -140,7 +160,6 @@ const styles = StyleSheet.create({
   messagesList: {
     flex: 1,
     paddingHorizontal: 20,
-    flexDirection: "column-reverse",
   },
   messageContainer: {
     borderRadius: 20,
@@ -149,7 +168,7 @@ const styles = StyleSheet.create({
     maxWidth: "80%",
   },
   userMessage: {
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "#98FB98", // Màu xanh lá cây
     alignSelf: "flex-end",
   },
   adminMessage: {

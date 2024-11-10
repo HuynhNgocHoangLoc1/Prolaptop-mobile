@@ -6,7 +6,7 @@ const messagesApi = {
         return await axiosClient.application.post(url, data);
     },
     getMessages: async (id) => {
-        const url = `/messages/${id}/0d9ac0ad-a385-48da-9c2e-f80d16602625`;
+        const url = `/messages/${id}/1d9c91b5-404c-4e26-9ba8-ed571a037cb1`;
         return await axiosClient.application.get(url);
     },
 };

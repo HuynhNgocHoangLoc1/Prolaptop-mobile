@@ -70,12 +70,13 @@ const Order = () => {
     const orderDetail = order.orderDetail ? order.orderDetail : [];
     return (
       <View key={order.id}>
-        {orderDetail.map((item) => renderProduct(item))}
+        {orderDetail.map((item) => renderProduct(item, order))}
       </View>
     );
   };
+  
 
-  const renderProduct = (item) => {
+  const renderProduct = (item, order) => {
     return (
       <View style={styles.orderItem} key={item.id}>
         <View style={styles.imageContainer}>
@@ -102,11 +103,13 @@ const Order = () => {
               <Text style={styles.reviewButtonText}>Review product</Text>
             </TouchableOpacity>
           )}
-          <Text style={styles.productPrice}>Price: {item.price} $</Text>
+          {/* Thay item.price bằng order.price */}
+          <Text style={styles.productPrice}>Total price: {order.price} $</Text>
         </View>
       </View>
     );
   };
+  
 
   useEffect(() => {
     if (activeSection === "all") {

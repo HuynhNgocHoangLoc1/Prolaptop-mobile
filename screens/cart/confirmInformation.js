@@ -24,12 +24,12 @@ export default function ConfirmInformation() {
 
   const navigation = useNavigation();
   const route = useRoute();
-  const { selectedItems , totalPrice, paymentMethod,productId } = route.params;
+  const { selectedItems, totalPrice, paymentMethod } = route.params;
   // console.log(selectedItems, totalPrice, paymentMethod);
   const handleConfirm = () => {
     const createOrderApi = async () => {
-    
-     const res = await orderAPI
+  
+      const res = await orderAPI
         .createOrderFromCart({
           carts: selectedItems,
           paymentMethod: paymentMethod,
@@ -38,9 +38,9 @@ export default function ConfirmInformation() {
           phoneNumber: phone,
           shippingAddress: address,
           totalPrice: totalPrice,
-          productId: productId
         })
         .then((res) => {
+          console.log(res);
           if (res) {
             if (paymentMethod === "Cash on Delivery") {
               navigation.navigate("Success", {
@@ -51,7 +51,6 @@ export default function ConfirmInformation() {
                 email,
                 phoneNumber: phone,
                 shippingAddress: address,
-                productId,
               });
             } else if (paymentMethod === "ZALOPAY") {
               navigation.navigate("CheckStatusPayment", {
@@ -62,7 +61,6 @@ export default function ConfirmInformation() {
                 email,
                 phoneNumber: phone,
                 shippingAddress: address,
-                productId,
               });
             }
           }
@@ -73,22 +71,38 @@ export default function ConfirmInformation() {
     };
     createOrderApi();
   };
-  
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Confirm information</Text>
 
       <Text style={styles.label}>Name</Text>
-      <TextInput style={styles.input} value={inputAccount} onChangeText ={(value) => setInputAccount(value)} />
+      <TextInput
+        style={styles.input}
+        value={inputAccount}
+        onChangeText={(value) => setInputAccount(value)}
+      />
 
       <Text style={styles.label}>Email</Text>
-      <TextInput style={styles.input} value={email} onChangeText={(value) => setEmail(value)} />
+      <TextInput
+        style={styles.input}
+        value={email}
+        onChangeText={(value) => setEmail(value)}
+      />
 
       <Text style={styles.label}>PhoneNumber</Text>
-      <TextInput style={styles.input} value={phone} onChangeText={(value)=> setPhone(value)} />
+      <TextInput
+        style={styles.input}
+        value={phone}
+        onChangeText={(value) => setPhone(value)}
+      />
 
       <Text style={styles.label}>Address</Text>
-      <TextInput style={styles.input} value={address} onChangeText={(value)=> setAddress(value)} />
+      <TextInput
+        style={styles.input}
+        value={address}
+        onChangeText={(value) => setAddress(value)}
+      />
 
       <TouchableOpacity style={styles.button} onPress={handleConfirm}>
         <Text style={styles.buttonText}>Confirm</Text>
