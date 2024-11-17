@@ -133,7 +133,8 @@ export default function Login() {
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.bottom} onPress={handleSignUp}>
-          <Text>
+          <Text
+          style ={styles.dontHave}>
             Don't have an account?{" "}
             <Text
               style={{
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
   backgroundLogin: {
     width: 252,
     height: 177,
-    marginBottom: 20, // Cách ly hình ảnh khỏi các phần tử khác
+    marginBottom: 20,
   },
   inputUserName: {
     fontSize: 15,
@@ -211,5 +212,9 @@ const styles = StyleSheet.create({
     color: colors.blue_background_profile,
     textDecorationLine: "underline",
     fontSize: 16,
+  },
+  dontHave: {
+    fontSize: 15,
+    marginBottom: 10,
   },
 });
