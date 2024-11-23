@@ -20,7 +20,7 @@ export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const { account } = useContext(AccountContext);
-  const admin = "1d9c91b5-404c-4e26-9ba8-ed571a037cb1";
+  const admin = "2dfd0de0-f0b8-42c0-8fe6-1e9d3ace3be0";
   const flatListRef = useRef();
 
   useEffect(() => {
@@ -65,22 +65,28 @@ export default function Chat() {
         senderId: account.id,
         receiverId: admin,
       };
-
+  
       try {
+        // Call API để gửi tin nhắn
+        await messagesApi.send(newMessage);
+  
+        // Gửi tin nhắn qua socket
         socket.emit("sendMessage", newMessage);
-
+  
+        // Cập nhật giao diện với tin nhắn mới
         setMessages((prevMessages) => [
           ...prevMessages,
           { ...newMessage, id: Date.now().toString(), senderRole: "user" },
         ]);
-
-        setInputText("");
-        scrollToEnd();
+  
+        setInputText(""); // Reset input text
+        scrollToEnd(); // Cuộn xuống cuối danh sách tin nhắn
       } catch (error) {
         console.error("Failed to send message:", error);
       }
     }
   };
+  
 
   const renderMessage = ({ item }) => (
     <View

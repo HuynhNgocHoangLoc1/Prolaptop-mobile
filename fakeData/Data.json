@@ -110,10 +110,10 @@
             "price": 500000,
             "stockQuantity": 0,
             "ram": "8GB hoặc 16GB: Bộ nhớ thống nhất (Unified Memory Architecture).",
-            "cpu": "7-core hoặc 8-core GPU: Tùy thuộc vào cấu hình.",
-            "card": "GPU tích hợp trong chip M1, không có card đồ họa rời.",
-            "chip": "Apple M1: Bao gồm CPU, GPU, và Neural Engine trên một chip duy nhất.",
-            "hardDrive": "SSD: Tùy chọn 256GB, 512GB, 1TB hoặc 2TB."
+            "cpu": "7-core or 8-core GPU: Depends on configuration.",
+            "card": "GPU integrated in M1 chip, no discrete graphics card.",
+            "chip": "Apple M1: Includes CPU, GPU, and Neural Engine on a single chip.",
+            "hardDrive": "SSD: 256GB, 512GB, 1TB or 2TB options."
         },
         {
             "imageUrl": "https://tse4.mm.bing.net/th?id=OIP.oxoxd5ungCm42DcxjbA1MgHaE7&pid=Api&P=0&h=180",

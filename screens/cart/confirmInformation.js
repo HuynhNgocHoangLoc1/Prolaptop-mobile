@@ -40,7 +40,7 @@ export default function ConfirmInformation() {
           totalPrice: totalPrice,
         })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           if (res) {
             if (paymentMethod === "Cash on Delivery") {
               navigation.navigate("Success", {

@@ -82,11 +82,13 @@ export default function NavigationApp(props) {
           name="Welcome"
           component={Welcome}
           options={{ headerShown: false }}
+          listeners={{ focus: () => StatusBar.setBarStyle("light-content") }}
         />
         <Stack.Screen
           name="Login"
           component={Login}
           options={{ headerShown: false }}
+          listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
         <Stack.Screen
           name="SignUp"

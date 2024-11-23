@@ -89,7 +89,7 @@ const Cart = () => {
   
 
   const decrementQuantity = async (id, quantity, stockQuantity) => {
-    console.log("Decrement quantity:", id, quantity, stockQuantity);
+    // console.log("Decrement quantity:", id, quantity, stockQuantity);
     if (quantity <= 1) {
       await removeItem(id);
     } else {
