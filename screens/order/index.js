@@ -47,9 +47,8 @@ const Order = () => {
   const fetchOrder = async () => {
     try {
       const response = await orderAPI.getListOrderByUser();
-      // console.log(response.data);
       if (response.data.order) {
-        setOrderItems(response.data.order);
+        setOrderItems(response.data.order.reverse());
       } else {
         console.error("API response does not contain 'orders' array");
       }
@@ -74,7 +73,6 @@ const Order = () => {
       </View>
     );
   };
-  
 
   const renderProduct = (item, order) => {
     return (
@@ -98,18 +96,16 @@ const Order = () => {
           {activeSection === "success" && !item.review && (
             <TouchableOpacity
               style={styles.reviewButton}
-              onPress={() => handleReviewButton(item.productId, item.id)} 
+              onPress={() => handleReviewButton(item.productId, item.id)}
             >
               <Text style={styles.reviewButtonText}>Review product</Text>
             </TouchableOpacity>
           )}
-          {/* Thay item.price bằng order.price */}
           <Text style={styles.productPrice}>Total price: {order.price} $</Text>
         </View>
       </View>
     );
   };
-  
 
   useEffect(() => {
     if (activeSection === "all") {
@@ -144,10 +140,7 @@ const Order = () => {
           filterOrderItems.map((order) => renderOrder(order))
         )}
       </ScrollView>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={handleBack}
-      >
+      <TouchableOpacity style={styles.backButton} onPress={handleBack}>
         <Text style={styles.backButtonText}>Back to Home</Text>
       </TouchableOpacity>
     </View>
@@ -253,7 +246,7 @@ const styles = StyleSheet.create({
     color: "#aaa",
   },
   reviewButton: {
-    backgroundColor:colors.dark_blu,
+    backgroundColor: colors.dark_blu,
     borderRadius: 10,
     padding: 10,
   },

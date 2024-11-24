@@ -64,10 +64,10 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   title: {
-    fontSize: 25,
+    fontSize: 40,
     fontWeight: "bold",
     marginBottom: 20,
-    color: '#3498db',
+    color: colors.dark_blu,
     alignSelf: 'center',
   },
   input: {
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#2980b9',
+    backgroundColor: colors.dark_blu,
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',

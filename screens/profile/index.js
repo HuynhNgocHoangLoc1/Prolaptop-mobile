@@ -35,7 +35,7 @@ export default function Profile() {
   };
 
   const handleChangePassword = () => {
-    navigation.navigate("ChangePassword");
+    // navigation.navigate("ChangePassword");
   }
 
   const handleClickListOrders = () => {

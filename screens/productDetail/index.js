@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import fakeData from "../../fakeData/Data.json";
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
@@ -14,6 +14,10 @@ const ProductDetail = () => {
   const navigation = useNavigation();
 
   const handleToCart = async () => {
+    if (productItem.stockQuantity <= 0) {
+      Alert.alert("Out of Stock", "Cannot add this product to the cart as it is out of stock.");
+      return;
+    }
     await cartAPI.addProductToCart({
       userId: account.id,
       productId: productItem.id,

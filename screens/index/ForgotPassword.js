@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import mailApi from '../../repositories/mailApi';
+import colors from '../../constants/colors';
 
 export default function ForgotPassword() {
     const navigation = useNavigation();
@@ -69,11 +70,11 @@ const styles = StyleSheet.create({
         top: 20,
     },
     title: {
-        fontSize: 26,
+        fontSize: 30,
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 30,
-        color: '#000', 
+        color: colors.dark_blu, 
     },
     label: {
         fontSize: 16,
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     nextButton: {
-        backgroundColor: '#000', 
+        backgroundColor: colors.dark_blu, 
         paddingVertical: 15,
         borderRadius: 25,
         alignItems: 'center',

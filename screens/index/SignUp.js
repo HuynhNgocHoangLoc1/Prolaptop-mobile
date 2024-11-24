@@ -174,7 +174,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "white"
+    backgroundColor: "white",
+    // maxHeight: "160%",
   },
   container:{
     flex: 1,

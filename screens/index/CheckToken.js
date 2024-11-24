@@ -86,11 +86,11 @@ const styles = StyleSheet.create({
         top: 20,
     },
     title: {
-        fontSize: 26,
+        fontSize: 30,
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 30,
-        color: '#000', 
+        color: colors.dark_blu, 
     },
     otpContainer: {
         flexDirection: 'row',
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     confirmButton: {
-        backgroundColor: '#000', 
+        backgroundColor: colors.dark_blu, 
         paddingVertical: 15,
         borderRadius: 25,
         alignItems: 'center',

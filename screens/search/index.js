@@ -6,12 +6,13 @@ import {
   TouchableOpacity,
   SafeAreaView,
   FlatList,
-  ActivityIndicator, // Import ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import LaptopItem from "../../components/LaptopItem"; // Component để hiển thị sản phẩm
 import productAPI from "../../repositories/productApi";
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
 
 export default function Search() {
   const [searchText, setSearchText] = useState("");
@@ -20,25 +21,27 @@ export default function Search() {
   const [isSortedAZ, setIsSortedAZ] = useState(true); // Trạng thái sắp xếp A-Z ban đầu
   const [loading, setLoading] = useState(true); // Thêm state loading
 
-  // Gọi API lấy danh sách sản phẩm khi component được render
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await productAPI.getAllProduct(); // Gọi API lấy dữ liệu sản phẩm
-        setOriginProducts(response.data.data); // Lưu dữ liệu gốc vào state
-        setProducts(response.data.data); // Cập nhật products với dữ liệu từ API
-        setLoading(false); // Tắt loading khi dữ liệu đã tải xong
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-        setLoading(false); // Tắt loading khi có lỗi
-      }
-    };
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchProducts = async () => {
+        try {
+          setLoading(true); // Bật loading
+          const response = await productAPI.getAllProduct(); // Gọi API lấy dữ liệu sản phẩm
+          setOriginProducts(response.data.data); // Lưu dữ liệu gốc vào state
+          setProducts(response.data.data); // Cập nhật products với dữ liệu từ API
+        } catch (error) {
+          console.error("Failed to fetch products:", error);
+        } finally {
+          setLoading(false); // Tắt loading
+        }
+      };
 
-    fetchProducts(); // Gọi hàm fetchProducts khi component mount
-  },[]);
+      fetchProducts(); // Gọi API khi trang được focus
+    }, [])
+  );
 
   // Lọc sản phẩm dựa trên searchText
-  useEffect(() => {
+  React.useEffect(() => {
     if (searchText === "") {
       setProducts(originProducts);
     } else {
@@ -69,14 +72,13 @@ export default function Search() {
           style={styles.input}
           placeholder="search product"
           value={searchText}
-          onChangeText={(text) => setSearchText(text)} 
+          onChangeText={(text) => setSearchText(text)}
         />
         <TouchableOpacity style={styles.search}>
-          <AntDesign name="search1" size={24}  />
+          <AntDesign name="search1" size={24} />
         </TouchableOpacity>
       </View>
 
-      
       {loading ? (
         <View style={styles.loader}>
           <ActivityIndicator size="large" color="blue" />
@@ -85,7 +87,7 @@ export default function Search() {
         <FlatList
           data={products}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => <LaptopItem item={item} />} 
+          renderItem={({ item }) => <LaptopItem item={item} />}
           horizontal={false}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
@@ -101,15 +103,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    paddingTop: 50,    
+    paddingTop: 50,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    color: colors.light_blu,
     textDecorationLine: "underline",
-
   },
   inputContainer: {
     flexDirection: "row",
