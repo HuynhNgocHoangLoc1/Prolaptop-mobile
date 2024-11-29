@@ -23,7 +23,12 @@ const userAPI = {
             console.error("Error uploading avatar:", error.response ? error.response.data : error.message);
             throw error; // Ném lại lỗi nếu cần
         }
-    }
+    },
+
+    updatePassword: async (id, data) => {
+        const url = `/user/${id}`;
+        return await axiosClient.formData.patch(url, data);
+    },
     
 };
 

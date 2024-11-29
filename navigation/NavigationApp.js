@@ -27,6 +27,7 @@ import Review from "../screens/order/Review";
 import CheckStatusPayment from "../screens/paymentSuccess/CheckStatusPayment";
 import ForgotPassword from "../screens/index/ForgotPassword";
 import CheckToken from "../screens/index/CheckToken";
+import UpdatePassword from "../screens/profile/UpdatePassword";
 
 const Stack = createNativeStackNavigator();
 
@@ -180,6 +181,12 @@ export default function NavigationApp(props) {
          <Stack.Screen
           name="CheckToken"
           component={CheckToken}
+          options={{ headerShown: true, title: "" }}
+          listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
+        />
+          <Stack.Screen
+          name="UpdatePassword"
+          component={UpdatePassword}
           options={{ headerShown: true, title: "" }}
           listeners={{ focus: () => StatusBar.setBarStyle("dark-content") }}
         />
