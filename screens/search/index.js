@@ -12,53 +12,88 @@ import React, { useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import LaptopItem from "../../components/LaptopItem"; // Component để hiển thị sản phẩm
 import productAPI from "../../repositories/productApi";
-import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Search() {
   const [searchText, setSearchText] = useState("");
   const [originProducts, setOriginProducts] = useState([]); // Dữ liệu gốc sản phẩm
-  const [products, setProducts] = useState([]); // Dữ liệu hiển thị sau khi lọc
-  const [isSortedAZ, setIsSortedAZ] = useState(true); // Trạng thái sắp xếp A-Z ban đầu
-  const [loading, setLoading] = useState(true); // Thêm state loading
+  const [filteredProducts, setFilteredProducts] = useState([]); // Dữ liệu sau khi lọc
+  const [isSortedAZ, setIsSortedAZ] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   useFocusEffect(
     React.useCallback(() => {
       const fetchProducts = async () => {
         try {
-          setLoading(true); // Bật loading
-          const response = await productAPI.getAllProduct(); // Gọi API lấy dữ liệu sản phẩm
-          setOriginProducts(response.data.data); // Lưu dữ liệu gốc vào state
-          setProducts(response.data.data); // Cập nhật products với dữ liệu từ API
+          setLoading(true);
+          const response = await productAPI.getAllProduct({ page: 1 });
+          const data = response.data.data;
+          setOriginProducts(data); // Cập nhật dữ liệu gốc
+          setFilteredProducts(data); // Dữ liệu ban đầu cho bộ lọc
+          setPage(1);
+          setHasMore(data.length > 0); // Kiểm tra còn dữ liệu không
         } catch (error) {
           console.error("Failed to fetch products:", error);
         } finally {
-          setLoading(false); // Tắt loading
+          setLoading(false);
         }
       };
 
-      fetchProducts(); // Gọi API khi trang được focus
+      fetchProducts();
     }, [])
   );
 
-  // Lọc sản phẩm dựa trên searchText
+  // Hàm load thêm dữ liệu
+  const loadMoreProducts = async () => {
+    if (isLoadingMore || !hasMore) return;
+    try {
+      setIsLoadingMore(true);
+      const nextPage = page + 1;
+      const response = await productAPI.getAllProduct({ page: nextPage, limit: 10 }); // Gọi API
+      const newProducts = response.data.data;
+  
+      if (newProducts.length === 0) {
+        setHasMore(false);
+      } else {
+        // Sắp xếp sản phẩm theo tên hoặc tiêu chí khác
+        const sortedProducts = [...originProducts, ...newProducts].sort((a, b) =>
+          a.name.localeCompare(b.name) // Thay "name" bằng trường bạn muốn sắp xếp
+        );
+  
+        setOriginProducts(sortedProducts); // Lưu dữ liệu gốc đã sắp xếp
+        setFilteredProducts(sortedProducts); // Lưu dữ liệu hiển thị đã sắp xếp
+        setPage(nextPage);
+      }
+    } catch (error) {
+      console.error("Failed to load more products:", error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+  
+  
+  // Lọc sản phẩm khi searchText thay đổi
   React.useEffect(() => {
     if (searchText === "") {
-      setProducts(originProducts);
+      setFilteredProducts(originProducts);
     } else {
-      const filteredProducts = originProducts.filter((product) =>
+      const filtered = originProducts.filter((product) =>
         product.name.toLowerCase().includes(searchText.toLowerCase())
       );
-      setProducts(filteredProducts);
+      setFilteredProducts(filtered);
     }
-  }, [searchText, originProducts]); // Chạy lại khi searchText hoặc originProducts thay đổi
+  }, [searchText, originProducts]);
 
   // Hàm sắp xếp sản phẩm
   const sortProducts = () => {
-    const sortedProducts = [...products].sort((a, b) =>
+    const sortedProducts = [...filteredProducts].sort((a, b) =>
       isSortedAZ ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
     );
-    setProducts(sortedProducts); // Cập nhật danh sách đã sắp xếp
-    setIsSortedAZ(!isSortedAZ); // Thay đổi trạng thái sắp xếp
+    setFilteredProducts(sortedProducts);
+    setIsSortedAZ(!isSortedAZ);
   };
 
   return (
@@ -85,11 +120,20 @@ export default function Search() {
         </View>
       ) : (
         <FlatList
-          data={products}
+          data={filteredProducts}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => <LaptopItem item={item} />}
-          horizontal={false}
-          showsHorizontalScrollIndicator={false}
+          onEndReached={loadMoreProducts} // Gọi loadMoreProducts khi kéo đến cuối
+          onEndReachedThreshold={0.5} // Kích hoạt ở 50% cuối danh sách
+          ListFooterComponent={
+            isLoadingMore && (
+              <ActivityIndicator
+                size="small"
+                color="blue"
+                style={{ marginVertical: 10 }}
+              />
+            )
+          } // Loader khi đang tải thêm
           showsVerticalScrollIndicator={false}
           style={{ width: "100%" }}
         />
@@ -110,6 +154,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textDecorationLine: "underline",
+    color: colors.light_blu
   },
   inputContainer: {
     flexDirection: "row",

@@ -20,7 +20,7 @@ export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const { account } = useContext(AccountContext);
-  const admin = "2dfd0de0-f0b8-42c0-8fe6-1e9d3ace3be0";
+  const admin = "63330ead-553c-440a-80d5-e9a2f7f1ab7e";
   const flatListRef = useRef();
 
   useEffect(() => {

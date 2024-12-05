@@ -61,8 +61,8 @@ export default function CheckStatusPayment() {
         );
       }
     } catch (error) {
-      console.error("Chi tiết lỗi:", error.response?.data || error.message);
-      Alert.alert("Lỗi", `Đã xảy ra lỗi khi thanh toán: ${error.message}`);
+      console.error("Detailed error:", error.response?.data || error.message);
+      Alert.alert("Error", `Failed to create ZaloPay order: ${error.message}`);
     }
   };
 
@@ -91,13 +91,13 @@ export default function CheckStatusPayment() {
       if (return_code == "1") {
         navigation.navigate("Success");
       } else {
-        Alert.alert("Thông báo", "Failed to check order status.");
+        Alert.alert("Error", "Failed to check order status.");
       }
     } catch (statusError) {
       console.error("Error checking order status:", statusError);
       Alert.alert(
-        "Lỗi",
-        `Không thể kiểm tra trạng thái đơn hàng: ${statusError.message}`
+        "Error",
+        `Failed to check order status: ${statusError.message}`
       );
     }
   };

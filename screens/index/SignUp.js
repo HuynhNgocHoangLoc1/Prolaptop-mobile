@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from '@react-navigation/native';
@@ -80,7 +80,13 @@ const handleRegister = async () => {
     const response = await authAPI.register(formData);
     // console.log(response);
     console.log("register success");
-    navigation.navigate("Login"); // Chuyển hướng sau khi đăng ký thành công
+    Alert.alert(
+      "Success",
+      "You have successfully registered!",
+      [
+        { text: "OK", onPress: () => navigation.navigate("Login") } // Điều hướng sau khi nhấn OK
+      ]
+    );
 } catch (e) {
     console.error(e.response ? e.response.data : e.message); // In ra chi tiết lỗi
     if (e.response && e.response.data && e.response.data.message) {

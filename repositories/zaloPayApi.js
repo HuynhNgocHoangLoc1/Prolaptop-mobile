@@ -1,7 +1,6 @@
 import axiosClient from "./axiosClient";
 
 const zaloPayAPI = {
-  // Hàm tạo thanh toán ZaloPay
   createZaloPayment: async (paymentData) => {
     const url = `/payment/zalo/payment`;
     try {
@@ -13,7 +12,6 @@ const zaloPayAPI = {
     }
   },
 
-  // Hàm kiểm tra trạng thái thanh toán ZaloPay
   checkOrderStatus: async (appTransId) => {
     const url = `/payment/zalo/order-status/${appTransId}`;
     try {

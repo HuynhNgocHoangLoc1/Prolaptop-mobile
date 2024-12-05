@@ -57,7 +57,7 @@ export default function Login() {
         // console.log("Login successful:", response.data);
 
         if (response.data.isBlock) {
-          setError("Tài khoản của bạn đã bị chặn.");
+          setError("Account is blocked");
           return;
         }
 
@@ -80,7 +80,7 @@ export default function Login() {
     } catch (e) {
       // Xử lý lỗi khi có vấn đề trong quá trình đăng nhập
       if (e.response && e.response.data.statusCode === 401) {
-        setError("Sai tên đăng nhập hoặc mật khẩu."); // Thay đổi thông báo lỗi cho chính xác
+        setError("Username or password is incorrect."); // Thay đổi thông báo lỗi cho chính xác
       } else if (e.response && e.response.data.statusCode === 500) {
         setError("Server error occurred.");
         console.error(e);

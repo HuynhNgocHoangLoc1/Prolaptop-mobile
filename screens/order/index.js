@@ -12,21 +12,24 @@ import orderAPI from "../../repositories/orderApi";
 import { useNavigation } from "@react-navigation/native";
 
 const stages = [
-  { name: "all", icon: require("../../assets/icons/orderIcons/box.png") },
+  { 
+    name: "All", 
+    icon: require("../../assets/icons/orderIcons/box.png") 
+  },
   {
-    name: "pending",
+    name: "Pending",
     icon: require("../../assets/icons/orderIcons/pending.png"),
   },
   {
-    name: "delivering",
+    name: "Delivering",
     icon: require("../../assets/icons/orderIcons/transport.png"),
   },
   {
-    name: "success",
+    name: "Success",
     icon: require("../../assets/icons/orderIcons/check.png"),
   },
   {
-    name: "cancelled",
+    name: "Cancelled",
     icon: require("../../assets/icons/orderIcons/multiply.png"),
   },
 ];
@@ -93,7 +96,7 @@ const Order = () => {
         </View>
         <Text style={styles.productName}>{item.product.name}</Text>
         <View style={styles.productDetails}>
-          {activeSection === "success" && !item.review && (
+          {activeSection === "Success" && !item.review && (
             <TouchableOpacity
               style={styles.reviewButton}
               onPress={() => handleReviewButton(item.productId, item.id)}
@@ -108,7 +111,7 @@ const Order = () => {
   };
 
   useEffect(() => {
-    if (activeSection === "all") {
+    if (activeSection === "All") {
       setFilterOrderItems(orderItems);
     } else {
       setFilterOrderItems(
@@ -123,13 +126,23 @@ const Order = () => {
         {stages.map((stage) => (
           <TouchableOpacity
             key={stage.name}
-            style={styles.card}
+            style={[
+              styles.card,
+              activeSection === stage.name && styles.cardActive, // Thêm style khi được chọn
+            ]}
             onPress={() => setActiveSection(stage.name)}
           >
             <View style={styles.iconContainer}>
               <Image source={stage.icon} style={styles.icon} />
             </View>
-            <Text style={styles.stageName}>{stage.name}</Text>
+            <Text
+              style={[
+                styles.stageName,
+                activeSection === stage.name && styles.stageNameActive, // Thay đổi màu chữ khi được chọn
+              ]}
+            >
+              {stage.name}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -176,7 +189,7 @@ const styles = StyleSheet.create({
     height: 30,
   },
   stageName: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "bold",
     textAlign: "center",
   },
@@ -267,6 +280,10 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+
+  cardActive: {
+    backgroundColor: "#D9D9D9",
   },
 });
 
