@@ -13,8 +13,9 @@ import {
 import messagesApi from "../../repositories/messageApi";
 import AccountContext from "../../contexts/AccountContext";
 import { io } from "socket.io-client";
+import { SOCKET_URL } from "../../constants/server";
 
-const socket = io("https://prolaptop-server.onrender.com", { transports: ["websocket"] });
+const socket = io(SOCKET_URL, { transports: ["websocket"] });
 
 export default function Chat() {
   const [messages, setMessages] = useState([]);

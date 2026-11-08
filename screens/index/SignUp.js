@@ -1,3 +1,5 @@
+import images from "../../constants/images";
+import colors from "../../constants/colors";
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";

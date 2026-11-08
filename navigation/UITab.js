@@ -1,3 +1,4 @@
+import colors from "../constants/colors";
 import { StyleSheet, Image, View, Text, StatusBar } from "react-native";
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
