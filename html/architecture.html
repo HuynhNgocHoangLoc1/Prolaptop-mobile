@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ProLaptop Mobile Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* Same visual system as the server doc. Each step of a user action has one colour used everywhere. */
+:root {
+  --bg: #f7f6f2;
+  --surface: #ffffff;
+  --surface-2: #f0eee7;
+  --ink: #1d1c19;
+  --muted: #67625a;
+  --line: #e4e0d6;
+  --accent: #0f6e66;
+  --accent-soft: #d8efec;
+
+  --ui: #b4580f;     --ui-bg: #fcebd9;
+  --hand: #7a4bd1;   --hand-bg: #eee6fb;
+  --api: #1f5fc4;    --api-bg: #e0eafb;
+  --http: #0f6e66;   --http-bg: #d8efec;
+  --srv: #334155;    --srv-bg: #e3e8ef;
+  --state: #5b6b12;  --state-bg: #edf2d4;
+  --guard: #b42a3c;  --guard-bg: #fbe2e5;
+  --ext: #8a5a00;    --ext-bg: #fbefd2;
+
+  --font: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 20px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141412; --surface: #1c1b19; --surface-2: #25241f; --ink: #ece9e1; --muted: #a39e92; --line: #34322d;
+    --accent: #4fc2b6; --accent-soft: #173733;
+    --ui: #f0a35c;    --ui-bg: #3a2614;
+    --hand: #b394f0;  --hand-bg: #2a2140;
+    --api: #7aa7f0;   --api-bg: #17263f;
+    --http: #4fc2b6;  --http-bg: #173733;
+    --srv: #a9b6c9;   --srv-bg: #222a35;
+    --state: #b9cc5a; --state-bg: #272d12;
+    --guard: #f07786; --guard-bg: #3d1a20;
+    --ext: #e6b450;   --ext-bg: #33280f;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 20px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.7 var(--font); -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+code { font-family: var(--mono); font-size: .86em; background: var(--surface-2); padding: 1px 6px; border-radius: 5px; }
+h1 { font-size: 2.2rem; line-height: 1.2; margin: 0 0 12px; letter-spacing: -.02em; text-wrap: balance; }
+h2 { font-size: 1.55rem; line-height: 1.3; margin: 0 0 8px; letter-spacing: -.01em; text-wrap: balance; }
+h3 { font-size: 1.1rem; margin: 32px 0 10px; }
+p { margin: 0 0 14px; max-width: 68ch; }
+ul { margin: 0 0 14px; padding-left: 20px; max-width: 68ch; }
+li { margin-bottom: 6px; }
+.muted { color: var(--muted); }
+.kicker { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+
+.layout { display: grid; grid-template-columns: 230px minmax(0,1fr); min-height: 100vh; }
+nav.toc { position: sticky; top: 0; height: 100vh; padding: 32px 18px; border-right: 1px solid var(--line); background: var(--surface); }
+nav.toc b { display: block; font-size: 1rem; margin: 0 10px 2px; }
+nav.toc small { display: block; color: var(--muted); margin: 0 10px 22px; font-size: .78rem; }
+nav.toc a { display: block; padding: 7px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: .9rem; }
+nav.toc a:hover { background: var(--surface-2); color: var(--ink); }
+nav.toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+main { padding: 56px 56px 120px; min-width: 0; }
+.wrap { max-width: 920px; margin: 0 auto; }
+section { padding-top: 12px; margin-bottom: 84px; }
+.intro { color: var(--muted); font-size: 1.05rem; max-width: 64ch; margin-bottom: 26px; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; box-shadow: var(--shadow); }
+.grid { display: grid; gap: 14px; }
+.g3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+.g2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+.grid > * { min-width: 0; }
+.note { border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 10px 10px 0; padding: 12px 18px; margin: 20px 0; font-size: .95rem; }
+.note.warn { border-left-color: var(--guard); }
+.note p:last-child { margin: 0; }
+.caption { color: var(--muted); font-size: .85rem; margin: 10px 2px 0; }
+.chip { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: .8rem; font-weight: 600; white-space: nowrap; }
+.c-ui { background: var(--ui-bg); color: var(--ui); }
+.c-hand { background: var(--hand-bg); color: var(--hand); }
+.c-api { background: var(--api-bg); color: var(--api); }
+.c-http { background: var(--http-bg); color: var(--http); }
+.c-srv { background: var(--srv-bg); color: var(--srv); }
+.c-state { background: var(--state-bg); color: var(--state); }
+.c-guard { background: var(--guard-bg); color: var(--guard); }
+.c-ext { background: var(--ext-bg); color: var(--ext); }
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+.tabs button { border: 1px solid var(--line); background: var(--surface); padding: 6px 14px; border-radius: 999px; font-size: .88rem; cursor: pointer; color: var(--muted); }
+.tabs button:hover { border-color: var(--accent); color: var(--ink); }
+.tabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+@media (prefers-color-scheme: dark) { .tabs button[aria-selected="true"] { color: #08201d; } }
+
+.facts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.fact { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; font-size: .88rem; color: var(--muted); }
+.fact b { color: var(--ink); font-family: var(--mono); font-weight: 500; margin-right: 6px; }
+
+.ov svg { display: block; width: 100%; height: auto; }
+.ov-box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.ov-t { fill: var(--ink); font: 600 15px var(--font); }
+.ov-s { fill: var(--muted); font: 400 13px var(--font); }
+.ov-a { stroke: var(--muted); stroke-width: 1.6; fill: none; }
+.ov-ad { stroke: var(--muted); stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
+.ah { fill: var(--muted); }
+
+.folders { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+.folder { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.folder code { background: none; padding: 0; font-weight: 500; color: var(--ink); }
+.folder p { margin: 4px 0 0; font-size: .85rem; color: var(--muted); }
+
+.di { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; gap: 10px; align-items: center; }
+.box { border-radius: 10px; padding: 10px 14px; font-size: .88rem; line-height: 1.4; }
+.box b { display: block; font-family: var(--mono); font-weight: 500; font-size: .85rem; }
+.box span { font-size: .78rem; opacity: .85; }
+.arrow { color: var(--muted); font-size: 1.4rem; text-align: center; }
+pre.mini { background: #1e1d1a; color: #ebe7dc; border-radius: 10px; padding: 14px 18px; font: .82rem/1.65 var(--mono); overflow-x: auto; margin: 16px 0 0; }
+pre.mini i { color: #8f8a7c; }
+pre.mini em { color: #e9a76a; font-style: normal; }
+pre.mini s { text-decoration: none; color: #a7cf7a; }
+pre.mini u { text-decoration: none; color: #8fb8f0; }
+
+.strip { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 8px; }
+.layer { border-radius: 12px; padding: 12px 10px; text-align: center; transition: opacity .25s, box-shadow .25s; border: 2px solid transparent; }
+.layer b { display: block; font-size: .88rem; }
+.layer span { display: block; font-size: .74rem; opacity: .85; line-height: 1.35; margin-top: 2px; }
+.layer.skip { opacity: .28; }
+.layer.stop { border-color: currentColor; box-shadow: 0 0 0 3px var(--guard-bg); }
+.layer.after { opacity: .12; }
+.steps { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; max-width: none; }
+.steps li { display: grid; grid-template-columns: 110px minmax(0,1fr); gap: 14px; align-items: baseline; margin: 0; font-size: .93rem; }
+.steps li .chip { justify-self: start; }
+.req { font-family: var(--mono); font-size: .84rem; background: var(--surface-2); border-radius: 8px; padding: 8px 12px; margin-bottom: 16px; overflow-wrap: anywhere; }
+.result { margin-top: 14px; font-size: .9rem; font-weight: 600; }
+.result.bad { color: var(--guard); }
+.result.ok { color: var(--accent); }
+
+.boot { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; max-width: none; }
+.boot li { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.boot .n { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: .8rem; margin-bottom: 8px; }
+.boot b { display: block; font-size: .95rem; margin-bottom: 2px; }
+.boot p { margin: 0; font-size: .86rem; color: var(--muted); }
+.boot .f { font-family: var(--mono); font-size: .72rem; color: var(--muted); margin-top: 6px; }
+
+/* nested providers */
+.nest { border-radius: 12px; padding: 10px 14px 14px; border: 1.5px dashed var(--line); }
+.nest > .lbl { font-family: var(--mono); font-size: .8rem; font-weight: 500; margin-bottom: 8px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.nest > .lbl span { font-family: var(--font); color: var(--muted); font-weight: 400; font-size: .8rem; }
+
+/* route map */
+.routes { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.6fr); gap: 14px; align-items: start; }
+.rt-group { display: flex; flex-direction: column; gap: 8px; }
+.rt-h { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 700; }
+.rt { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font-size: .86rem; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.rt code { background: none; padding: 0; color: var(--ink); font-weight: 500; }
+.rt span { color: var(--muted); font-size: .8rem; }
+.shell { border: 2px solid var(--http); border-radius: 14px; padding: 12px; background: var(--http-bg); }
+.shell .top { font-size: .86rem; color: var(--http); font-weight: 600; margin-bottom: 4px; }
+.shell .sub { font-size: .8rem; color: var(--muted); margin: 0 0 10px; }
+.shell .kids { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+
+.flow-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
+.flow-meta code { font-size: .82rem; }
+.chain { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 12px 0 4px; }
+.chain i { color: var(--muted); font-style: normal; font-size: .85rem; }
+.mmd { margin-top: 16px; overflow-x: auto; }
+.mmd .out { display: flex; justify-content: center; min-width: 520px; }
+.mmd svg { max-width: 100%; height: auto; }
+.mmd pre { white-space: pre-wrap; font: .8rem var(--mono); color: var(--muted); }
+.flow-notes { margin: 16px 0 0; }
+
+details.more { margin-top: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+details.more summary { cursor: pointer; padding: 12px 18px; font-weight: 600; font-size: .93rem; }
+.tw { overflow-x: auto; padding: 0 6px 6px; }
+table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: .78rem; }
+tr:last-child td { border-bottom: 0; }
+td code { white-space: nowrap; }
+.m { font-family: var(--mono); font-size: .72rem; font-weight: 500; }
+
+.warns { display: grid; gap: 10px; }
+.w { display: grid; grid-template-columns: 28px minmax(0,1fr); gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.w .i { width: 26px; height: 26px; border-radius: 50%; background: var(--guard-bg); color: var(--guard); display: grid; place-items: center; font-weight: 700; font-size: .85rem; }
+.w b { display: block; }
+.w p { margin: 2px 0 0; font-size: .9rem; color: var(--muted); }
+
+.concepts { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+.concept { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.concept p { margin: 0; font-size: .93rem; }
+.concept p.sub { font-size: .82rem; color: var(--muted); }
+.concept pre.mini { margin: 4px 0 0; }
+.c-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.c-file { font-family: var(--mono); font-size: .74rem; color: var(--muted); }
+pre.mini .n, .legend-list .n {
+  display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--accent); color: #fff; font: 700 .68rem var(--font); margin-left: 10px; vertical-align: 1px;
+}
+.anat { display: grid; grid-template-columns: minmax(0,1.35fr) minmax(0,1fr); gap: 18px; align-items: start; }
+.anat pre.mini { margin: 0; }
+.legend-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; max-width: none; }
+.legend-list li { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 8px; margin: 0; font-size: .9rem; line-height: 1.55; }
+.legend-list .n { margin: 2px 0 0; }
+
+@media (max-width: 980px) {
+  .anat, .concepts, .routes { grid-template-columns: minmax(0,1fr); }
+  .layout { grid-template-columns: minmax(0,1fr); }
+  nav.toc { display: none; }
+  main { padding: 32px 16px 80px; }
+  .strip { grid-template-columns: repeat(4, minmax(0,1fr)); }
+  .boot, .folders { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .di { grid-template-columns: minmax(0,1fr); }
+  .arrow { transform: rotate(90deg); }
+}
+@media (max-width: 620px) {
+  h1 { font-size: 1.75rem; }
+  .g2, .g3, .folders, .boot, .shell .kids { grid-template-columns: minmax(0,1fr); }
+  .strip { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .steps li { grid-template-columns: 1fr; gap: 2px; }
+}
+
+/* stack visual */
+.stackviz { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
+.phone { border: 2px solid var(--line); border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 6px; background: var(--bg); }
+.ph-h { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 700; margin-bottom: 4px; }
+.card-st { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font-size: .86rem; opacity: .55; }
+.card-st b { font-family: var(--mono); font-weight: 500; margin-right: 8px; }
+.card-st span { color: var(--muted); font-size: .8rem; }
+.card-st.top { opacity: 1; border: 2px solid var(--ui); background: var(--ui-bg); box-shadow: var(--shadow); }
+.tabscreen { flex: 1; min-height: 120px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); padding: 10px 12px; font-size: .86rem; }
+.tabscreen b { font-family: var(--mono); font-weight: 500; display: block; }
+.tabscreen span { color: var(--muted); font-size: .8rem; }
+.tabbar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 6px; }
+.tabbar span { text-align: center; font-size: .78rem; color: var(--muted); padding: 4px 0; border-radius: 6px; }
+.tabbar span.on { background: var(--http-bg); color: var(--http); font-weight: 600; }
+.kids4 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
+/* journey */
+.journey { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+.jcol { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.rt.tab { border: 2px solid var(--http); background: var(--http-bg); }
+@media (max-width: 980px) { .journey { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 620px) { .journey, .stackviz, .kids4 { grid-template-columns: minmax(0,1fr); } }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav class="toc" aria-label="Mục lục">
+  <b>ProLaptop Mobile</b>
+  <small>Kiến trúc app khách hàng</small>
+  <a href="#tong-quan">Tổng quan</a>
+  <a href="#rn">Khái niệm cốt lõi</a>
+  <a href="#khoi-chay">App khởi chạy</a>
+  <a href="#man-hinh">Màn hình &amp; điều hướng</a>
+  <a href="#thao-tac">Một thao tác đi đâu</a>
+  <a href="#luong">Các luồng chính</a>
+  <a href="#luu-y">Cần lưu ý</a>
+</nav>
+
+<main><div class="wrap">
+
+<!-- ============ TỔNG QUAN ============ -->
+<section id="tong-quan">
+  <div class="kicker">ProLaptop Mobile</div>
+  <h1>App mua hàng chạy như thế nào</h1>
+  <p class="intro">Đây là app dành cho <b>khách hàng</b>: đăng ký, xem laptop theo hãng, thêm vào giỏ, đặt hàng (tiền mặt hoặc ZaloPay), xem đơn, đánh giá và chat với admin. Viết bằng React Native, chạy qua Expo, gọi cùng server NestJS với trang admin.</p>
+  <div class="facts">
+    <div class="fact"><b>Expo SDK 52</b>React Native 0.76</div>
+    <div class="fact"><b>22</b>màn hình (18 stack + 4 tab)</div>
+    <div class="fact"><b>10</b>file repository gọi API</div>
+    <div class="fact"><b>prolaptop://</b>scheme để mở lại app</div>
+  </div>
+
+  <h3>Nhìn từ xa</h3>
+  <div class="card ov">
+    <svg viewBox="0 0 900 380" role="img" aria-label="Điện thoại chạy app React Native; app gọi server NestJS và mở app ZaloPay">
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker></defs>
+      <rect x="10" y="20" width="580" height="340" rx="22" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="6 5"/>
+      <text x="30" y="48" class="ov-t" style="fill:var(--accent)">Điện thoại · Expo Go</text>
+
+      <rect x="34" y="66" width="250" height="64" rx="10" style="fill:var(--http-bg)"/>
+      <text x="52" y="92" class="ov-t" style="fill:var(--http)">Navigation</text>
+      <text x="52" y="113" class="ov-s">Stack + thanh Tab dưới đáy</text>
+
+      <rect x="34" y="146" width="250" height="84" rx="10" style="fill:var(--ui-bg)"/>
+      <text x="52" y="172" class="ov-t" style="fill:var(--ui)">Screens (màn hình)</text>
+      <text x="52" y="193" class="ov-s">Home · Cart · Order · Chat…</text>
+      <text x="52" y="213" class="ov-s">giữ dữ liệu bằng state</text>
+
+      <rect x="34" y="246" width="250" height="90" rx="10" style="fill:var(--api-bg)"/>
+      <text x="52" y="274" class="ov-t" style="fill:var(--api)">repositories + axios</text>
+      <text x="52" y="296" class="ov-s">cartApi, orderApi… gọi HTTP</text>
+      <text x="52" y="316" class="ov-s">URL lấy từ file .env</text>
+
+      <rect x="316" y="66" width="250" height="64" rx="10" style="fill:var(--state-bg)"/>
+      <text x="334" y="92" class="ov-t" style="fill:var(--state)">AccountContext</text>
+      <text x="334" y="113" class="ov-s">token + user, chỉ nằm trong RAM</text>
+
+      <rect x="316" y="146" width="250" height="84" rx="10" class="ov-box"/>
+      <text x="334" y="172" class="ov-t">constants/</text>
+      <text x="334" y="193" class="ov-s">màu, icon, ảnh nền,</text>
+      <text x="334" y="213" class="ov-s">phương thức thanh toán</text>
+
+      <rect x="316" y="246" width="250" height="90" rx="10" style="fill:var(--hand-bg)"/>
+      <text x="334" y="274" class="ov-t" style="fill:var(--hand)">Chat.js · socket</text>
+      <text x="334" y="296" class="ov-s">nhận tin của admin</text>
+      <text x="334" y="316" class="ov-s">theo thời gian thực</text>
+
+      <rect x="670" y="150" width="210" height="110" rx="14" style="fill:var(--srv-bg)"/>
+      <text x="775" y="190" text-anchor="middle" class="ov-t" style="fill:var(--srv)">Server NestJS</text>
+      <text x="775" y="212" text-anchor="middle" class="ov-s">localhost:5003</text>
+      <text x="775" y="232" text-anchor="middle" class="ov-s">/api + WebSocket</text>
+
+      <rect x="670" y="40" width="210" height="56" rx="12" style="fill:var(--ext-bg)"/>
+      <text x="775" y="64" text-anchor="middle" class="ov-t" style="fill:var(--ext)">App ZaloPay</text>
+      <text x="775" y="84" text-anchor="middle" class="ov-s">mở bằng Linking.openURL</text>
+
+      <path d="M159,130 L159,144" class="ov-a" marker-end="url(#ah)"/>
+      <path d="M159,230 L159,244" class="ov-a" marker-end="url(#ah)"/>
+      <path d="M284,200 H306 V98 H314" class="ov-ad" marker-end="url(#ah)"/>
+      <path d="M284,320 H300 V350 H775 V264" class="ov-a" marker-end="url(#ah)"/>
+      <text x="700" y="344" class="ov-s" text-anchor="middle">HTTP</text>
+      <path d="M566,256 H666" class="ov-ad" marker-end="url(#ah)"/>
+      <text x="630" y="248" class="ov-s" text-anchor="middle">WebSocket</text>
+      <path d="M284,160 H296 V56 H666" class="ov-ad" marker-end="url(#ah)"/>
+    </svg>
+  </div>
+  <p class="caption">Navigation chọn màn hình. Màn hình gọi repository, repository dùng axios gửi HTTP tới server. Nét đứt: đọc dữ liệu đăng nhập dùng chung, kênh chat, và việc mở app ZaloPay để thanh toán.</p>
+
+  <h3>Code nằm ở đâu</h3>
+  <div class="folders">
+    <div class="folder"><code>App.js</code><p>Điểm bắt đầu. Bọc <code>AuthProvider</code> quanh toàn bộ điều hướng.</p></div>
+    <div class="folder"><code>navigation/</code><p><code>NavigationApp.js</code> (stack) và <code>UITab.js</code> (4 tab dưới đáy).</p></div>
+    <div class="folder"><code>screens/</code><p>Mỗi thư mục là một nhóm màn hình: <code>index</code> (đăng nhập), <code>home</code>, <code>cart</code>, <code>order</code>…</p></div>
+    <div class="folder"><code>repositories/</code><p><code>axiosClient</code> và mỗi file một nhóm API, giống thư mục <code>api/</code> bên admin.</p></div>
+    <div class="folder"><code>contexts/</code> · <code>hooks/</code><p>Dữ liệu đăng nhập dùng chung và hook <code>useAuth</code>.</p></div>
+    <div class="folder"><code>constants/</code> · <code>components/</code><p>Màu, icon, ảnh; thẻ sản phẩm <code>LaptopItem</code> dùng lại nhiều nơi.</p></div>
+  </div>
+</section>
+
+<!-- ============ REACT NATIVE ============ -->
+<section id="rn">
+  <div class="kicker">Khái niệm cốt lõi</div>
+  <h2>Các khái niệm cốt lõi của React Native</h2>
+  <p class="intro">React Native dùng đúng cách nghĩ của React (component, props, state, effect) nhưng vẽ ra giao diện điện thoại thay vì HTML. Tám khái niệm dưới đây có mặt ở hầu hết file trong project.</p>
+
+  <div class="concepts">
+    <div class="card concept">
+      <div class="c-head"><span class="chip c-ui">Component</span><span class="c-file">components/LaptopItem.js</span></div>
+      <p>Một <b>hàm trả về giao diện</b>. Mỗi màn hình, mỗi thẻ sản phẩm đều là component. Tên viết hoa và dùng như một thẻ: <code>&lt;LaptopItem item={p} /&gt;</code>.</p>
+<pre class="mini"><em>export default function</em> LaptopItem(props) {
+  <em>return</em> &lt;<u>Text</u>&gt;{props.item.name}&lt;/<u>Text</u>&gt;;
+}</pre>
+    </div>
+    <div class="card concept">
+      <div class="c-head"><span class="chip c-ui">Core Components</span><span class="c-file">from "react-native"</span></div>
+      <p>Không có <code>div</code> hay <code>p</code>. Thay vào đó là các khối có sẵn, được đổi thành giao diện gốc của iOS / Android.</p>
+<pre class="mini">&lt;<u>View</u>&gt;            <i>// khung, như div</i>
+  &lt;<u>Text</u>&gt;Giá&lt;/<u>Text</u>&gt;  <i>// mọi chữ phải nằm trong Text</i>
+  &lt;<u>Image</u> source={{ uri }} /&gt;
+  &lt;<u>TouchableOpacity</u> onPress={...} /&gt; <i>// nút bấm</i>
+  &lt;<u>FlatList</u> data={list} /&gt;  <i>// danh sách cuộn</i>
+&lt;/<u>View</u>&gt;</pre>
+    </div>
+    <div class="card concept">
+      <div class="c-head"><span class="chip c-ui">StyleSheet</span><span class="c-file">cuối mỗi file</span></div>
+      <p>Không có CSS. Style là <b>object JavaScript</b>, tên thuộc tính viết kiểu camelCase, số không có đơn vị. Bố cục mặc định là flexbox theo chiều dọc.</p>
+<pre class="mini"><em>const</em> styles = StyleSheet.create({
+  container: { flex: <s>1</s>, backgroundColor: <s>"white"</s> },
+});
+&lt;<u>View</u> style={styles.container} /&gt;</pre>
+    </div>
+    <div class="card concept">
+      <div class="c-head"><span class="chip c-hand">Props</span><span class="c-file">route.params</span></div>
+      <p>Dữ liệu <b>cha truyền xuống con</b>. Riêng giữa các màn hình, dữ liệu được gửi kèm khi chuyển màn hình và đọc ở <code>route.params</code>.</p>
+<pre class="mini">navigation.navigate(<s>"Brand"</s>, { categoryId: item.id });
+<i>// trong màn hình Brand</i>
+<em>const</em> { categoryId } = route.params;</pre>
+    </div>
+    <div class="card concept">
+      <div class="c-head"><span class="chip c-state">State</span><span class="c-file">useState</span></div>
+      <p>Dữ liệu <b>màn hình tự giữ và thay đổi được</b>: danh sách, số lượng trong giỏ, đang loading… Gọi <code>set…</code> là React vẽ lại màn hình.</p>
+<pre class="mini"><em>const</em> [categories, setCategory] = useState([]);
+setCategory(res.data.data); <i>// → màn hình tự cập nhật</i></pre>
+    </div>
+    <div class="card concept">
+      <div class="c-head"><span class="chip c-api">Effect</span><span class="c-file">useEffect · useFocusEffect</span></div>
+      <p>Code <b>chạy sau khi màn hình đã vẽ</b>: gọi API, mở socket. <code>useFocusEffect</code> của React Navigation chạy lại <b>mỗi lần quay về màn hình</b>, dùng cho giỏ hàng để luôn thấy dữ liệu mới.</p>
+<pre class="mini">useEffect(() =&gt; { fetchCategories(); }, []);
+<i>// [] = chỉ chạy 1 lần khi màn hình mở</i></pre>
+    </div>
+    <div class="card concept">
+      <div class="c-head"><span class="chip c-state">Context</span><span class="c-file">contexts/AccountContext.js</span></div>
+      <p>Kho dữ liệu <b>dùng chung cho mọi màn hình</b>. Ở đây giữ <code>token</code> và <code>account</code> của khách sau khi đăng nhập. Đọc bằng <code>useContext</code> hoặc <code>useAuth()</code>.</p>
+<pre class="mini"><em>const</em> { account } = useContext(AccountContext);
+cartAPI.getCart(account.id);</pre>
+    </div>
+    <div class="card concept">
+      <div class="c-head"><span class="chip c-http">Navigation</span><span class="c-file">@react-navigation</span></div>
+      <p>Điện thoại không có URL. Màn hình được xếp thành <b>chồng (Stack)</b>: mở màn hình mới là đặt lên trên, bấm Back là bỏ màn hình trên cùng. <b>Tab</b> là các màn hình ngang hàng chọn bằng thanh dưới đáy.</p>
+<pre class="mini">navigation.navigate(<s>"ProductDetail"</s>, { productItem });
+navigation.goBack();</pre>
+    </div>
+  </div>
+
+  <h3>Từ web sang mobile: đổi tên là chính</h3>
+  <div class="card" style="padding:6px 8px">
+    <div class="tw"><table>
+      <tr><th>Trên web (trang admin)</th><th>Trên mobile (app này)</th><th>Ghi chú</th></tr>
+      <tr><td><code>&lt;div&gt;</code></td><td><code>&lt;View&gt;</code></td><td>Khung chứa</td></tr>
+      <tr><td><code>&lt;p&gt;</code>, <code>&lt;span&gt;</code></td><td><code>&lt;Text&gt;</code></td><td>Chữ đặt ngoài <code>Text</code> sẽ báo lỗi</td></tr>
+      <tr><td><code>&lt;button onClick&gt;</code></td><td><code>&lt;TouchableOpacity onPress&gt;</code></td><td>Bấm vào thì mờ đi một chút</td></tr>
+      <tr><td><code>array.map()</code> trong JSX</td><td><code>&lt;FlatList data renderItem&gt;</code></td><td>Chỉ vẽ phần đang hiện trên màn hình, cuộn mượt</td></tr>
+      <tr><td>File CSS</td><td><code>StyleSheet.create({...})</code></td><td>Không có class, không có kế thừa style</td></tr>
+      <tr><td>URL + react-router</td><td>Stack / Tab + react-navigation</td><td>Gọi màn hình bằng tên, không bằng đường dẫn</td></tr>
+      <tr><td><code>localStorage</code></td><td>(chưa dùng)</td><td>Bản tương đương là AsyncStorage; app hiện chỉ giữ token trong RAM</td></tr>
+    </table></div>
+  </div>
+
+  <h3>Stack và Tab lồng nhau</h3>
+  <p>Thanh tab dưới đáy (<code>UITab</code>) thật ra chỉ là <b>một màn hình</b> trong stack. Khi mở chi tiết sản phẩm, màn hình đó được đặt lên trên, che luôn thanh tab; bấm Back là quay lại tab cũ.</p>
+  <div class="card">
+    <div class="stackviz">
+      <div class="phone">
+        <div class="ph-h">Stack lúc khách xem một sản phẩm</div>
+        <div class="card-st top"><b>ProductDetail</b><span>trên cùng, đang hiện</span></div>
+        <div class="card-st"><b>UITab</b><span>Home · Search · Cart · User</span></div>
+        <div class="card-st"><b>Login</b><span>vẫn còn bên dưới</span></div>
+        <div class="card-st"><b>Welcome</b><span>màn hình đầu tiên</span></div>
+      </div>
+      <div class="phone">
+        <div class="ph-h">Bên trong màn hình UITab</div>
+        <div class="tabscreen"><b>Home</b><span>tab đang chọn</span></div>
+        <div class="tabbar"><span class="on">Home</span><span>Search</span><span>Cart</span><span>User</span></div>
+      </div>
+    </div>
+  </div>
+  <p class="caption"><code>navigate("X")</code>: đặt X lên trên. <code>goBack()</code>: bỏ màn hình trên cùng. Chọn tab: đổi màn hình bên trong UITab, stack giữ nguyên.</p>
+
+  <h3>Cấu trúc một màn hình (Screen)</h3>
+  <div class="anat">
+<pre class="mini code"><em>import</em> { View, Text, FlatList, StyleSheet } <em>from</em> <s>"react-native"</s>;<span class="n">1</span>
+<em>import</em> categoryAPI <em>from</em> <s>"../../repositories/categoryApi"</s>;
+
+<em>export default function</em> Category() {
+  <em>const</em> [categories, setCategory] = useState([]);<span class="n">2</span>
+  <em>const</em> [loading, setLoading] = useState(<em>true</em>);
+  <em>const</em> navigation = useNavigation();
+
+  useEffect(() =&gt; {<span class="n">3</span>
+    categoryAPI.getAllCategory().then((res) =&gt; {
+      setCategory(res.data.data);
+      setLoading(<em>false</em>);
+    });
+  }, []);
+
+  <em>const</em> renderItem = ({ item }) =&gt; (<span class="n">4</span>
+    &lt;<u>TouchableOpacity</u> onPress={() =&gt;
+      navigation.navigate(<s>"Brand"</s>, { categoryId: item.id })}&gt;
+      &lt;<u>Text</u>&gt;{item.name}&lt;/<u>Text</u>&gt;
+    &lt;/<u>TouchableOpacity</u>&gt;
+  );
+
+  <em>return</em> (<span class="n">5</span>
+    &lt;<u>View</u> style={styles.container}&gt;
+      &lt;<u>FlatList</u> data={categories} renderItem={renderItem}
+        horizontal /&gt;
+    &lt;/<u>View</u>&gt;
+  );
+}
+
+<em>const</em> styles = StyleSheet.create({<span class="n">6</span>
+  container: { flex: <s>1</s>, backgroundColor: <s>"white"</s> },
+});</pre>
+    <ol class="legend-list">
+      <li><span class="n">1</span><div><b>Import</b> khối giao diện từ <code>react-native</code> và repository cần gọi.</div></li>
+      <li><span class="n">2</span><div><b>State</b> giữ dữ liệu màn hình; <code>useNavigation()</code> lấy công cụ chuyển màn hình.</div></li>
+      <li><span class="n">3</span><div><b>Effect tải dữ liệu</b> khi màn hình mở: gọi API, đưa kết quả vào state.</div></li>
+      <li><span class="n">4</span><div><b>Cách vẽ một dòng</b> của danh sách, kèm handler: bấm vào thì mở màn hình <code>Brand</code> và gửi kèm <code>categoryId</code>.</div></li>
+      <li><span class="n">5</span><div><b>JSX</b> mô tả màn hình từ state. State đổi → tự vẽ lại.</div></li>
+      <li><span class="n">6</span><div><b>Style</b> đặt cuối file, dùng qua <code>style={styles.container}</code>.</div></li>
+    </ol>
+  </div>
+  <p class="caption">Rút gọn từ <code>screens/home/Category.js</code>. Mọi màn hình trong app đều theo khuôn này; không có tầng service hay hook riêng cho dữ liệu.</p>
+
+  <h3>Cấu trúc một repository</h3>
+  <div class="anat">
+<pre class="mini code"><i>// repositories/axiosClient.js</i>
+<em>import</em> { SERVER_URL } <em>from</em> <s>'@env'</s>;<span class="n">1</span>
+<em>const</em> axiosClient = {
+  application: axios.create({ baseURL: SERVER_URL }),<span class="n">2</span>
+  applicationNoAuth: axios.create({ baseURL: SERVER_URL }),
+  formData: axios.create({
+    baseURL: <s>'https://prolaptop-server.onrender.com/api'</s> }),
+};
+
+<i>// repositories/categoryApi.js</i>
+<em>const</em> categoryAPI = {<span class="n">3</span>
+  getAllCategory: <em>async</em> () =&gt;
+    axiosClient.applicationNoAuth.get(<s>"/category"</s>),
+};</pre>
+    <ol class="legend-list">
+      <li><span class="n">1</span><div><b>URL server lấy từ <code>.env</code></b> qua plugin <code>react-native-dotenv</code> (khai báo ở <code>babel.config.js</code>). Đổi <code>.env</code> xong phải chạy lại với <code>-c</code> để xoá cache.</div></li>
+      <li><span class="n">2</span><div><b>Ba bản axios.</b> <code>application</code> được gắn token sau khi đăng nhập; <code>formData</code> dùng khi gửi kèm ảnh nhưng đang ghi cứng URL bản deploy.</div></li>
+      <li><span class="n">3</span><div><b>Mỗi file một nhóm API</b>, mỗi hàm một endpoint. Màn hình chỉ gọi hàm.</div></li>
+    </ol>
+  </div>
+
+  <h3>Mỗi phần nằm ở file nào trong project</h3>
+  <div class="card" style="padding:6px 8px">
+    <div class="tw"><table>
+      <tr><th>Phần</th><th>Nằm ở</th><th>Ghi chú</th></tr>
+      <tr><td><span class="chip c-ui">Screen</span></td><td><code>screens/**/*.js</code></td><td>Được đăng ký tên trong <code>NavigationApp.js</code> hoặc <code>UITab.js</code></td></tr>
+      <tr><td><span class="chip c-ui">Component dùng lại</span></td><td><code>components/LaptopItem.js</code></td><td><code>Button.js</code> là file rỗng</td></tr>
+      <tr><td><span class="chip c-http">Navigation</span></td><td><code>navigation/NavigationApp.js</code>, <code>navigation/UITab.js</code></td><td>Stack 18 màn hình, Tab 4 màn hình</td></tr>
+      <tr><td><span class="chip c-guard">Chặn chưa đăng nhập</span></td><td>Không có</td><td>Màn hình đọc <code>account.id</code> sẽ lỗi nếu chưa đăng nhập</td></tr>
+      <tr><td><span class="chip c-state">Context</span></td><td><code>contexts/AccountContext.js</code> → <code>AuthProvider</code></td><td>Đọc bằng <code>useContext</code> hoặc <code>hooks/userAuth.js</code></td></tr>
+      <tr><td><span class="chip c-api">Gọi API</span></td><td><code>repositories/axiosClient.js</code> + <code>repositories/*Api.js</code></td><td>URL ở <code>.env</code>, đọc qua <code>@env</code></td></tr>
+      <tr><td><span class="chip c-hand">Socket</span></td><td><code>screens/chat/Chat.js</code></td><td><code>hooks/socket.js</code> có nhưng không ai dùng</td></tr>
+      <tr><td><span class="chip c-ext">Deep link</span></td><td><code>app.json</code> (<code>scheme</code>) + <code>NavigationApp.js</code> (<code>linking</code>)</td><td><code>prolaptop://Success</code> mở màn hình Success</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- ============ KHỞI CHẠY ============ -->
+<section id="khoi-chay">
+  <div class="kicker">Khởi chạy</div>
+  <h2>Từ <code>npx expo start</code> tới màn hình Welcome</h2>
+  <p class="intro">Máy tính gom code thành một file JavaScript, điện thoại tải file đó về và chạy.</p>
+  <ol class="boot">
+    <li><div class="n">1</div><b>Metro gom code</b><p><code>expo start</code> bật Metro: đọc mọi file, thay <code>@env</code> bằng giá trị trong <code>.env</code>, gom thành một bundle.</p><div class="f">babel.config.js · .env</div></li>
+    <li><div class="n">2</div><b>Điện thoại tải bundle</b><p>Quét mã QR bằng Expo Go; app tải bundle qua mạng Wi-Fi từ máy tính.</p><div class="f">Expo Go</div></li>
+    <li><div class="n">3</div><b>Vào App.js</b><p><code>package.json</code> trỏ <code>main</code> tới <code>expo/AppEntry.js</code>, file này nạp <code>App.js</code>.</p><div class="f">App.js</div></li>
+    <li><div class="n">4</div><b>Dựng AuthProvider</b><p>Tạo kho <code>token</code>, <code>account</code>, ban đầu đều trống.</p><div class="f">contexts/AccountContext.js</div></li>
+    <li><div class="n">5</div><b>Dựng Navigation</b><p><code>NavigationContainer</code> + Stack, đăng ký 18 màn hình và cấu hình deep link.</p><div class="f">navigation/NavigationApp.js</div></li>
+    <li><div class="n">6</div><b>Mở Welcome</b><p>Luôn bắt đầu ở Welcome; app không nhớ lần đăng nhập trước.</p><div class="f">screens/index/Welcome.js</div></li>
+  </ol>
+
+  <h3>Thứ tự các lớp bọc</h3>
+  <div class="nest" style="border-color:var(--state);background:var(--state-bg)">
+    <div class="lbl" style="color:var(--state)">AuthProvider <span>cấp token + account qua AccountContext</span></div>
+    <div class="nest" style="border-color:var(--http);background:var(--http-bg)">
+      <div class="lbl" style="color:var(--http)">NavigationContainer <span>giữ trạng thái điều hướng, nhận deep link</span></div>
+      <div class="nest" style="border-color:var(--http);background:var(--surface)">
+        <div class="lbl" style="color:var(--http)">Stack.Navigator <span>initialRouteName = "Welcome"</span></div>
+        <div class="kids4">
+          <div class="box c-ui"><b>Welcome · Login · SignUp</b><span>bắt đầu</span></div>
+          <div class="box c-http" style="border:1.5px solid var(--http)"><b>UITab → Tab.Navigator</b><span>Home · Search · Cart · User</span></div>
+          <div class="box c-ui"><b>ProductDetail · Brand · Order…</b><span>mở đè lên trên tab</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="caption">Mọi màn hình nằm bên trong <code>AuthProvider</code>, nên màn hình nào cũng đọc được thông tin khách đang đăng nhập.</p>
+  <div class="note"><p>Muốn trỏ app về server chạy trên máy, sửa <code>SERVER_URL</code> trong <code>.env</code>. Điện thoại thật phải dùng IP mạng LAN của máy tính (ví dụ <code>http://192.168.1.190:5003/api</code>), không dùng <code>localhost</code>.</p></div>
+</section>
+
+<!-- ============ MÀN HÌNH ============ -->
+<section id="man-hinh">
+  <div class="kicker">Màn hình &amp; điều hướng</div>
+  <h2>22 màn hình theo hành trình của khách</h2>
+  <p class="intro">Đọc từ trái sang phải là đúng thứ tự một khách mới đi qua: vào app, đăng nhập, xem hàng, mua, rồi theo dõi đơn.</p>
+  <div class="journey">
+    <div class="jcol"><div class="rt-h">1 · Bắt đầu</div>
+      <div class="rt"><code>Welcome</code><span>nút Start</span></div>
+      <div class="rt"><code>Login</code><span>đăng nhập</span></div>
+      <div class="rt"><code>SignUp</code><span>đăng ký</span></div>
+      <div class="rt"><code>ForgotPassword</code><span>xin OTP</span></div>
+      <div class="rt"><code>CheckToken</code><span>nhập OTP</span></div>
+      <div class="rt"><code>ChangePassword</code><span>mật khẩu mới</span></div>
+    </div>
+    <div class="jcol"><div class="rt-h">2 · Xem hàng</div>
+      <div class="rt tab"><code>Home</code><span>tab · banner, hãng, bán chạy</span></div>
+      <div class="rt tab"><code>Search</code><span>tab · tìm, sắp xếp</span></div>
+      <div class="rt"><code>Brand</code><span>laptop theo hãng</span></div>
+      <div class="rt"><code>ProductDetail</code><span>chi tiết, thêm giỏ</span></div>
+    </div>
+    <div class="jcol"><div class="rt-h">3 · Mua</div>
+      <div class="rt tab"><code>Cart</code><span>tab · giỏ hàng</span></div>
+      <div class="rt"><code>PaymentMethod</code><span>tiền mặt / ZaloPay</span></div>
+      <div class="rt"><code>ConfirmInformation</code><span>địa chỉ nhận</span></div>
+      <div class="rt"><code>CheckStatusPayment</code><span>ZaloPay</span></div>
+      <div class="rt"><code>Success</code><span>đặt thành công</span></div>
+    </div>
+    <div class="jcol"><div class="rt-h">4 · Sau khi mua</div>
+      <div class="rt"><code>Order</code><span>đơn theo trạng thái</span></div>
+      <div class="rt"><code>Review</code><span>đánh giá món đã mua</span></div>
+      <div class="rt tab"><code>User</code><span>tab · hồ sơ</span></div>
+      <div class="rt"><code>UpdateProfile</code><span>sửa hồ sơ, ảnh</span></div>
+      <div class="rt"><code>UpdatePassword</code><span>đổi mật khẩu</span></div>
+      <div class="rt"><code>Chat</code><span>chat với admin</span></div>
+    </div>
+  </div>
+  <p class="caption">Ô viền xanh là 4 tab trong <code>UITab</code>; các ô còn lại là màn hình của stack.</p>
+  <div class="note warn"><p>Không màn hình nào được chặn khi chưa đăng nhập. Các màn hình đọc <code>account.id</code> (Home, Cart, ProductDetail, Profile, Chat…) sẽ lỗi nếu mở khi <code>account</code> còn trống; thực tế không xảy ra vì chỉ vào được qua Login.</p></div>
+</section>
+
+<!-- ============ THAO TÁC ============ -->
+<section id="thao-tac">
+  <div class="kicker">Vòng đời một thao tác</div>
+  <h2>Một lần chạm đi qua những đâu</h2>
+  <p class="intro">Chọn một ví dụ. Mỗi thao tác của khách đi qua cùng một chuỗi bước, từ màn hình tới server rồi quay về màn hình. Bước sáng là bước được chạy, bước mờ là bị bỏ qua.</p>
+  <div class="tabs" role="tablist" id="reqTabs"></div>
+  <div class="card">
+    <div class="req" id="reqLine"></div>
+    <div class="strip" id="reqStrip"></div>
+    <ol class="steps" id="reqSteps"></ol>
+    <div class="result" id="reqResult"></div>
+  </div>
+  <div class="note"><p>Bước <span class="chip c-srv">Server</span> chính là toàn bộ Request Lifecycle (Middleware → Guard → Pipe → Controller → Service → Database) trong tài liệu server.</p></div>
+</section>
+
+<!-- ============ LUỒNG ============ -->
+<section id="luong">
+  <div class="kicker">Các luồng chính</div>
+  <h2>Từng tính năng chạy ra sao</h2>
+  <p class="intro">Sắp theo thứ tự dữ liệu được tạo ra: phải có tài khoản trước, rồi mới có giỏ hàng, rồi đơn hàng, rồi đánh giá. Mọi URL có tiền tố <code>/api</code>. Sơ đồ đọc từ trên xuống theo thời gian.</p>
+  <div class="tabs" role="tablist" id="flowTabs"></div>
+  <div class="card" id="flowPanel"></div>
+</section>
+
+<!-- ============ LƯU Ý ============ -->
+<section id="luu-y">
+  <div class="kicker">Cần lưu ý</div>
+  <h2>Những điểm nên biết trước khi sửa code</h2>
+  <div class="warns">
+    <div class="w"><div class="i">1</div><div><b>Giỏ hàng bị xoá trước khi thanh toán</b><p>Bấm "Payment" ở giỏ là các món đã chọn bị <code>DELETE</code> ngay (<code>screens/cart/index.js</code>). Khách quay lại không đặt nữa thì mất giỏ.</p></div></div>
+    <div class="w"><div class="i">2</div><div><b>ZaloPay tạo đơn hai lần</b><p>App gọi <code>POST /order/create-from-cart</code> trước, rồi khi ZaloPay báo thành công, callback ở server lại tạo đơn thêm một lần nữa.</p></div></div>
+    <div class="w"><div class="i">3</div><div><b>Biến toàn cục ngầm trong <code>constants/</code></b><p>Các file viết <code>export default colors = {...}</code>, vô tình tạo biến toàn cục. 10 file (9 màn hình và <code>UITab.js</code>) dùng <code>colors</code> mà không import và vẫn chạy nhờ điều đó. Chạy trên web (strict mode) sẽ báo <code>colors is not defined</code>. Cách sửa: <code>const colors = {...}; export default colors;</code> rồi thêm import.</p></div></div>
+    <div class="w"><div class="i">4</div><div><b>URL server ghi cứng ở 3 chỗ</b><p><code>formData</code> trong <code>axiosClient.js</code>, <code>Chat.js</code> và <code>hooks/socket.js</code> luôn gọi bản deploy, bỏ qua <code>.env</code>. Đăng ký, đổi ảnh, đổi mật khẩu và chat vì vậy không đi vào server local.</p></div></div>
+    <div class="w"><div class="i">5</div><div><b>Đăng nhập không bền</b><p>Token chỉ nằm trong RAM: tắt app là mất. Lúc mới mở, header là <code>Bearer null</code> (so sánh với chuỗi <code>"null"</code>). Đăng xuất chỉ chuyển về Login, không xoá token.</p></div></div>
+    <div class="w"><div class="i">6</div><div><b>Deep link mới làm một nửa</b><p>Code đọc URL lúc mở app nhưng không dùng kết quả; và server đang cấu hình cho ZaloPay quay về trang web chứ không phải <code>prolaptop://Success</code>. Trong Expo Go, scheme <code>prolaptop://</code> cũng không chạy.</p></div></div>
+    <div class="w"><div class="i">7</div><div><b>Expo Go mới không chạy SDK 52</b><p>Expo Go trên iPhone chỉ hỗ trợ SDK mới nhất. Bản đã nâng lên SDK 58 và chạy được trên web nằm ở nhánh <code>thang/expo-sdk-58</code>.</p></div></div>
+    <div class="w"><div class="i">8</div><div><b>Thư viện thừa và thiếu</b><p>Cài nhưng không dùng: <code>redux</code>, <code>react-redux</code>, <code>react-router-*</code>, <code>react-navigation</code> v5, <code>yarn</code>, <code>add</code>. Dùng nhưng không khai báo: <code>query-string</code>, <code>@expo/vector-icons</code>. ID admin ghi cứng trong <code>Chat.js</code> và <code>messageApi.js</code>.</p></div></div>
+  </div>
+
+  <details class="more">
+    <summary>Danh sách API mà app gọi</summary>
+    <div class="tw"><table id="apiTable"></table></div>
+  </details>
+</section>
+
+</div></main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+(function () {
+'use strict';
+var $ = function (s) { return document.querySelector(s); };
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+/* ---------- action examples ---------- */
+var LAYERS = [['ui', 'Màn hình'], ['hand', 'Handler'], ['api', 'Repository'], ['http', 'Axios'], ['srv', 'Server'], ['state', 'setState'], ['ui2', 'Vẽ lại']];
+var CLS = { ui2: 'ui' };
+var REQ = [
+  { name: 'Đăng nhập', line: 'Chạm "Login" ở màn hình Login  →  POST /api/auth/login',
+    s: { ui: 'Hai ô nhập username, password và nút Login.', hand: 'handleLogin kiểm tra ô trống rồi gọi API.', api: 'authAPI.login({ userName, password }).', http: 'applicationNoAuth gửi JSON tới SERVER_URL.', srv: 'Kiểm tra mật khẩu, trả access_token + thông tin user.', state: 'Không bị khoá → setToken, setAccount trong AccountContext.', ui2: 'navigate("UITab"): mở thanh tab, đang ở Home.' },
+    res: ['ok', 'Vào trang chủ'] },
+  { name: 'Thêm vào giỏ', line: 'Chạm "Add to Cart" ở ProductDetail  →  POST /api/cart',
+    s: { ui: 'Ảnh, giá, cấu hình sản phẩm và nút Add to Cart.', hand: 'Kiểm tra còn hàng, lấy account.id từ context.', api: 'cartAPI.addToCart({ userId, productId, quantity: 1 }).', http: 'applicationNoAuth gửi JSON.', srv: 'Kiểm tra tồn kho; đã có trong giỏ thì cộng dồn.', ui2: 'navigate("Cart"): chuyển sang tab giỏ hàng, giỏ tự tải lại.' },
+    res: ['ok', 'Sản phẩm nằm trong giỏ'] },
+  { name: 'Đặt hàng tiền mặt', line: 'Chạm "Confirm" ở ConfirmInformation  →  POST /api/order/create-from-cart',
+    s: { ui: 'Form tên, email, điện thoại, địa chỉ, điền sẵn từ account.', hand: 'handleConfirm gom món đã chọn, phương thức, địa chỉ.', api: 'orderAPI.createOrderFromCart({...}).', http: 'Bản application, có gắn token.', srv: 'Guard kiểm tra token; tạo đơn, chi tiết đơn, trừ kho.', ui2: 'navigate("Success"): màn hình đặt hàng thành công.' },
+    res: ['ok', 'Đơn mới ở trạng thái Pending'] },
+  { name: 'Sai mật khẩu', line: 'Chạm "Login" với mật khẩu sai  →  POST /api/auth/login',
+    s: { ui: 'Màn hình Login.', hand: 'handleLogin gọi API trong try/catch.', api: 'authAPI.login(...).', http: 'Server trả 401, axios ném lỗi.', srv: 'Không khớp mật khẩu → 401.', state: 'Khối catch: setError với thông báo sai tài khoản.', ui2: 'Dòng chữ đỏ hiện dưới form.' },
+    res: ['bad', 'Ở lại màn hình Login'] },
+  { name: 'Tài khoản bị khoá', line: 'Đăng nhập bằng user bị admin khoá  →  POST /api/auth/login',
+    s: { ui: 'Màn hình Login.', hand: 'handleLogin nhận response thành công nhưng thấy isBlock = true.', api: 'authAPI.login(...).', http: 'Server trả 201 bình thường.', srv: 'Mật khẩu đúng, trả token kèm isBlock.', state: 'Không lưu token, chỉ setError("tài khoản bị khoá").' }, stop: 'state',
+    res: ['bad', 'Không vào được app'] }
+];
+var reqTabs = $('#reqTabs');
+reqTabs.innerHTML = REQ.map(function (r, i) { return '<button type="button" role="tab" data-i="' + i + '">' + esc(r.name) + '</button>'; }).join('');
+function showReq(i) {
+  var r = REQ[i];
+  Array.prototype.forEach.call(reqTabs.children, function (b, j) { b.setAttribute('aria-selected', j === i ? 'true' : 'false'); });
+  $('#reqLine').textContent = r.line;
+  var stopIdx = r.stop ? LAYERS.map(function (l) { return l[0]; }).indexOf(r.stop) : 99;
+  $('#reqStrip').innerHTML = LAYERS.map(function (l, k) {
+    var cls = 'layer c-' + (CLS[l[0]] || l[0]);
+    if (k > stopIdx) cls += ' after';
+    else if (!r.s[l[0]]) cls += ' skip';
+    if (k === stopIdx) cls += ' stop';
+    var sub = k > stopIdx ? 'không tới' : (r.s[l[0]] ? (k === stopIdx ? 'dừng tại đây' : 'chạy') : 'bỏ qua');
+    return '<div class="' + cls + '"><b>' + l[1] + '</b><span>' + sub + '</span></div>';
+  }).join('');
+  $('#reqSteps').innerHTML = LAYERS.filter(function (l) { return r.s[l[0]]; }).map(function (l) {
+    return '<li><span class="chip c-' + (CLS[l[0]] || l[0]) + '">' + l[1] + '</span><span>' + esc(r.s[l[0]]) + '</span></li>';
+  }).join('');
+  var res = $('#reqResult');
+  res.className = 'result ' + r.res[0];
+  res.textContent = '→ ' + r.res[1];
+}
+reqTabs.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) showReq(+b.dataset.i); });
+showReq(1);
+
+/* ---------- flows ---------- */
+var FLOWS = [
+  { name: 'Đăng ký', api: 'POST /user', where: 'screens/index/SignUp.js',
+    desc: 'Tạo tài khoản khách. Kiểm tra form ngay trên máy trước khi gửi.',
+    chain: [['ui', 'SignUp'], ['hand', 'kiểm tra form'], ['api', 'authAPI.register'], ['http', 'formData'], ['srv', 'POST /user']],
+    mmd: 'sequenceDiagram\n  participant K as Khách\n  participant P as SignUp\n  participant S as Server\n  K->>P: nhập username, email, phone, mật khẩu 2 lần\n  P->>P: kiểm tra ô trống, định dạng email, phone, mật khẩu khớp\n  alt sai\n    P-->>K: báo lỗi ngay, không gọi server\n  else đúng\n    P->>S: POST /user (form-data)\n    S-->>P: 201 user mới\n    P-->>K: Alert, bấm OK về Login\n  end',
+    notes: ['Màn hình đăng ký không có chọn ảnh; ảnh đại diện đổi sau ở UpdateProfile.', 'Bản formData đang ghi cứng URL bản deploy, nên đăng ký luôn đi vào server deploy.'] },
+  { name: 'Đăng nhập', api: 'POST /auth/login', where: 'screens/index/Login.js',
+    desc: 'Đổi username và mật khẩu lấy token. Token và thông tin khách được cất vào AccountContext.',
+    chain: [['ui', 'Login'], ['api', 'authAPI.login'], ['srv', 'POST /auth/login'], ['state', 'setToken + setAccount'], ['http', 'navigate UITab']],
+    mmd: 'sequenceDiagram\n  participant K as Khách\n  participant P as Login\n  participant X as AccountContext\n  participant S as Server\n  K->>P: nhập username, mật khẩu\n  P->>S: POST /auth/login\n  S-->>P: access_token, isBlock, thông tin user\n  alt isBlock\n    P-->>K: báo tài khoản bị khoá\n  else bình thường\n    P->>X: setToken, setAccount\n    X->>X: gắn Bearer token vào axios application\n    P-->>K: mở UITab (Home)\n  end',
+    notes: ['Token chỉ nằm trong RAM: tắt app là phải đăng nhập lại.'] },
+  { name: 'Quên mật khẩu', api: 'POST /auth/request-password-reset', where: 'ForgotPassword · CheckToken · ChangePassword',
+    desc: 'Ba màn hình nối nhau, email được gửi kèm khi chuyển màn hình (route.params).',
+    chain: [['ui', 'ForgotPassword'], ['ui', 'CheckToken'], ['ui', 'ChangePassword'], ['api', 'mailApi'], ['srv', '/auth/*']],
+    mmd: 'sequenceDiagram\n  participant K as Khách\n  participant A as App\n  participant S as Server\n  K->>A: ForgotPassword, nhập email\n  A->>S: POST /auth/request-password-reset\n  S-->>K: gửi OTP 4 số qua Gmail\n  A->>A: navigate CheckToken, kèm email\n  K->>A: nhập OTP\n  A->>S: POST /auth/verify-otp\n  A->>A: navigate ChangePassword, kèm email\n  K->>A: nhập mật khẩu mới\n  A->>S: POST /auth/reset-password\n  A-->>K: quay về Login',
+    notes: ['Tên dễ nhầm: CheckToken là màn hình nhập OTP, ChangePassword là đặt lại mật khẩu khi quên; đổi mật khẩu lúc đã đăng nhập là UpdatePassword.'] },
+  { name: 'Xem sản phẩm', api: 'GET /category · GET /product', where: 'home/* · brand · search · productDetail',
+    desc: 'Trang chủ có banner, danh sách hãng và sản phẩm bán chạy. Chọn hãng để xem laptop của hãng đó; tab Search để tìm.',
+    chain: [['ui', 'Home'], ['api', 'categoryAPI · productAPI'], ['srv', '/category · /product'], ['ui', 'Brand / Search'], ['ui', 'ProductDetail']],
+    mmd: 'sequenceDiagram\n  participant K as Khách\n  participant A as App\n  participant S as Server\n  A->>S: GET /category (Home)\n  A->>S: GET /product (bán chạy)\n  K->>A: chạm một hãng\n  A->>S: GET /product/:categoryId/categoryId\n  S-->>A: laptop của hãng, hiện ở Brand\n  K->>A: chạm một laptop\n  A-->>K: ProductDetail, dùng dữ liệu đã có, không gọi lại server',
+    notes: ['Search tải từng trang 10 sản phẩm khi cuộn; ô tìm kiếm chỉ lọc trong các trang đã tải.'] },
+  { name: 'Giỏ hàng', api: 'POST · PATCH · DELETE /cart', where: 'productDetail · screens/cart/index.js',
+    desc: 'Thêm từ ProductDetail. Ở tab Cart có thể tăng, giảm, xoá, chọn món để thanh toán.',
+    chain: [['ui', 'ProductDetail'], ['api', 'cartAPI.addToCart'], ['ui', 'Cart'], ['api', 'cartAPI'], ['srv', '/cart · /user/:id/carts']],
+    mmd: 'sequenceDiagram\n  participant K as Khách\n  participant A as App\n  participant S as Server\n  K->>A: Add to Cart\n  A->>S: POST /cart { userId, productId, quantity 1 }\n  A->>A: navigate Cart\n  A->>S: GET /user/:id/carts (mỗi lần vào tab)\n  K->>A: bấm + hoặc -\n  A->>A: đổi số trên màn hình trước\n  A->>S: PATCH /cart/:id (hết thì DELETE)\n  K->>A: chọn món, bấm Payment\n  A->>A: navigate PaymentMethod\n  A->>S: DELETE /cart/:id cho từng món đã chọn',
+    notes: ['Bước cuối xoá giỏ ngay lúc chuyển sang chọn thanh toán, trước khi có đơn hàng.'] },
+  { name: 'Đặt hàng tiền mặt', api: 'POST /order/create-from-cart', where: 'cart/PaymentMethod · cart/confirmInformation',
+    desc: 'Chọn "Cash on Delivery", xác nhận địa chỉ, tạo đơn. Đây là route đầu tiên app gọi có kèm token.',
+    chain: [['ui', 'PaymentMethod'], ['ui', 'ConfirmInformation'], ['api', 'orderAPI'], ['http', 'application + token'], ['srv', 'Guard → OrderService'], ['ui', 'Success']],
+    mmd: 'sequenceDiagram\n  participant K as Khách\n  participant A as App\n  participant S as Server\n  K->>A: chọn Cash on Delivery\n  A->>A: navigate ConfirmInformation\n  A->>A: điền sẵn tên, email, phone, địa chỉ từ account\n  K->>A: Confirm\n  A->>S: POST /order/create-from-cart + token\n  S-->>A: đơn mới (Pending)\n  A-->>K: Success, nút xem đơn',
+    notes: ['Giá trị paymentMethod là chuỗi lấy từ constants/PaymentMethodEnum.js.'] },
+  { name: 'Thanh toán ZaloPay', api: 'POST /payment/zalo/payment', where: 'cart/confirmInformation · paymentSuccess/CheckStatusPayment',
+    desc: 'App tạo giao dịch ZaloPay, mở app ZaloPay để trả tiền, rồi khách quay lại bấm kiểm tra trạng thái.',
+    chain: [['api', 'orderAPI'], ['api', 'zaloPayAPI'], ['ext', 'App ZaloPay'], ['api', 'order-status'], ['ui', 'Success']],
+    mmd: 'sequenceDiagram\n  participant K as Khách\n  participant A as App\n  participant S as Server\n  participant Z as ZaloPay\n  K->>A: chọn ZALOPAY, Confirm\n  A->>S: POST /order/create-from-cart\n  A->>A: navigate CheckStatusPayment\n  A->>S: POST /payment/zalo/payment\n  S->>Z: tạo giao dịch\n  S-->>A: order_url, app_trans_id\n  A->>Z: Linking.openURL(order_url)\n  K->>Z: thanh toán\n  Z->>S: callback, server tạo đơn\n  K->>A: quay lại app, bấm Check status\n  A->>S: GET /payment/zalo/order-status/:appTransId\n  S-->>A: return_code 1 nghĩa là đã trả\n  A-->>K: Success',
+    notes: ['Đơn bị tạo hai lần: một lần ở bước đầu, một lần trong callback.', 'Callback cần server có URL public, nên luồng này chỉ chạy trọn vẹn với server deploy.'] },
+  { name: 'Đơn hàng & đánh giá', api: 'GET /order · POST /review', where: 'screens/order/index.js · order/Review.js',
+    desc: 'Xem đơn theo trạng thái. Đơn đã giao thành công thì có nút đánh giá từng món.',
+    chain: [['ui', 'Order'], ['api', 'orderAPI.getOrders'], ['http', 'token'], ['ui', 'Review'], ['api', 'reviewAPI']],
+    mmd: 'sequenceDiagram\n  participant K as Khách\n  participant A as App\n  participant S as Server\n  A->>S: GET /order + token\n  S-->>A: đơn của khách kèm chi tiết và review\n  K->>A: chọn tab Success\n  A->>A: lọc theo statusDelivery\n  K->>A: Review product\n  A->>A: navigate Review\n  K->>A: chọn sao, viết nhận xét\n  A->>S: POST /review { rating, comment, productId, orderDetailId }',
+    notes: ['Trạng thái do admin đổi trên trang web: Pending → Delivering → Success, hoặc Cancelled.', 'Mỗi món trong đơn chỉ đánh giá được một lần.'] },
+  { name: 'Hồ sơ', api: 'PATCH /user/:id', where: 'profile/UpdateProfile · profile/UpdatePassword',
+    desc: 'Sửa thông tin, đổi ảnh đại diện từ thư viện ảnh, đổi mật khẩu.',
+    chain: [['ui', 'UpdateProfile'], ['ext', 'expo-image-picker'], ['api', 'userAPI'], ['srv', 'PATCH /user/:id'], ['state', 'setAccount']],
+    mmd: 'sequenceDiagram\n  participant K as Khách\n  participant A as App\n  participant S as Server\n  K->>A: chạm ảnh đại diện\n  A->>A: mở thư viện ảnh (expo-image-picker)\n  K->>A: sửa thông tin, Save\n  A->>S: PATCH /user/:id (chữ)\n  opt có đổi ảnh\n    A->>S: PATCH /user/:id (form-data, avatar)\n    A->>A: setAccount với ảnh mới\n  end\n  A-->>K: goBack',
+    notes: ['Chỉ đổi chữ mà không đổi ảnh thì context không được cập nhật, màn hình hồ sơ vẫn hiện thông tin cũ.', 'UpdatePassword có ô mật khẩu hiện tại nhưng không kiểm tra.'] },
+  { name: 'Chat', api: 'GET · POST /messages · WebSocket', where: 'screens/chat/Chat.js',
+    desc: 'Khách chat với admin. Lịch sử tải qua REST; tin mới tới qua WebSocket.',
+    chain: [['ui', 'Chat'], ['api', 'messagesApi'], ['hand', 'socket.io'], ['srv', '/messages + gateway']],
+    mmd: 'sequenceDiagram\n  participant K as Khách\n  participant A as App\n  participant S as Server\n  participant AD as Admin web\n  A->>S: GET /messages/:userId/:adminId\n  S-->>A: lịch sử\n  K->>A: gõ và gửi\n  A->>S: POST /messages (lưu)\n  A->>S: socket sendMessage\n  S-->>AD: receive_message\n  AD->>S: admin trả lời\n  S-->>A: receive_message\n  A->>A: chỉ hiện nếu receiverId là mình',
+    notes: ['Socket được mở ngay khi app chạy, vì Chat.js tạo nó ở ngoài component.', 'Server phát mọi tin cho mọi máy đang kết nối; app tự lọc.'] }
+];
+var flowTabs = $('#flowTabs');
+flowTabs.innerHTML = FLOWS.map(function (f, i) { return '<button type="button" role="tab" data-i="' + i + '">' + (i + 1) + '. ' + esc(f.name) + '</button>'; }).join('');
+var mmdN = 0;
+function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function initMermaid() {
+  if (!window.mermaid) return false;
+  window.mermaid.initialize({
+    startOnLoad: false, securityLevel: 'strict', theme: 'base',
+    fontFamily: 'Be Vietnam Pro, system-ui, sans-serif',
+    sequence: { mirrorActors: false, wrap: true, width: 170, messageFontSize: 14, actorFontSize: 14, noteFontSize: 13, boxMargin: 8 },
+    themeVariables: {
+      background: css('--surface'), primaryColor: css('--accent-soft'), primaryTextColor: css('--ink'), primaryBorderColor: css('--accent'),
+      lineColor: css('--muted'), textColor: css('--ink'), actorBkg: css('--accent-soft'), actorBorder: css('--accent'), actorTextColor: css('--ink'),
+      actorLineColor: css('--line'), signalColor: css('--muted'), signalTextColor: css('--ink'),
+      labelBoxBkgColor: css('--surface-2'), labelBoxBorderColor: css('--line'), labelTextColor: css('--ink'), loopTextColor: css('--muted'),
+      noteBkgColor: css('--ext-bg'), noteBorderColor: css('--ext'), noteTextColor: css('--ink')
+    }
+  });
+  return true;
+}
+var mermaidReady = null;
+function showFlow(i) {
+  var f = FLOWS[i];
+  Array.prototype.forEach.call(flowTabs.children, function (b, j) { b.setAttribute('aria-selected', j === i ? 'true' : 'false'); });
+  $('#flowPanel').innerHTML =
+    '<div class="flow-meta"><code>' + esc(f.api) + '</code><span class="chip" style="background:var(--surface-2);color:var(--muted)">' + esc(f.where) + '</span></div>' +
+    '<p style="margin-bottom:6px">' + esc(f.desc) + '</p>' +
+    '<div class="chain">' + f.chain.map(function (c) { return '<span class="chip c-' + c[0] + '">' + esc(c[1]) + '</span>'; }).join('<i>→</i>') + '</div>' +
+    '<div class="mmd"><div class="out"><span class="muted" style="font-size:.85rem">Đang vẽ sơ đồ…</span></div></div>' +
+    '<ul class="flow-notes">' + f.notes.map(function (n) { return '<li class="muted" style="font-size:.9rem">' + esc(n) + '</li>'; }).join('') + '</ul>';
+  var out = document.querySelector('#flowPanel .out');
+  if (mermaidReady === null) mermaidReady = initMermaid();
+  if (!mermaidReady) { out.innerHTML = '<pre>' + esc(f.mmd) + '</pre>'; return; }
+  window.mermaid.render('m' + (mmdN++), f.mmd).then(function (r) { out.innerHTML = r.svg; }).catch(function () { out.innerHTML = '<pre>' + esc(f.mmd) + '</pre>'; });
+}
+flowTabs.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) showFlow(+b.dataset.i); });
+showFlow(0);
+
+/* ---------- API table ---------- */
+var API = [
+  ['authApi · mailApi', [['POST', '/auth/login', 'Đăng nhập'], ['POST', '/user', 'Đăng ký (form-data)'], ['POST', '/auth/request-password-reset', 'Xin OTP'], ['POST', '/auth/verify-otp', 'Xác minh OTP'], ['POST', '/auth/reset-password', 'Đặt mật khẩu mới']]],
+  ['categoryApi · productApi', [['GET', '/category', 'Danh sách hãng'], ['GET', '/product?page&limit', 'Danh sách sản phẩm'], ['GET', '/product/:categoryId/categoryId', 'Sản phẩm theo hãng']]],
+  ['cartApi', [['GET', '/user/:id/carts', 'Xem giỏ'], ['POST', '/cart', 'Thêm vào giỏ'], ['PATCH', '/cart/:id', 'Đổi số lượng'], ['DELETE', '/cart/:id', 'Xoá khỏi giỏ']]],
+  ['orderApi · zaloPayApi · reviewApi', [['POST', '/order/create-from-cart', 'Đặt hàng (token)'], ['GET', '/order', 'Đơn của tôi (token)'], ['POST', '/payment/zalo/payment', 'Tạo giao dịch ZaloPay (token)'], ['GET', '/payment/zalo/order-status/:appTransId', 'Kiểm tra đã trả tiền chưa'], ['POST', '/review', 'Đánh giá']]],
+  ['userApi · messageApi', [['PATCH', '/user/:id', 'Sửa hồ sơ, ảnh, mật khẩu'], ['GET', '/messages/:userId/:adminId', 'Lịch sử chat'], ['POST', '/messages', 'Lưu tin nhắn']]]
+];
+$('#apiTable').innerHTML = '<tr><th>File</th><th>Method</th><th>Path</th><th>Làm gì</th></tr>' + API.map(function (g) {
+  return g[1].map(function (r, k) {
+    return '<tr><td>' + (k === 0 ? '<b>' + g[0] + '</b>' : '') + '</td><td class="m">' + r[0] + '</td><td><code>' + esc(r[1]) + '</code></td><td>' + esc(r[2]) + '</td></tr>';
+  }).join('');
+}).join('');
+
+/* ---------- TOC highlight ---------- */
+var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+if ('IntersectionObserver' in window) {
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) links.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id); }); });
+  }, { rootMargin: '0px 0px -70% 0px' });
+  links.forEach(function (a) { var s = document.querySelector(a.getAttribute('href')); if (s) io.observe(s); });
+}
+})();
+</script>
+</body>
+</html>
