@@ -275,7 +275,7 @@ pre.mini .n, .legend-list .n {
   <h1>App mua hàng chạy như thế nào</h1>
   <p class="intro">Đây là app dành cho <b>khách hàng</b>: đăng ký, xem laptop theo hãng, thêm vào giỏ, đặt hàng (tiền mặt hoặc ZaloPay), xem đơn, đánh giá và chat với admin. Viết bằng React Native, chạy qua Expo, gọi cùng server NestJS với trang admin.</p>
   <div class="facts">
-    <div class="fact"><b>Expo SDK 52</b>React Native 0.76</div>
+    <div class="fact"><b>Expo SDK 58</b>React Native 0.88 · React 19</div>
     <div class="fact"><b>22</b>màn hình (18 stack + 4 tab)</div>
     <div class="fact"><b>10</b>file repository gọi API</div>
     <div class="fact"><b>prolaptop://</b>scheme để mở lại app</div>
@@ -495,13 +495,17 @@ navigation.goBack();</pre>
 
   <h3>Cấu trúc một repository</h3>
   <div class="anat">
-<pre class="mini code"><i>// repositories/axiosClient.js</i>
+<pre class="mini code"><i>// constants/server.js</i>
 <em>import</em> { SERVER_URL } <em>from</em> <s>'@env'</s>;<span class="n">1</span>
+<em>export const</em> API_URL = SERVER_URL;      <i>// .../api</i>
+<em>export const</em> SOCKET_URL = <i>/* API_URL bỏ /api */</i>;
+
+<i>// repositories/axiosClient.js</i>
 <em>const</em> axiosClient = {
-  application: axios.create({ baseURL: SERVER_URL }),<span class="n">2</span>
-  applicationNoAuth: axios.create({ baseURL: SERVER_URL }),
-  formData: axios.create({
-    baseURL: <s>'https://prolaptop-server.onrender.com/api'</s> }),
+  application: axios.create({ baseURL: API_URL }),<span class="n">2</span>
+  applicationNoAuth: axios.create({ baseURL: API_URL }),
+  formData: axios.create({ baseURL: API_URL,
+    headers: { <s>'content-type'</s>: <s>'multipart/form-data'</s> } }),
 };
 
 <i>// repositories/categoryApi.js</i>
@@ -510,8 +514,8 @@ navigation.goBack();</pre>
     axiosClient.applicationNoAuth.get(<s>"/category"</s>),
 };</pre>
     <ol class="legend-list">
-      <li><span class="n">1</span><div><b>URL server lấy từ <code>.env</code></b> qua plugin <code>react-native-dotenv</code> (khai báo ở <code>babel.config.js</code>). Đổi <code>.env</code> xong phải chạy lại với <code>-c</code> để xoá cache.</div></li>
-      <li><span class="n">2</span><div><b>Ba bản axios.</b> <code>application</code> được gắn token sau khi đăng nhập; <code>formData</code> dùng khi gửi kèm ảnh nhưng đang ghi cứng URL bản deploy.</div></li>
+      <li><span class="n">1</span><div><b>URL server gom về một chỗ.</b> <code>constants/server.js</code> đọc <code>SERVER_URL</code> trong <code>.env</code> qua plugin <code>react-native-dotenv</code> (khai báo ở <code>babel.config.js</code>); API và socket đều lấy từ đây. Đổi <code>.env</code> xong phải chạy lại với <code>-c</code> để xoá cache.</div></li>
+      <li><span class="n">2</span><div><b>Ba bản axios.</b> <code>application</code> được gắn token sau khi đăng nhập; <code>formData</code> dùng khi gửi kèm ảnh.</div></li>
       <li><span class="n">3</span><div><b>Mỗi file một nhóm API</b>, mỗi hàm một endpoint. Màn hình chỉ gọi hàm.</div></li>
     </ol>
   </div>
@@ -525,7 +529,7 @@ navigation.goBack();</pre>
       <tr><td><span class="chip c-http">Navigation</span></td><td><code>navigation/NavigationApp.js</code>, <code>navigation/UITab.js</code></td><td>Stack 18 màn hình, Tab 4 màn hình</td></tr>
       <tr><td><span class="chip c-guard">Chặn chưa đăng nhập</span></td><td>Không có</td><td>Màn hình đọc <code>account.id</code> sẽ lỗi nếu chưa đăng nhập</td></tr>
       <tr><td><span class="chip c-state">Context</span></td><td><code>contexts/AccountContext.js</code> → <code>AuthProvider</code></td><td>Đọc bằng <code>useContext</code> hoặc <code>hooks/userAuth.js</code></td></tr>
-      <tr><td><span class="chip c-api">Gọi API</span></td><td><code>repositories/axiosClient.js</code> + <code>repositories/*Api.js</code></td><td>URL ở <code>.env</code>, đọc qua <code>@env</code></td></tr>
+      <tr><td><span class="chip c-api">Gọi API</span></td><td><code>repositories/axiosClient.js</code> + <code>repositories/*Api.js</code></td><td>URL ở <code>.env</code>, gom về <code>constants/server.js</code></td></tr>
       <tr><td><span class="chip c-hand">Socket</span></td><td><code>screens/chat/Chat.js</code></td><td><code>hooks/socket.js</code> có nhưng không ai dùng</td></tr>
       <tr><td><span class="chip c-ext">Deep link</span></td><td><code>app.json</code> (<code>scheme</code>) + <code>NavigationApp.js</code> (<code>linking</code>)</td><td><code>prolaptop://Success</code> mở màn hình Success</td></tr>
     </table></div>
@@ -539,7 +543,7 @@ navigation.goBack();</pre>
   <p class="intro">Máy tính gom code thành một file JavaScript, điện thoại tải file đó về và chạy.</p>
   <ol class="boot">
     <li><div class="n">1</div><b>Metro gom code</b><p><code>expo start</code> bật Metro: đọc mọi file, thay <code>@env</code> bằng giá trị trong <code>.env</code>, gom thành một bundle.</p><div class="f">babel.config.js · .env</div></li>
-    <li><div class="n">2</div><b>Điện thoại tải bundle</b><p>Quét mã QR bằng Expo Go; app tải bundle qua mạng Wi-Fi từ máy tính.</p><div class="f">Expo Go</div></li>
+    <li><div class="n">2</div><b>Điện thoại tải bundle</b><p>Quét mã QR bằng Expo Go (bản SDK 58); app tải bundle qua Wi-Fi từ máy tính. Chạy trên trình duyệt thì dùng <code>--web</code>.</p><div class="f">Expo Go · trình duyệt</div></li>
     <li><div class="n">3</div><b>Vào App.js</b><p><code>package.json</code> trỏ <code>main</code> tới <code>expo/AppEntry.js</code>, file này nạp <code>App.js</code>.</p><div class="f">App.js</div></li>
     <li><div class="n">4</div><b>Dựng AuthProvider</b><p>Tạo kho <code>token</code>, <code>account</code>, ban đầu đều trống.</p><div class="f">contexts/AccountContext.js</div></li>
     <li><div class="n">5</div><b>Dựng Navigation</b><p><code>NavigationContainer</code> + Stack, đăng ký 18 màn hình và cấu hình deep link.</p><div class="f">navigation/NavigationApp.js</div></li>
@@ -562,7 +566,14 @@ navigation.goBack();</pre>
     </div>
   </div>
   <p class="caption">Mọi màn hình nằm bên trong <code>AuthProvider</code>, nên màn hình nào cũng đọc được thông tin khách đang đăng nhập.</p>
-  <div class="note"><p>Muốn trỏ app về server chạy trên máy, sửa <code>SERVER_URL</code> trong <code>.env</code>. Điện thoại thật phải dùng IP mạng LAN của máy tính (ví dụ <code>http://192.168.1.190:5003/api</code>), không dùng <code>localhost</code>.</p></div>
+  <div class="card" style="padding:6px 8px;margin-top:20px">
+    <div class="tw"><table>
+      <tr><th>Chạy ở đâu</th><th>Lệnh</th><th><code>SERVER_URL</code> trong <code>.env</code></th></tr>
+      <tr><td>Trình duyệt trên máy</td><td><code>npx expo start --web -c</code></td><td><code>http://localhost:5003/api</code></td></tr>
+      <tr><td>Điện thoại thật (Expo Go)</td><td><code>npx expo start -c</code>, quét QR</td><td><code>http://&lt;IP LAN của máy&gt;:5003/api</code>, ví dụ <code>192.168.1.190</code></td></tr>
+    </table></div>
+  </div>
+  <p class="caption">Trên điện thoại, <code>localhost</code> là chính điện thoại, nên phải dùng IP của máy tính. Chạy web thì server phải cho phép origin <code>http://localhost:8081</code> trong <code>CLIENT_URL</code>.</p>
 </section>
 
 <!-- ============ MÀN HÌNH ============ -->
@@ -636,12 +647,11 @@ navigation.goBack();</pre>
   <div class="warns">
     <div class="w"><div class="i">1</div><div><b>Giỏ hàng bị xoá trước khi thanh toán</b><p>Bấm "Payment" ở giỏ là các món đã chọn bị <code>DELETE</code> ngay (<code>screens/cart/index.js</code>). Khách quay lại không đặt nữa thì mất giỏ.</p></div></div>
     <div class="w"><div class="i">2</div><div><b>ZaloPay tạo đơn hai lần</b><p>App gọi <code>POST /order/create-from-cart</code> trước, rồi khi ZaloPay báo thành công, callback ở server lại tạo đơn thêm một lần nữa.</p></div></div>
-    <div class="w"><div class="i">3</div><div><b>Biến toàn cục ngầm trong <code>constants/</code></b><p>Các file viết <code>export default colors = {...}</code>, vô tình tạo biến toàn cục. 10 file (9 màn hình và <code>UITab.js</code>) dùng <code>colors</code> mà không import và vẫn chạy nhờ điều đó. Chạy trên web (strict mode) sẽ báo <code>colors is not defined</code>. Cách sửa: <code>const colors = {...}; export default colors;</code> rồi thêm import.</p></div></div>
-    <div class="w"><div class="i">4</div><div><b>URL server ghi cứng ở 3 chỗ</b><p><code>formData</code> trong <code>axiosClient.js</code>, <code>Chat.js</code> và <code>hooks/socket.js</code> luôn gọi bản deploy, bỏ qua <code>.env</code>. Đăng ký, đổi ảnh, đổi mật khẩu và chat vì vậy không đi vào server local.</p></div></div>
-    <div class="w"><div class="i">5</div><div><b>Đăng nhập không bền</b><p>Token chỉ nằm trong RAM: tắt app là mất. Lúc mới mở, header là <code>Bearer null</code> (so sánh với chuỗi <code>"null"</code>). Đăng xuất chỉ chuyển về Login, không xoá token.</p></div></div>
-    <div class="w"><div class="i">6</div><div><b>Deep link mới làm một nửa</b><p>Code đọc URL lúc mở app nhưng không dùng kết quả; và server đang cấu hình cho ZaloPay quay về trang web chứ không phải <code>prolaptop://Success</code>. Trong Expo Go, scheme <code>prolaptop://</code> cũng không chạy.</p></div></div>
-    <div class="w"><div class="i">7</div><div><b>Expo Go mới không chạy SDK 52</b><p>Expo Go trên iPhone chỉ hỗ trợ SDK mới nhất. Bản đã nâng lên SDK 58 và chạy được trên web nằm ở nhánh <code>thang/expo-sdk-58</code>.</p></div></div>
-    <div class="w"><div class="i">8</div><div><b>Thư viện thừa và thiếu</b><p>Cài nhưng không dùng: <code>redux</code>, <code>react-redux</code>, <code>react-router-*</code>, <code>react-navigation</code> v5, <code>yarn</code>, <code>add</code>. Dùng nhưng không khai báo: <code>query-string</code>, <code>@expo/vector-icons</code>. ID admin ghi cứng trong <code>Chat.js</code> và <code>messageApi.js</code>.</p></div></div>
+    <div class="w"><div class="i">3</div><div><b>Đăng nhập không bền</b><p>Token chỉ nằm trong RAM: tắt app là mất. Lúc mới mở, header là <code>Bearer null</code> (so sánh với chuỗi <code>"null"</code>). Đăng xuất chỉ chuyển về Login, không xoá token.</p></div></div>
+    <div class="w"><div class="i">4</div><div><b>Deep link mới làm một nửa</b><p>Code đọc URL lúc mở app nhưng không dùng kết quả; và server đang cấu hình cho ZaloPay quay về trang web chứ không phải <code>prolaptop://Success</code>. Trong Expo Go, scheme <code>prolaptop://</code> cũng không chạy.</p></div></div>
+    <div class="w"><div class="i">5</div><div><b>React Navigation vẫn là bản 6</b><p>Expo SDK 58 đi kèm React 19; navigation chưa được nâng lên bản 7. Khi nâng, các lệnh <code>navigate("Cart")</code>, <code>navigate("Home")</code> gọi từ màn hình stack sang tab phải sửa lại, vì bản 7 bỏ kiểu gọi này.</p></div></div>
+    <div class="w"><div class="i">6</div><div><b>Hằng số trong <code>constants/</code> phải được import</b><p>Trước đây các file viết <code>export default colors = {...}</code> (vô tình tạo biến toàn cục) và nhiều màn hình dùng <code>colors</code> không import. Đã sửa thành <code>const colors = {...}; export default colors;</code>. Màn hình mới nhớ <code>import colors from ".../constants/colors"</code>, nếu không bản web sẽ báo <code>colors is not defined</code>.</p></div></div>
+    <div class="w"><div class="i">7</div><div><b>Code thừa</b><p><code>redux</code>, <code>react-redux</code> cài nhưng không dùng; <code>hooks/socket.js</code> không ai import; <code>components/Button.js</code> rỗng. ID admin ghi cứng trong <code>Chat.js</code> và <code>messageApi.js</code>.</p></div></div>
   </div>
 
   <details class="more">
@@ -711,7 +721,7 @@ var FLOWS = [
     desc: 'Tạo tài khoản khách. Kiểm tra form ngay trên máy trước khi gửi.',
     chain: [['ui', 'SignUp'], ['hand', 'kiểm tra form'], ['api', 'authAPI.register'], ['http', 'formData'], ['srv', 'POST /user']],
     mmd: 'sequenceDiagram\n  participant K as Khách\n  participant P as SignUp\n  participant S as Server\n  K->>P: nhập username, email, phone, mật khẩu 2 lần\n  P->>P: kiểm tra ô trống, định dạng email, phone, mật khẩu khớp\n  alt sai\n    P-->>K: báo lỗi ngay, không gọi server\n  else đúng\n    P->>S: POST /user (form-data)\n    S-->>P: 201 user mới\n    P-->>K: Alert, bấm OK về Login\n  end',
-    notes: ['Màn hình đăng ký không có chọn ảnh; ảnh đại diện đổi sau ở UpdateProfile.', 'Bản formData đang ghi cứng URL bản deploy, nên đăng ký luôn đi vào server deploy.'] },
+    notes: ['Màn hình đăng ký không có chọn ảnh; ảnh đại diện đổi sau ở UpdateProfile.'] },
   { name: 'Đăng nhập', api: 'POST /auth/login', where: 'screens/index/Login.js',
     desc: 'Đổi username và mật khẩu lấy token. Token và thông tin khách được cất vào AccountContext.',
     chain: [['ui', 'Login'], ['api', 'authAPI.login'], ['srv', 'POST /auth/login'], ['state', 'setToken + setAccount'], ['http', 'navigate UITab']],
