@@ -1,4 +1,4 @@
-export default colors = {
+const colors = {
     primary: '#50d2c2',
     secondary: '#34897e',
     accent: '#ff6347',
@@ -26,3 +26,4 @@ export default colors = {
     button_red: '#D02626',
 };
             
+export default colors;

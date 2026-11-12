@@ -1,3 +1,4 @@
+import colors from "../../constants/colors";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useState, useRef } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';

@@ -1,3 +1,4 @@
+import colors from "../../constants/colors";
 import React, { useContext, useState } from "react";
 import {
   StyleSheet,

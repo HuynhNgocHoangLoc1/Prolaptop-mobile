@@ -1,12 +1,12 @@
 import io from 'socket.io-client';
+import { SOCKET_URL } from '../constants/server';
 
 let socket;
-const SERVER_URL = 'https://prolaptop-server.onrender.com'; // Đảm bảo URL chính xác của server WebSocket
 let isConnected = false; // Biến trạng thái để kiểm tra trạng thái kết nối
 
 export const connectSocket = () => {
   if (!socket || !isConnected) { // Đảm bảo chỉ tạo một kết nối
-    socket = io(SERVER_URL, {
+    socket = io(SOCKET_URL, {
       transports: ['websocket'],
       reconnectionAttempts: 5, // Số lần thử kết nối lại
     });
