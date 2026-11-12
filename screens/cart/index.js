@@ -252,14 +252,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: "#fff",
     padding: 10,
-    marginHorizontal: 20,
+    marginHorizontal: 10,
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 5,
-    alignSelf: "center",
+    alignSelf: "stretch", // mọi thẻ cùng chiều rộng, thẳng hàng
   },
   imageContainer: {
     position: "relative",

@@ -65,8 +65,9 @@ const UITab = () => {
 };
 
 const styles = StyleSheet.create({
+  // Không đặt position: "fixed"/"absolute" cho tab bar: nó sẽ nổi đè lên nội dung
+  // và che phần dưới của màn hình (ví dụ nút Payment ở Cart).
   tabBar: {
-    position: "fixed",
     paddingTop: 5,
   },
   homeTab: {},

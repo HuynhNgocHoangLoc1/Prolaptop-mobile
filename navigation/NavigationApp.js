@@ -28,6 +28,7 @@ import CheckStatusPayment from "../screens/paymentSuccess/CheckStatusPayment";
 import ForgotPassword from "../screens/index/ForgotPassword";
 import CheckToken from "../screens/index/CheckToken";
 import UpdatePassword from "../screens/profile/UpdatePassword";
+import useAuth from "../hooks/userAuth";
 
 const Stack = createNativeStackNavigator();
 
@@ -45,6 +46,7 @@ const linking = {
 // }
 
 export default function NavigationApp(props) {
+  const { account, ready } = useAuth();
   const [initialRoute, setInitialRoute] = useState("Success");
   useEffect(() => {
     const handleDeepLink = ({ url }) => {
@@ -71,10 +73,13 @@ export default function NavigationApp(props) {
     };
   }, []);
 
+  // Chờ AuthProvider khôi phục phiên đăng nhập, rồi mới chọn màn hình đầu tiên
+  if (!ready) return null;
+
   return (
     <NavigationContainer linking={linking}>
       <Stack.Navigator
-        initialRouteName="Welcome"
+        initialRouteName={account ? "UITab" : "Welcome"}
         screenOptions={{
           headerTintColor: colors.dark_blu,
         }}

@@ -19,14 +19,15 @@ import AccountContext from "../../contexts/AccountContext";
 
 export default function Profile() {
 
-  const {account, token} = useContext(AccountContext);
+  const {account, token, logout} = useContext(AccountContext);
 
 
   const navigation = useNavigation();
 
   const handleLogout = () => {
-    // console.log("success");
-    navigation.navigate("Login")
+    // Đưa stack về Login trước (để không màn hình nào còn đọc account), rồi xoá phiên
+    navigation.reset({ index: 0, routes: [{ name: "Login" }] });
+    logout();
   }
   
 

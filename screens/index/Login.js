@@ -85,7 +85,13 @@ export default function Login() {
       } else if (e.response && e.response.data.statusCode === 500) {
         setError("Server error occurred.");
         console.error(e);
+      } else if (!e.response) {
+        // Không đọc được phản hồi: server chưa chạy, sai SERVER_URL, hoặc bị CORS chặn
+        // (trên web, origin của Expo phải nằm trong CLIENT_URL của server).
+        setError("Cannot connect to server.");
+        console.error("Network error: ", e);
       } else {
+        setError("Login failed. Please try again.");
         console.error("Unknown error occurred: ", e);
       }
     }
