@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import fakeData from "../../fakeData/Data.json";
 import { useRoute } from '@react-navigation/native';
@@ -13,17 +13,28 @@ const ProductDetail = () => {
   const { account } = useAuth();
   const navigation = useNavigation();
 
+  const [adding, setAdding] = useState(false);
+
   const handleToCart = async () => {
+    if (adding) return; // chặn bấm liên tiếp khi request trước chưa xong
     if (productItem.stockQuantity <= 0) {
       Alert.alert("Out of Stock", "Cannot add this product to the cart as it is out of stock.");
       return;
     }
-    await cartAPI.addProductToCart({
-      userId: account.id,
-      productId: productItem.id,
-      quantity: 1
-    });
-    navigation.navigate("Cart", { productId: productItem.id });
+    setAdding(true);
+    try {
+      await cartAPI.addProductToCart({
+        userId: account.id,
+        productId: productItem.id,
+        quantity: 1
+      });
+      navigation.navigate("Cart", { productId: productItem.id });
+    } catch (error) {
+      const message = error?.response?.data?.message || "Cannot add this product to the cart.";
+      Alert.alert("Add to Cart failed", String(message));
+    } finally {
+      setAdding(false);
+    }
   };
 
   // Check if product is available before rendering
@@ -52,7 +63,7 @@ const ProductDetail = () => {
       <Text style={styles.description}>Description: {productItem.description}</Text>
       
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.button} onPress={handleToCart}>
+        <TouchableOpacity style={[styles.button, adding && { opacity: 0.6 }]} onPress={handleToCart} disabled={adding}>
           <Text style={styles.buttonText}>Add to Cart</Text>
         </TouchableOpacity>
         <Text style={styles.totalPrice}>${productItem.price}</Text>

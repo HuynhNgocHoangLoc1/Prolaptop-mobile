@@ -23,7 +23,10 @@ const Cart = () => {
   const [error, setError] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
   
-  useFocusEffect(() => {
+  // useFocusEffect phải nhận hàm đã bọc useCallback; nếu không, mỗi lần setState
+  // tạo hàm mới → effect chạy lại → gọi API lại → lặp vô hạn.
+  useFocusEffect(
+    React.useCallback(() => {
     const fetchCart = async () => {
       try {
         if (account.id) {
@@ -42,7 +45,8 @@ const Cart = () => {
       }
     };
     fetchCart();
-  });
+    }, [account?.id])
+  );
   
   const handlePaymentButton = async () => {
     if (selectedItems.length === 0) {
