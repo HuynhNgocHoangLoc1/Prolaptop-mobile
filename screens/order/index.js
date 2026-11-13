@@ -1,5 +1,5 @@
 import colors from "../../constants/colors";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import orderAPI from "../../repositories/orderApi";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 const stages = [
   { 
@@ -44,7 +44,7 @@ const Order = () => {
     navigation.navigate("Home");
   };
 
-  const [activeSection, setActiveSection] = useState("all");
+  const [activeSection, setActiveSection] = useState("Pending");
   const [orderItems, setOrderItems] = useState([]);
   const [filterOrderItems, setFilterOrderItems] = useState(orderItems);
 
@@ -62,12 +62,14 @@ const Order = () => {
   };
 
   useEffect(() => {
-    setFilterOrderItems(orderItems);
-  }, [orderItems]);
-
-  useEffect(() => {
     fetchOrder();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      setActiveSection("Pending");
+    }, [])
+  );
 
   const renderOrder = (order) => {
     const orderDetail = order.orderDetail ? order.orderDetail : [];
@@ -119,7 +121,7 @@ const Order = () => {
         orderItems.filter((order) => order.statusDelivery === activeSection)
       );
     }
-  }, [activeSection]);
+  }, [activeSection, orderItems]);
 
   return (
     <View style={styles.container}>
