@@ -111,7 +111,7 @@ export default function Search() {
           onChangeText={(text) => setSearchText(text)}
         />
         <TouchableOpacity style={styles.search}>
-          <AntDesign name="search1" size={24} />
+          <AntDesign name="search" size={24} />
         </TouchableOpacity>
       </View>
 

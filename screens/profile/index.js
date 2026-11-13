@@ -56,7 +56,7 @@ export default function Profile() {
     },
     {
       name: "List of orders",
-      icon: <AntDesign name="hearto" size={24} color="black" />,
+      icon: <MaterialIcons name="list-alt" size={24} color="black" />,
       onPress: handleClickListOrders,
     },
     {
