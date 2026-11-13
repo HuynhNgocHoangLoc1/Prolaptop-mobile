@@ -22,6 +22,7 @@ const Cart = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [selectionError, setSelectionError] = useState("");
   
   useFocusEffect(() => {
     const fetchCart = async () => {
@@ -46,9 +47,10 @@ const Cart = () => {
   
   const handlePaymentButton = async () => {
     if (selectedItems.length === 0) {
-      alert("Please select at least one product before proceeding to payment.");
+      setSelectionError("Please select a product before proceeding to payment.");
       return;
     }
+    setSelectionError("");
     navigation.navigate("PaymentMethod", {
       selectedItems,
       totalPrice: getTotalPrice(),
@@ -123,6 +125,7 @@ const Cart = () => {
   };
 
   const toggleSelectItem = ({id, productId, quantity, price, imageUrl, name, totalPrice}) => {
+    setSelectionError("");
     if (selectedItems.some((item) => item.id === id)) {
       setSelectedItems(selectedItems.filter((item) => item.id !== id));
     } else {
@@ -136,7 +139,10 @@ const Cart = () => {
     <View style={styles.container}>
       <Text style={styles.cartTitle}>Cart</Text>
 
-      <ScrollView contentContainerStyle={styles.productList}>
+      <ScrollView
+        style={styles.productScroll}
+        contentContainerStyle={styles.productList}
+      >
         {cartItems.length === 0 ? (
           <Text style={styles.emptyText}>Your cart is empty</Text>
         ) : (
@@ -171,34 +177,42 @@ const Cart = () => {
                 </View>
               </View>
               <View style={styles.info}>
-                <Text style={styles.name}>{item.product.name}</Text>
-                <Text style={styles.stockText}>
-                  Quantities {item.product.stockQuantity}
-                </Text>
+                <View style={styles.productDetails}>
+                  <Text style={styles.name} numberOfLines={2}>
+                    {item.product.name}
+                  </Text>
+                  <Text style={styles.stockText} numberOfLines={1}>
+                    Quantity in stock: {item.product.stockQuantity}
+                  </Text>
+                  <Text style={styles.price} numberOfLines={1}>
+                    {item.product.price} $
+                  </Text>
+                </View>
                 <View style={styles.quantityControl}>
                   <TouchableOpacity
+                    style={styles.quantityButtonContainer}
                     onPress={() => decrementQuantity(item.id, item.quantity, item.product.stockQuantity)}
                   >
                     <Text style={styles.quantityButton}>-</Text>
                   </TouchableOpacity>
                   <Text style={styles.quantityText}>{item.quantity}</Text>
                   <TouchableOpacity
+                    style={styles.quantityButtonContainer}
                     onPress={() => incrementQuantity(item.id, item.quantity,item.product.stockQuantity)}
                   >
                     <Text style={styles.quantityButton}>+</Text>
                   </TouchableOpacity>
-                <Text style={styles.price}>{item.product.price} $</Text>
                 </View>
-                <TouchableOpacity
-                  style={styles.deleteIcon}
-                  onPress={() => removeItem(item.id)}
-                >
-                  <Image
-                    style={styles.deleteIcon}
-                    source={icons.deleteFuntion}
-                  />
-                </TouchableOpacity>
               </View>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => removeItem(item.id)}
+              >
+                <Image
+                  style={styles.deleteImage}
+                  source={icons.deleteFuntion}
+                />
+              </TouchableOpacity>
             </View>
           ))
         )}
@@ -209,6 +223,10 @@ const Cart = () => {
           Total            : {(getTotalPrice() )} $
         </Text>
       </View>
+
+      {selectionError ? (
+        <Text style={styles.selectionErrorText}>{selectionError}</Text>
+      ) : null}
 
       <TouchableOpacity
         style={styles.paymentButton}
@@ -237,33 +255,40 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     color: colors.light_blu
   },
+  productScroll: {
+    flex: 1,
+  },
   productList: {
     flexGrow: 1,
     paddingBottom: 20,
-    width: "95%",
+    width: "100%",
     alignSelf: "center",
+    alignItems: "center",
+    paddingHorizontal: 16,
   },
   cartItem: {
+    position: "relative",
     flexDirection: "row",
-    marginBottom: 10,
+    alignItems: "center",
+    width: "100%",
+    height: 150,
+    marginBottom: 12,
     backgroundColor: "#fff",
-    padding: 10,
-    marginHorizontal: 20,
+    padding: 12,
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 5,
-    alignSelf: "center",
   },
   imageContainer: {
     position: "relative",
-    marginRight: 15,
+    marginRight: 12,
   },
   image: {
-    width: 80,
-    height: 80,
+    width: 68,
+    height: 68,
     borderRadius: 8,
   },
   quantityBadge: {
@@ -284,37 +309,54 @@ const styles = StyleSheet.create({
   },
   info: {
     flex: 1,
-    position: "relative",
+    alignSelf: "stretch",
+    justifyContent: "space-between",
+    paddingRight: 24,
+    minWidth: 0,
+  },
+  productDetails: {
+    flexShrink: 1,
   },
   name: {
     fontSize: 16,
     fontWeight: "bold",
+    color: "#222",
   },
   price: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#FF6347",
     fontWeight: "bold",
-    marginTop: 5,
+    marginTop: 4,
+    flexShrink: 1,
   },
   stockText: {
-    fontSize: 14,
+    fontSize: 12,
     color: "#aaa",
-    marginTop: 5,
+    marginTop: 3,
   },
   quantityControl: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 10,
+    alignSelf: "flex-start",
+  },
+  quantityButtonContainer: {
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 6,
+    backgroundColor: "#f1f3f5",
   },
   quantityButton: {
-    fontSize: 20,
+    fontSize: 18,
     color: "#000",
-    paddingHorizontal: 15,
   },
   quantityText: {
-    fontSize: 16,
+    minWidth: 28,
+    textAlign: "center",
+    fontSize: 14,
     fontWeight: "bold",
-    marginHorizontal: 10,
+    marginHorizontal: 4,
   },
   summary: {
     paddingVertical: 15,
@@ -327,6 +369,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
     marginBottom: 5,
+  },
+  selectionErrorText: {
+    color: "#B00020",
+    backgroundColor: "#FDECEE",
+    textAlign: "center",
+    marginHorizontal: 20,
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 6,
   },
   totalText: {
     fontSize: 20,
@@ -358,12 +409,18 @@ const styles = StyleSheet.create({
     color: "#aaa",
     marginVertical: 20,
   },
-  deleteIcon: {
+  deleteButton: {
+    position: "absolute",
+    width: 28,
+    height: 28,
+    right: 8,
+    top: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  deleteImage: {
     width: 20,
     height: 20,
-    position: "absolute",
-    right: 5,
-    top: 5,
   },
   selectCircleContainer: {
     justifyContent: "center",

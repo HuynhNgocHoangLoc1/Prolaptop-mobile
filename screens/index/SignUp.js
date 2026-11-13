@@ -1,14 +1,17 @@
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert } from 'react-native'
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import authAPI from "../../repositories/authApi";
+import images from "../../constants/images";
+import colors from "../../constants/colors";
 
 export default function SignUp() {
 
   const navigation = useNavigation();
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
 
   const [username, setUserName] = useState('');
@@ -77,16 +80,10 @@ const handleRegister = async () => {
   // formData.append('address', address);
 
   try {
-    const response = await authAPI.register(formData);
-    // console.log(response);
-    console.log("register success");
-    Alert.alert(
-      "Success",
-      "You have successfully registered!",
-      [
-        { text: "OK", onPress: () => navigation.navigate("Login") } // Điều hướng sau khi nhấn OK
-      ]
-    );
+    await authAPI.register(formData);
+    setError('');
+    setSuccess('Register success');
+    setTimeout(() => navigation.replace("Login"), 1500);
 } catch (e) {
     console.error(e.response ? e.response.data : e.message); // In ra chi tiết lỗi
     if (e.response && e.response.data && e.response.data.message) {
@@ -163,7 +160,8 @@ const handleRegister = async () => {
           setAddress(value)
         }}
       ></TextInput>
-        {error != '' && <Text style={styles.errorLine}>{error}</Text>}
+        {error !== '' && <Text style={styles.errorLine}>{error}</Text>}
+        {success !== '' && <Text style={styles.successLine}>{success}</Text>}
 
       <TouchableOpacity style={styles.buttonRegis} onPress={handleRegister}>
       <Text style={styles.regisTextButton}>Register</Text>
@@ -228,5 +226,11 @@ const styles = StyleSheet.create({
    },
    errorLine: {
     color: "red",                                                           
-  }
+   },
+   successLine: {
+     color: colors.success,
+     fontSize: 16,
+     fontWeight: "bold",
+     marginBottom: 8,
+   }
 })

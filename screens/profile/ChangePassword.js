@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import mailApi from '../../repositories/mailApi'; 
 import { useNavigation } from '@react-navigation/native';
+import colors from '../../constants/colors';
 
 export default function ChangePassword({ route }) {
   const navigation = useNavigation();
   const { email } = route.params; 
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
@@ -19,12 +21,7 @@ export default function ChangePassword({ route }) {
       const response = await mailApi.resetPassword({ email, newPassword }); 
       console.log(response.data);
 
-      Alert.alert("Success", "Password has been changed successfully.", [
-        {
-          text: "OK",
-          onPress: () => navigation.navigate('Login'),
-        },
-      ]);
+      setSuccess(true);
     } catch (error) {
       console.log(error);
       console.error('Error details:', error.response ? error.response.data : error);
@@ -35,23 +32,38 @@ export default function ChangePassword({ route }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Change Password</Text>
-      <TextInput 
-        style={styles.input} 
-        placeholder="New password" 
-        secureTextEntry 
-        value={newPassword}
-        onChangeText={setNewPassword} 
-      />
-      <TextInput 
-        style={styles.input} 
-        placeholder="Confirm new password" 
-        secureTextEntry 
-        value={confirmPassword}
-        onChangeText={setConfirmPassword} 
-      />
-      <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
-        <Text style={styles.buttonText}>Save Change</Text>
-      </TouchableOpacity>
+      {success ? (
+        <View style={styles.successContainer}>
+          <Text style={styles.successTitle}>Success</Text>
+          <Text style={styles.successText}>Password has been changed successfully.</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('Login')}
+          >
+            <Text style={styles.buttonText}>OK</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <>
+          <TextInput 
+            style={styles.input} 
+            placeholder="New password" 
+            secureTextEntry 
+            value={newPassword}
+            onChangeText={setNewPassword} 
+          />
+          <TextInput 
+            style={styles.input} 
+            placeholder="Confirm new password" 
+            secureTextEntry 
+            value={confirmPassword}
+            onChangeText={setConfirmPassword} 
+          />
+          <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
+            <Text style={styles.buttonText}>Save Change</Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 }
@@ -97,5 +109,22 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  successContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  successTitle: {
+    color: colors.success,
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  successText: {
+    color: colors.success,
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
   },
 });

@@ -5,8 +5,13 @@ const messagesApi = {
         const url = '/messages';
         return await axiosClient.application.post(url, data);
     },
-    getMessages: async (id) => {
-        const url = `/messages/${id}/63330ead-553c-440a-80d5-e9a2f7f1ab7e`;
+    getAdminId: async () => {
+        const response = await axiosClient.application.get('/user/admin');
+        return response.data?.id || response.data?.user?.id;
+    },
+    getMessages: async (id, receiverId = null) => {
+        const targetId = receiverId || (await messagesApi.getAdminId());
+        const url = `/messages/${id}/${targetId}`;
         return await axiosClient.application.get(url);
     },
 };

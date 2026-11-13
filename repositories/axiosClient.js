@@ -21,10 +21,8 @@ const axiosClient = {
     }),
 
     formData : axios.create({
-        baseURL: 'https://prolaptop-server.onrender.com/api',
-        headers: {
-            'content-type': 'multipart/form-data',
-        },
+        // baseURL: 'https://prolaptop-server.onrender.com/api',
+        baseURL: SERVER_URL,
     })
 }
 

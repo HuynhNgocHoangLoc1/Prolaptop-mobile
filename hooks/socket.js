@@ -40,9 +40,15 @@ export const disconnectSocket = () => {
 };
 
 // Gửi tin nhắn qua socket với sự kiện "send_message"
+export const joinRoom = (userId) => {
+  if (socket && userId) {
+    socket.emit('joinRoom', { userId });
+  }
+};
+
 export const sendMessage = (message) => {
   if (socket) {
-    socket.emit('send_message', message); // Đảm bảo tên sự kiện là 'send_message'
+    socket.emit('sendMessage', message);
     console.log('Message sent:', message);
   }
 };
