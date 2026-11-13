@@ -1,9 +1,9 @@
-import colors from "../../constants/colors";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import useAuth from '../../hooks/userAuth';
 import userAPI from '../../repositories/userApi';
+import colors from '../../constants/colors';
 
 export default function UpdatePassword() {
   const { account } = useAuth();
@@ -11,26 +11,30 @@ export default function UpdatePassword() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const navigation = useNavigation();
 
   const handleSaveChange = async () => {
-    // Kiểm tra mật khẩu hiện tại có trùng với mật khẩu của account không
-    // if (currentPassword !== account.password) {
-    //   Alert.alert('Error', 'Current password is incorrect');
-    //   return;
-    // }
-
+    if (!currentPassword) {
+      setError('Please enter your current password');
+      return;
+    }
+    if (!newPassword || !confirmPassword) {
+      setError('Please enter and confirm your new password');
+      return;
+    }
     if (newPassword !== confirmPassword) {
-      Alert.alert('Error', 'New password and confirm password do not match');
+      setError('New password and confirm password do not match');
       return;
     }
 
     try {
-      await userAPI.updatePassword(account.id, { password: newPassword });
-      Alert.alert('Success', 'Password updated successfully');
-      navigation.goBack(); // Quay lại màn hình trước đó sau khi lưu thành công
+      await userAPI.updatePassword(account.id, { currentPassword, newPassword });
+      setError('');
+      setSuccess(true);
     } catch (error) {
-      Alert.alert('Error', 'Failed to update password');
+      setError(error.response?.data?.message || 'Failed to update password');
     }
   };
 
@@ -38,33 +42,58 @@ export default function UpdatePassword() {
     <View style={styles.container}>
       <Text style={styles.title}>Change password</Text>
 
-      <Text style={styles.label}>Current password</Text>
-      <TextInput
-        style={styles.input}
-        secureTextEntry={true}
-        value={currentPassword}
-        onChangeText={setCurrentPassword}
-      />
+      {success ? (
+        <View style={styles.successContainer}>
+          <Text style={styles.successText}>Password updated successfully</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.buttonText}>OK</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <>
+          <Text style={styles.label}>Current password</Text>
+          <TextInput
+            style={styles.input}
+            secureTextEntry={true}
+            value={currentPassword}
+            onChangeText={(value) => {
+              setCurrentPassword(value);
+              setError('');
+            }}
+          />
 
-      <Text style={styles.label}>New password</Text>
-      <TextInput
-        style={styles.input}
-        secureTextEntry={true}
-        value={newPassword}
-        onChangeText={setNewPassword}
-      />
+          <Text style={styles.label}>New password</Text>
+          <TextInput
+            style={styles.input}
+            secureTextEntry={true}
+            value={newPassword}
+            onChangeText={(value) => {
+              setNewPassword(value);
+              setError('');
+            }}
+          />
 
-      <Text style={styles.label}>Confirm password</Text>
-      <TextInput
-        style={styles.input}
-        secureTextEntry={true}
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-      />
+          <Text style={styles.label}>Confirm password</Text>
+          <TextInput
+            style={styles.input}
+            secureTextEntry={true}
+            value={confirmPassword}
+            onChangeText={(value) => {
+              setConfirmPassword(value);
+              setError('');
+            }}
+          />
 
-      <TouchableOpacity style={styles.button} onPress={handleSaveChange}>
-        <Text style={styles.buttonText}>Save</Text>
-      </TouchableOpacity>
+          {error !== '' && <Text style={styles.errorText}>{error}</Text>}
+
+          <TouchableOpacity style={styles.button} onPress={handleSaveChange}>
+            <Text style={styles.buttonText}>Save</Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 }
@@ -108,5 +137,20 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  successContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  successText: {
+    color: colors.success,
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });

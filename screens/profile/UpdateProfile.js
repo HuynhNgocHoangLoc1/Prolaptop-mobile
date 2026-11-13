@@ -1,5 +1,4 @@
-import colors from "../../constants/colors";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,15 +8,16 @@ import {
   Image,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import AccountContext from "../../contexts/AccountContext";
 import * as ImagePicker from "expo-image-picker";
 import userAPI from "../../repositories/userApi";
 import useAuth from "../../hooks/userAuth";
+import colors from "../../constants/colors";
 
 const UpdateProfile = () => {
-  const navigation = useNavigation();
   const { account, setAccount } = useAuth();
+  const [success, setSuccess] = useState(false);
+  const [avatarUpdated, setAvatarUpdated] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [avatar, setAvatar] = useState(account.avatar);
   const [userName, setUserName] = useState(account.userName);
   const [email, setEmail] = useState(account.email);
@@ -27,7 +27,7 @@ const UpdateProfile = () => {
   // Hàm xử lý cập nhật avatar
   const handleUpdateAvatar = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
@@ -36,46 +36,50 @@ const UpdateProfile = () => {
     if (!result.canceled) {
       const selectedAvatar = result.assets[0].uri;
       setAvatar(selectedAvatar);
+      setSuccess(false);
+      setAvatarUpdated(false);
+      setErrorMessage("");
     }
   };
 
   // Hàm xử lý lưu thông tin người dùng
   const handleSave = async () => {
+    setSuccess(false);
+    setAvatarUpdated(false);
+    setErrorMessage("");
     const updateUserDto = {
       userName,
       email,
       phoneNumber: phone,
       address,
+      gender: account.gender,
     };
 
     try {
-      // Update user profile
-      const response = await userAPI.updateUser(account.id, updateUserDto);
+      const avatarChanged = avatar !== account.avatar;
+      const response = await userAPI.updateUser(
+        account.id,
+        updateUserDto,
+        avatarChanged ? avatar : undefined,
+      );
+      const updatedAvatar = response.data.result.avatar;
 
-      // Check if the avatar was changed
-      if (avatar !== account.avatar) {
-        const avatarResponse = await userAPI.updateAvatar(avatar, account.id);
-
-        console.log(avatarResponse.result.avatar, account);
-        // Update avatar in context and local state if the avatar was updated successfully
-        setAccount({
-          address: address,
-          email: email,
-          phone: phone,
-          userName: userName,
-          gender: account.gender,
-          id: account.id,
-          role: account.role,
-          avatar: avatarResponse.result.avatar,
-        });
-        // console.log(account);
-      }
-      // Update context with new user details
-
-      alert("Update successfully");
-      navigation.goBack();
+      setAccount({
+        ...account,
+        address,
+        email,
+        phone,
+        userName,
+        avatar: updatedAvatar,
+      });
+      setAvatar(updatedAvatar);
+      setAvatarUpdated(avatarChanged);
+      setSuccess(true);
     } catch (error) {
       console.error("Error updating user:", error);
+      setErrorMessage(
+        error.response?.data?.message || "Failed to update profile. Please try again.",
+      );
     }
   };
 
@@ -107,7 +111,10 @@ const UpdateProfile = () => {
           <TextInput
             style={styles.input}
             value={userName}
-            onChangeText={setUserName}
+            onChangeText={(value) => {
+              setUserName(value);
+              setSuccess(false);
+            }}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -115,7 +122,10 @@ const UpdateProfile = () => {
           <TextInput
             style={styles.input}
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(value) => {
+              setEmail(value);
+              setSuccess(false);
+            }}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -123,7 +133,10 @@ const UpdateProfile = () => {
           <TextInput
             style={styles.input}
             value={phone}
-            onChangeText={setPhone}
+            onChangeText={(value) => {
+              setPhone(value);
+              setSuccess(false);
+            }}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -131,9 +144,24 @@ const UpdateProfile = () => {
           <TextInput
             style={styles.input}
             value={address}
-            onChangeText={setAddress}
+            onChangeText={(value) => {
+              setAddress(value);
+              setSuccess(false);
+            }}
           />
         </View>
+        {success && (
+          <Text style={styles.successMessage} accessibilityLiveRegion="polite">
+            {avatarUpdated
+              ? "Profile and avatar updated successfully."
+              : "Profile updated successfully."}
+          </Text>
+        )}
+        {errorMessage !== "" && (
+          <Text style={styles.errorMessage} accessibilityLiveRegion="polite">
+            {errorMessage}
+          </Text>
+        )}
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>Save</Text>
         </TouchableOpacity>
@@ -183,6 +211,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 5,
+  },
+  successMessage: {
+    width: "100%",
+    color: colors.success,
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  errorMessage: {
+    width: "100%",
+    color: colors.danger,
+    marginBottom: 16,
+    textAlign: "center",
   },
   input: {
     width: "100%",
